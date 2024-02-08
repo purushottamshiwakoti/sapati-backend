@@ -57,6 +57,7 @@ enum RequestStatus {
   PENDING
   APPROVED
   REJECTED
+  CHANGE
 }
 
 model SapatiRequests {
@@ -64,7 +65,7 @@ model SapatiRequests {
   amount            Int
   return_date       DateTime
   reason            String
-  dcline_reason     String?
+  decline_reason    String?
   change_reason     String?
   request_status    RequestStatus @default(PENDING)
   user_id           String        @db.ObjectId
