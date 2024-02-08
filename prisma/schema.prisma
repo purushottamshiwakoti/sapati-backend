@@ -16,17 +16,19 @@ enum Gender {
 }
 
 model User {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
   first_name   String?
   last_name    String?
   password     String?
+  image        String?
   email        String?
-  is_verified  Boolean   @default(false)
+  is_verified  Boolean      @default(false)
   gender       Gender?
-  phone_number Int       @unique
+  phone_number Int          @unique
   dob          DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+  bearerToken  BearerToken?
 }
 
 model VerifyPhoneNumber {
@@ -36,4 +38,13 @@ model VerifyPhoneNumber {
   expires      DateTime @unique
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
+}
+
+model BearerToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  user_id    String   @unique @db.ObjectId
+  user       User     @relation(fields: [user_id], references: [id])
+  token      String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

@@ -8,9 +8,9 @@ export async function POST(req:NextRequest){
     try {
 const body=await req.json();
 const {phone_number}=body
-const token=await generatePhoneVerificationToken(phone_number);
+const phone =parseInt(phone_number)
 
-if(!phone_number){
+if(!phone){
     return NextResponse.json({message:"Phone number is required"},{status:499})
 }
 
@@ -19,7 +19,8 @@ if(phone_number.length!==10){
 
 }
 
-const existingUser=await getUserByPhone(phone_number);
+const existingUser=await getUserByPhone(phone);
+console.log(existingUser)
 if(existingUser){
     return NextResponse.json({message:"User already exists"},{status:409})
 
@@ -27,18 +28,17 @@ if(existingUser){
 
 const user=await prismadb.user.create({
     data:{
-        phone_number
+        phone_number:phone
     }
 });
 
+const token=await generatePhoneVerificationToken(phone);
 
-
-console.log(phone_number.length);
-
-return NextResponse.json({message:"Yes man"},{status:200})
+return NextResponse.json({message:"Otp sent successfully"},{status:200})
     
         
     } catch (e) {
+        console.log(e);
         return NextResponse.json({error:e},{status:500})
     }
 
