@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
         });
 
         if (errors.length > 0) {
-            return NextResponse.json({ errors }, { status: 499 });
+            return NextResponse.json({ error:errors[0] }, { status: 499 });
         }
 
         if (new_password !== confirm_new_password) {

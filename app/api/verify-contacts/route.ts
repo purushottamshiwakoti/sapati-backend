@@ -31,10 +31,11 @@ export async function POST(req:NextRequest){
             const verifyContact = await prismadb.user.findUnique({
                 where: {
                     phone_number: item.phone
-                }
+                },
+              
             });
             if(verifyContact){
-                verifiedContacts.push(item.phone)
+                verifiedContacts.push(verifyContact)
             }
             // Add your logic to handle the verification of each contact here...
             console.log("Verified contact:", item.phone);

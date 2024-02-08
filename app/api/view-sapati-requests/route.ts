@@ -1,10 +1,8 @@
 import prismadb from "@/lib/prismadb";
-import { getUserById } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req:NextRequest){
-
     try {
         const token=await req.headers
 
@@ -15,16 +13,17 @@ export async function GET(req:NextRequest){
             return NextResponse.json({message:"Invalid token"},{status:498})
         }
 
+        const requests=await prismadb.user.findMany({
+            include:{
+                sapatiRequests:true
+            }
+        })
 
-        const user=await getUserById(existingToken.user_id)
-     
+        return NextResponse.json({message:"All sapati requests fetched successfully",requests},{status:200});
 
-
-        return NextResponse.json({message:"Successfully fetched user",user},{status:200})
         
     } catch (error) {
         console.log(error);
         return NextResponse.json({ error: error }, { status: 500 });
     }
-
 }

@@ -8,20 +8,22 @@ import { generateBearerToken } from "@/lib/tokens";
 
 export async function POST(req:NextRequest) {
   try {
-    const data = await req.formData();
+    const {phone_number,first_name,last_name,device_token,password,email} = await req.json();
     // const image = data.get("image");
-    const phone_number:any = data.get("phone_number");
-    const first_name:any = data.get("first_name");
-    const last_name:any = data.get("last_name");
-    const password:any = data.get("password");
-    const email:any = data.get("email");
+    // const phone_number:any = data.get("phone_number");
+    // const first_name:any = data.get("first_name");
+    // const last_name:any = data.get("last_name");
+    // const password:any = data.get("password");
+    // const email:any = data.get("email");
+    // const device_token:any = data.get("device_token");
 
   
     const requiredFields = [
         { field: phone_number, fieldName: 'Phone number ' },
         { field: first_name, fieldName: 'First Name' },
         { field: last_name, fieldName: 'Last Name' },
-        { field: password, fieldName: 'Password' }
+        { field: password, fieldName: 'Password' },
+        { field: device_token, fieldName: 'Device Token' }
     ];
     const errors:any = [];
 
@@ -32,7 +34,7 @@ export async function POST(req:NextRequest) {
     });
 
     if (errors.length > 0) {
-        return NextResponse.json({ errors }, { status: 499 });
+        return NextResponse.json({ error:errors[0] }, { status: 499 });
     }
 
     const phone=parseInt(phone_number)
@@ -60,7 +62,8 @@ export async function POST(req:NextRequest) {
                 first_name,
                 last_name,
                 password:hashedPassword,
-                email
+                email,
+                device_token
             }
 
           })

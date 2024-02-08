@@ -1,11 +1,10 @@
 import prismadb from "@/lib/prismadb";
-import { getUserById } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req:NextRequest){
-
+export async function POST(req:NextRequest){
     try {
+
         const token=await req.headers
 
         const bearerToken=token.get("Authorization")?.split(" ")[1]
@@ -15,16 +14,16 @@ export async function GET(req:NextRequest){
             return NextResponse.json({message:"Invalid token"},{status:498})
         }
 
+        await prismadb.user.delete({
+            where:{
+                id:existingToken.user_id
+            }
+        });
 
-        const user=await getUserById(existingToken.user_id)
-     
-
-
-        return NextResponse.json({message:"Successfully fetched user",user},{status:200})
+        return NextResponse.json({message:"Successfully deleted user"},{status:200})
         
     } catch (error) {
         console.log(error);
         return NextResponse.json({ error: error }, { status: 500 });
     }
-
 }

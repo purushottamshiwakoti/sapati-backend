@@ -72,7 +72,6 @@ export const generateBearerToken=async(id:string)=>{
                 user_id:id,
             }
         })
-console.log(existingToken)
         if(existingToken){
             await prismadb.bearerToken.delete({
                 where:{
