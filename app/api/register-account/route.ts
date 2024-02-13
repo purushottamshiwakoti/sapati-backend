@@ -4,11 +4,22 @@ import { NextRequest, NextResponse } from "next/server";
 
 import bcrypt from "bcryptjs"
 import { generateBearerToken } from "@/lib/tokens";
+import { verifyBearerToken } from "@/lib/verifyBearerToken";
 
 
 export async function POST(req:NextRequest) {
   try {
-    const {phone_number,first_name,last_name,device_token,password,email} = await req.json();
+
+    const token=await req.headers
+
+    const bearerToken=token.get("Authorization")?.split(" ")[1]
+
+    const existingToken=await verifyBearerToken(bearerToken)
+    if(!existingToken){
+        return NextResponse.json({message:"Invalid token"},{status:498})
+    }
+
+    const {first_name,last_name,device_token,password,email} = await req.json();
     // const image = data.get("image");
     // const phone_number:any = data.get("phone_number");
     // const first_name:any = data.get("first_name");
@@ -19,7 +30,6 @@ export async function POST(req:NextRequest) {
 
   
     const requiredFields = [
-        { field: phone_number, fieldName: 'Phone number ' },
         { field: first_name, fieldName: 'First Name' },
         { field: last_name, fieldName: 'Last Name' },
         { field: password, fieldName: 'Password' },
@@ -37,26 +47,16 @@ export async function POST(req:NextRequest) {
         return NextResponse.json({ error:errors[0] }, { status: 499 });
     }
 
-    const phone=parseInt(phone_number)
 
 
-     const user=await getUserByPhone(phone)
 
-    if(!user){
-        return NextResponse.json({ message: "User does not exist" }, { status: 403 });
-
-    }
-
-    if(!user.is_verified){
-        return NextResponse.json({ message: "User has not verified otp yet" }, { status: 403 });
-
-    }
+   
 
 
     const hashedPassword = await bcrypt.hash(password,10);
         const updateUser=  await prismadb.user.update({
             where:{
-                phone_number:phone
+                id:existingToken.id
             },
             data:{
                 first_name,
@@ -68,9 +68,9 @@ export async function POST(req:NextRequest) {
 
           })
 
-          const token=await generateBearerToken(updateUser.id)
+          const loginToken=await generateBearerToken(updateUser.id)
 
-          return NextResponse.json({message:"Successfully updated account",token:token},{status:200})
+          return NextResponse.json({message:"Successfully updated account",token:loginToken},{status:200})
 
   
  

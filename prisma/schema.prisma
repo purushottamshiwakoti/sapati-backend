@@ -16,23 +16,24 @@ enum Gender {
 }
 
 model User {
-  id               String           @id @default(auto()) @map("_id") @db.ObjectId
-  first_name       String?
-  last_name        String?
-  password         String?
-  image            String?
-  email            String?
-  notification     Boolean?         @default(true)
-  is_verified      Boolean          @default(false)
-  gender           Gender?
-  phone_number     Int              @unique
-  dob              DateTime?
-  created_at       DateTime         @default(now())
-  updated_at       DateTime         @updatedAt
-  bearerToken      BearerToken?
-  device_token     String?
-  sapatiRequests   SapatiRequests[] @relation("requestedUser")
-  requestedSapatis SapatiRequests[] @relation("requester")
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  first_name   String?
+  last_name    String?
+  fullName     String?
+  password     String?
+  image        String?
+  email        String?
+  notification Boolean?     @default(true)
+  is_verified  Boolean      @default(false)
+  gender       Gender?
+  phone_number Int          @unique
+  dob          DateTime?
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+  bearerToken  BearerToken?
+  device_token String?
+  Lendings     Lendings[]
+  Borrowings   Borrowings[]
 }
 
 model VerifyPhoneNumber {
@@ -53,25 +54,57 @@ model BearerToken {
   updated_at DateTime @updatedAt
 }
 
-enum RequestStatus {
+enum SapatiStatus {
   PENDING
   APPROVED
-  REJECTED
+  DECLINED
   CHANGE
+  CHANGED
 }
 
-model SapatiRequests {
-  id                String        @id @default(auto()) @map("_id") @db.ObjectId
-  amount            Int
-  return_date       DateTime
-  reason            String
-  decline_reason    String?
-  change_reason     String?
-  request_status    RequestStatus @default(PENDING)
-  user_id           String        @db.ObjectId
-  requested_user_id String        @db.ObjectId
-  user              User          @relation("requester", fields: [user_id], references: [id])
-  requested_user    User          @relation("requestedUser", fields: [requested_user_id], references: [id])
-  created_at        DateTime      @default(now())
-  updated_at        DateTime      @updatedAt
+enum SapatiType {
+  LENDED
+  BORROWED
+}
+
+model Sapati {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  fullName        String?
+  image           String?
+  phone           String
+  amount          Int
+  taken_date      DateTime
+  return_date     DateTime
+  decline_reason  String?
+  change_reason   String?
+  changed_remarks String?
+  changed_amount  Int?
+  remarks         String?
+  isPaid          Boolean      @default(false)
+  type            SapatiType
+  sapati_satatus  SapatiStatus @default(PENDING)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+  lendings        Lendings?
+  borrowings      Borrowings?
+}
+
+model Lendings {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  user_id    String   @db.ObjectId
+  user       User     @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  sapati_id  String   @unique @db.ObjectId
+  sapati     Sapati   @relation(fields: [sapati_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Borrowings {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  user_id    String   @db.ObjectId
+  user       User     @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  sapati_id  String   @unique @db.ObjectId
+  sapati     Sapati   @relation(fields: [sapati_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

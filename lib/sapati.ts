@@ -3,9 +3,13 @@ import prismadb from "./prismadb";
 export const getSapatiById=async(id:string)=>{
     try {
 
-        const sapati=await prismadb.sapatiRequests.findUnique({
+        const sapati=await prismadb.sapati.findUnique({
             where:{
                 id
+            },
+            include:{
+               borrowings:true,
+               lendings:true 
             }
         });
 
@@ -15,3 +19,5 @@ export const getSapatiById=async(id:string)=>{
         return null;
     }
 }
+
+
