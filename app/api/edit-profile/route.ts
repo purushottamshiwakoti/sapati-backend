@@ -1,3 +1,4 @@
+import { deleteImage, uploadImage } from "@/actions/upload";
 import prismadb from "@/lib/prismadb";
 import { getUserById } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
@@ -14,8 +15,20 @@ export async function PATCH(req:NextRequest){
             return NextResponse.json({message:"Invalid token"},{status:498})
         }
 
-        const body=await req.json();
-        const {first_name,last_name,gender,email,dob}=body;
+const data=await req.formData();
+const image:any=data.get('image');
+const first_name:any=data.get('first_name');
+const last_name:any=data.get('last_name');
+const email:any=data.get('email');
+const dob:any=data.get('dob');
+const gender:any=data.get('gender');
+let userImage;
+
+
+ 
+
+
+        // const {first_name,last_name,gender,email,dob}=body;
 
         const requiredFields = [
             { field: first_name, fieldName: 'First Name' },
@@ -35,11 +48,24 @@ export async function PATCH(req:NextRequest){
 
         const user=await getUserById(existingToken.user_id);
 
+       
+
+        if(image!==null){
+            userImage= await uploadImage(image)
+            
+          }
+
         if(!user){
             return NextResponse.json({message:"User does not exists"},{status:403})
         }
 
-       const newUser= await prismadb.user.update({
+        if(user.image!==null){
+            const abc=await deleteImage(user.image)
+            console.log(abc)
+        }
+        console.log(userImage)
+      if(userImage!==null){
+        const newUser= await prismadb.user.update({
             where:{
                 id:user.id
             },
@@ -47,11 +73,27 @@ export async function PATCH(req:NextRequest){
                 first_name,
                 last_name,
                 gender,
-                email
+                email,
+                image:userImage
             }
         })
 
-            return NextResponse.json({message:"Successfully updated data",newUser},{status:200})
+        return NextResponse.json({message:"Successfully updated profile",newUser},{status:200})
+      }
+
+      const newUser= await prismadb.user.update({
+        where:{
+            id:user.id
+        },
+        data:{
+            first_name,
+            last_name,
+            gender,
+            email,
+        }
+    })
+
+    return NextResponse.json({message:"Successfully updated profile",newUser},{status:200})
         
 
 

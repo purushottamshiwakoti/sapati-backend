@@ -1,15 +1,21 @@
 "use server"
 import { utapi } from "@/server/uploadthing";
 
-export const deleteImage = async (id:string) => {
-const url=id.split("/")
-  await utapi.deleteFiles(url[url.length-1]);
+export const deleteImage = async (image:string) => {
+  console.log(image);
+  await utapi.deleteFiles(image);
 }
 
 export const uploadImage = async (imageFile:FormData) => {
-    console.log(imageFile);
+    try {
+      
+     const image= await utapi.uploadFiles(imageFile)
+     console.log(image.data?.url);
 
-     const abc= await utapi.uploadFiles(imageFile)
-     console.log(abc);
+     return image.data?.url
+    } catch (error) {
+      console.log(error)
+      return null;
+    }
     }
     
