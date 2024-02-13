@@ -74,7 +74,8 @@ let userImage;
                 last_name,
                 gender,
                 email,
-                image:userImage
+                image:userImage,
+                dob
             }
         })
 
@@ -90,6 +91,7 @@ let userImage;
             last_name,
             gender,
             email,
+            dob
         }
     })
 
