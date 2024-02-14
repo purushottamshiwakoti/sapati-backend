@@ -68,25 +68,25 @@ enum SapatiType {
 }
 
 model Sapati {
-  id              String       @id @default(auto()) @map("_id") @db.ObjectId
-  fullName        String?
-  image           String?
-  phone           String
-  amount          Int
-  taken_date      DateTime
-  return_date     DateTime
-  decline_reason  String?
-  change_reason   String?
-  changed_remarks String?
-  changed_amount  Int?
-  remarks         String?
-  isPaid          Boolean      @default(false)
-  type            SapatiType
-  sapati_satatus  SapatiStatus @default(PENDING)
-  created_at      DateTime     @default(now())
-  updated_at      DateTime     @updatedAt
-  lendings        Lendings?
-  borrowings      Borrowings?
+  id                 String       @id @default(auto()) @map("_id") @db.ObjectId
+  fullName           String?
+  image              String?
+  phone              String
+  amount             Int
+  taken_date         DateTime
+  return_date        DateTime
+  decline_reason     String?
+  change_reason      String?
+  changed_remarks    String?
+  changed_amount     Int?
+  remarks            String?
+  confirm_settlement Boolean      @default(false)
+  type               SapatiType
+  sapati_satatus     SapatiStatus @default(PENDING)
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @updatedAt
+  lendings           Lendings?
+  borrowings         Borrowings?
 }
 
 model Lendings {
