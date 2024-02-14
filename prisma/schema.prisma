@@ -32,8 +32,8 @@ model User {
   updated_at   DateTime     @updatedAt
   bearerToken  BearerToken?
   device_token String?
-  Lendings     Lendings[]
-  Borrowings   Borrowings[]
+  lendings     Lendings[]
+  borrowings   Borrowings[]
 }
 
 model VerifyPhoneNumber {

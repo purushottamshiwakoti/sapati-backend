@@ -5,12 +5,12 @@ export async function GET(){
     try {
         const users=await prismadb.user.findMany({
             include:{
-              Borrowings:{
+              borrowings:{
                 include:{
                     sapati:true
                 }
               },
-              Lendings:{
+              lendings:{
                 include:{
                     sapati:true
                 }

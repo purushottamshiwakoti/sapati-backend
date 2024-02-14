@@ -1,3 +1,4 @@
+import { getSapatiSum } from "@/lib/calculate-sapati";
 import prismadb from "@/lib/prismadb";
 import { getUserById } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
@@ -21,12 +22,12 @@ export async function GET(req:NextRequest){
                 id:existingToken.user_id
             },
             include:{
-                Borrowings:{
+                borrowings:{
                     include:{
                         sapati:true,
                     }
                 },
-                Lendings:{
+                lendings:{
                     include:{
                         sapati:true,
                     }
@@ -37,10 +38,14 @@ export async function GET(req:NextRequest){
         if(!user){
             return NextResponse.json({message:"No user found"},{status:403})
         }
-     
+        
+      const borrowings=getSapatiSum(user.borrowings.map((item)=>(item.sapati.amount)))
+      const lendings=getSapatiSum(user.lendings.map((item)=>(item.sapati.amount)))
+      const balance=borrowings-lendings
+      const overallTransactions=user.borrowings.length+user.lendings.length
 
 
-        return NextResponse.json({message:"Successfully fetched user",user},{status:200})
+        return NextResponse.json({message:"Successfully fetched user",borrowed:borrowings,lent:lendings,balance,overallTransactions},{status:200})
         
     } catch (error) {
         console.log(error);
