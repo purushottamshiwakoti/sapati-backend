@@ -16,7 +16,27 @@ export async function GET(req:NextRequest){
         }
 
 
-        const user=await getUserById(existingToken.user_id)
+        const user=await prismadb.user.findUnique({
+            where:{
+                id:existingToken.user_id
+            },
+            include:{
+                Borrowings:{
+                    include:{
+                        sapati:true,
+                    }
+                },
+                Lendings:{
+                    include:{
+                        sapati:true,
+                    }
+                }
+            }
+        });
+
+        if(!user){
+            return NextResponse.json({message:"No user found"},{status:403})
+        }
      
 
 

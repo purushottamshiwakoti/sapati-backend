@@ -4,6 +4,8 @@ import "./globals.css";
 
 import { Toaster } from "sonner";
 
+import NextTopLoader from "nextjs-toploader";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <NextTopLoader />
         {children}
         <Toaster richColors />
       </body>
