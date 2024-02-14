@@ -1,20 +1,14 @@
-import { getSapatiSum } from "@/lib/calculate-sapati";
 import prismadb from "@/lib/prismadb";
 import { getUserById } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
-import { User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { ExtendedUser } from "../../me/route";
+import { getSapatiSum } from "@/lib/calculate-sapati";
 
-export interface ExtendedUser extends User {
-    borrowed?: number;
-    lendings?: number;
-    balance?: number;
-    lent?: number;
-    overallTransactions?: number;
-}
-
-export async function GET(req: NextRequest) {
+export async function GET(req:NextRequest,params:any){
     try {
+        console.log(params.params.id);
+        const id=params.params.id;
         const token = req.headers.get("Authorization");
         if (!token) {
             return NextResponse.json({ message: "Authorization token missing" }, { status: 401 });
@@ -26,7 +20,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: "Invalid token" }, { status: 498 });
         }
 
-        const user = await prismadb.user.findUnique({
+        const user=await prismadb.user.findUnique({
             where: {
                 id: existingToken.user_id
             },
@@ -43,35 +37,33 @@ export async function GET(req: NextRequest) {
                 }
             }
         });
-
         if (!user) {
             return NextResponse.json({ message: "No user found" }, { status: 404 });
         }
+
+        console.log(user)
 
         const borrowings = getSapatiSum(user.borrowings.map(item => item.sapati.amount));
         const lendings = getSapatiSum(user.lendings.map(item => item.sapati.amount));
         const balance = borrowings - lendings;
         const overallTransactions = user.borrowings.length + user.lendings.length;
 
-        let existingUser: ExtendedUser = await getUserById(user.id) as ExtendedUser;;
+        console.log(borrowings,lendings,balance,overallTransactions)
 
-        existingUser.borrowed=borrowings;
-        existingUser.lent=lendings; 
-        existingUser.balance=balance; 
-        existingUser.overallTransactions=overallTransactions; 
+        const findUser: ExtendedUser=await getUserById(id) as ExtendedUser;
+        findUser.borrowed=borrowings;
+        findUser.lent=lendings; 
+        findUser.balance=balance; 
+        findUser.overallTransactions=overallTransactions; 
 
+        if(!findUser){
+            return NextResponse.json({message:"No user found"},{status:404})
+        }
 
+        return NextResponse.json({message:"Successfully fetched user",user:findUser},{status:200});
         
-
-        
-        return NextResponse.json({
-            message: "Successfully fetched user",
-            user: existingUser,
-           
-        }, { status: 200 });
-
     } catch (error) {
-        console.error(error);
+        console.log(error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

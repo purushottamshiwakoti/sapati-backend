@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prismadb";
-import { getUserById } from "@/lib/user";
+import { getUserById, getUserByPhone } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest,searchParams: any){
         let data;
 
 
-        const borrowings=await prismadb.borrowings.findMany({
+        let borrowings=await prismadb.borrowings.findMany({
             where:{
                 user_id:existingToken.user_id,
             },
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest,searchParams: any){
                 user:true,
             }
         });
-        const lendings=await prismadb.lendings.findMany({
+        let lendings=await prismadb.lendings.findMany({
             where:{
                 user_id:existingToken.user_id,
             },
@@ -46,8 +46,53 @@ export async function GET(req: NextRequest,searchParams: any){
             }
         });
 
+        for (const item of borrowings) {
+            console.log(item);
+            const phone = parseInt(item.sapati.phone);
+            if (!isNaN(phone)) {
+              const borrower_user = await getUserByPhone(phone);
+              item.user_id = borrower_user?.id || "";
+              item.user.first_name = borrower_user?.first_name || "";
+              item.user.last_name = borrower_user?.last_name || "";
+              item.user.fullName = borrower_user?.fullName || "";
+              item.user.is_verified = borrower_user?.is_verified || false;
+              item.user.image = borrower_user?.image || "";
+      
+              // You can access the index using 'index' variable here
+            } else {
+              console.log(
+                `Index: ${item}, Invalid phone number: ${item.sapati.phone}`
+              );
+            }
+          }
+      
+          for (const item of lendings) {
+            console.log(item);
+            const phone = parseInt(item.sapati.phone);
+            if (!isNaN(phone)) {
+              const borrower_user = await getUserByPhone(phone);
+              item.user_id = borrower_user?.id || "";
+              item.user.first_name = borrower_user?.first_name || "";
+              item.user.last_name = borrower_user?.last_name || "";
+              item.user.fullName = borrower_user?.fullName || "";
+              item.user.is_verified = borrower_user?.is_verified || false;
+              item.user.image = borrower_user?.image || "";
+      
+              // You can access the index using 'index' variable here
+            } else {
+              console.log(
+                `Index: ${item}, Invalid phone number: ${item.sapati.phone}`
+              );
+            }
+          }
+      
+
         const sapatiTaken=borrowings.map((item)=>(
             {
+                user_id: item.user_id,
+                sapati_id: item.sapati_id,
+                first_name: item.user.first_name,
+                last_name: item.user.last_name,
                 fullName:item.user.fullName,
                 isverified:item.user.is_verified,
                 created_at:item.sapati.created_at,
@@ -60,6 +105,10 @@ export async function GET(req: NextRequest,searchParams: any){
         ))
         const sapatiGiven=lendings.map((item)=>(
             {
+                user_id: item.user_id,
+        sapati_id: item.sapati_id,
+        first_name: item.user.first_name,
+        last_name: item.user.last_name,
                 fullName:item.user.fullName,
                 isverified:item.user.is_verified,
                 created_at:item.sapati.created_at,
@@ -87,7 +136,7 @@ export async function GET(req: NextRequest,searchParams: any){
 
 
 
-        return NextResponse.json({message:"ndbsnbdsnbs",data},{status:200})
+        return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
         
     } catch (error) {
         console.error(error);

@@ -19,6 +19,7 @@ export const getUserByPhone=async(phone:number)=>{
 
 export const getUserById=async(id:string)=>{
     try {
+        console.log(id);
 
         const user=await prismadb.user.findUnique({
             where:{
@@ -29,6 +30,7 @@ export const getUserById=async(id:string)=>{
         return user;
         
     } catch (error) {
+        console.log(error);
         return null;
     }
 }

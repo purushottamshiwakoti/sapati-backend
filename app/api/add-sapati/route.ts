@@ -69,6 +69,7 @@ if(existingToken.user_id===existingUser?.id){
                     taken_date,
                     fullName,
                     type,
+                    remarks,
                     lendings: {
                 create:{
                       user:{
@@ -99,6 +100,7 @@ if(existingToken.user_id===existingUser?.id){
                     taken_date,
                     fullName,
                     type,
+                    remarks,
                     lendings: {
                         create:{
                             user:{
@@ -129,6 +131,7 @@ if(existingToken.user_id===existingUser?.id){
                     taken_date,
                     fullName,
                     type,
+                    remarks,
                     borrowings: {
                        create:{
                         user:{
@@ -158,6 +161,7 @@ if(existingToken.user_id===existingUser?.id){
                     taken_date,
                     fullName,
                     type,
+                    remarks,
                     borrowings: {
                         create:{
                          user:{
