@@ -27,7 +27,7 @@ model User {
   is_verified  Boolean      @default(false)
   gender       Gender?
   phone_number Int          @unique
-  dob          DateTime?
+  dob          String?
   created_at   DateTime     @default(now())
   updated_at   DateTime     @updatedAt
   bearerToken  BearerToken?

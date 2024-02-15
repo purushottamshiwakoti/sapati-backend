@@ -34,10 +34,10 @@ export async function POST(req:NextRequest){
         const existingUser=await getUserByPhone(phone);
 
         if(!existingUser){
-            return NextResponse.json({ message: "User does not exist" }, { status: 403 });
+            return NextResponse.json({ message: "User does not exist" }, { status: 404 });
         }
         if(!existingUser.password){
-            return NextResponse.json({ message: "Password is not added yet!" }, { status: 403 });
+            return NextResponse.json({ message: "ser does not exist" }, { status: 404 });
 
         }
         const checkPassword=await bcrypt.compare(password,existingUser.password);

@@ -57,11 +57,14 @@ export async function POST(req:NextRequest){
                     device_token:null
                 }
             });
-            console.log(ddd);
 
         }
 
-        return NextResponse.json({message:"Notification updated successfully"},{status:200});
+       if(isActive){
+        return NextResponse.json({message:"Notification enabled "},{status:200});
+    }else{
+           return NextResponse.json({message:"Notification disabled"},{status:200});
+       }
 
         
     } catch (error) {

@@ -32,6 +32,7 @@ export async function POST(req:NextRequest){
         let newUser;
 
         const existingUser=await getUserByPhone(phone_number);
+        console.log(existingUser)
 
         if(!existingUser){
           newUser=  await prismadb.user.create({
@@ -75,14 +76,14 @@ if(existingToken.user_id===existingUser?.id){
                       user:{
                              connect:{
                             //    id:newUser.id,
-                               id:existingToken.user_id,
+                               id:newUser.id,
                                    }
                                  }
                             }
                     },
                     borrowings:{
                        create:{
-                       user_id:newUser.id
+                       user_id:existingToken.user_id
                        }
                     }
                 }
@@ -105,15 +106,15 @@ if(existingToken.user_id===existingUser?.id){
                         create:{
                             user:{
                                 connect:{
-                                    id:existingToken.user_id
-                                    // id:existingUser.id
+                                    // id:existingToken.user_id
+                                    id:existingUser.id
                                 }
                             }
                         }
                     },
                     borrowings:{
                         create:{
-                         user_id:existingUser.id
+                         user_id:existingToken.user_id
                         }
                      }
                 }
@@ -166,14 +167,14 @@ if(existingToken.user_id===existingUser?.id){
                         create:{
                          user:{
                              connect:{
-                                //  id:existingUser.id
-                                 id:existingToken.user_id
+                                 id:existingUser.id
+                                //  id:existingToken.user_id
                              }
                          }
                         }
                      },lendings:{
                          create:{
-                             user_id:existingUser.id
+                             user_id:existingToken.user_id
                             }
                      }
                 }

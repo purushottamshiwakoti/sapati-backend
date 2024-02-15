@@ -21,20 +21,34 @@ if(phone_number.length!==10){
 
 const existingUser=await getUserByPhone(phone);
 console.log(existingUser)
-if(existingUser){
+console.log(!existingUser?.is_verified)
+
+if(!existingUser?.is_verified){
+    const user=await prismadb.user.create({
+        data:{
+            phone_number:phone
+        }
+    });
+    const token=await generatePhoneVerificationToken(phone);
+    return NextResponse.json({message:"Otp sent successfully"},{status:200})
+
+}
+if(existingUser&&existingUser.is_verified){
     return NextResponse.json({message:"User already exists"},{status:409})
 
 }
 
-const user=await prismadb.user.create({
-    data:{
-        phone_number:phone
-    }
-});
+if(!existingUser){
+    const user=await prismadb.user.create({
+        data:{
+            phone_number:phone
+        }
+    });
+    const token=await generatePhoneVerificationToken(phone);
+    return NextResponse.json({message:"Otp sent successfully"},{status:200})
+}
 
-const token=await generatePhoneVerificationToken(phone);
 
-return NextResponse.json({message:"Otp sent successfully"},{status:200})
     
         
     } catch (e) {

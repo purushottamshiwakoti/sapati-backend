@@ -2,6 +2,7 @@ import { deleteImage, uploadImage } from "@/actions/upload";
 import prismadb from "@/lib/prismadb";
 import { getUserById } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req:NextRequest){
@@ -24,8 +25,6 @@ const dob:any=data.get('dob');
 const gender:any=data.get('gender');
 let userImage;
 
-
- 
 
 
         // const {first_name,last_name,gender,email,dob}=body;
@@ -81,7 +80,9 @@ let userImage;
 
         return NextResponse.json({message:"Successfully updated profile",newUser},{status:200})
       }
-
+      if(dob==""){
+        
+      }
       const newUser= await prismadb.user.update({
         where:{
             id:user.id
@@ -102,8 +103,16 @@ let userImage;
 
         
     } catch (error) {
-        console.log(error);
-        return NextResponse.json({ error: error }, { status: 500 });
+        console.log({error});
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            // Prisma client error, extract more details
+            console.error("Prisma Error:", error.message);
+            
+                return NextResponse.json({ error: error.message }, { status: 500 });
+            // Handle other Prisma errors as needed
+        }
+    
+        return NextResponse.json({ error: error || "Internal Server Error" }, { status: 500 });
         
     }
 

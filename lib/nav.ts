@@ -17,7 +17,7 @@ export const adminNavs=[
             {
                 name:"Admins",
                 icon:ShieldCheck,
-                href:"/admin/adminss"
+                href:"/admin/admins"
             },
         ]
     }

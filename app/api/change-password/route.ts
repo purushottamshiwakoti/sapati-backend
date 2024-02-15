@@ -64,8 +64,10 @@ export async function POST(req: NextRequest) {
         }
 
         // Password validation
-        const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$/;
+        // const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$/;
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&.])[A-Za-z\d@$!%*#?&.]{8,}$/;
         if (!passwordRegex.test(new_password)) {
+            
             return NextResponse.json({ message: "Password must be at least 8 characters long and contain at least one number, one special character, and one capital letter." }, { status: 401 });
         }
 
