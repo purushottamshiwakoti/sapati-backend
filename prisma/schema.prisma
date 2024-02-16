@@ -83,6 +83,7 @@ model Sapati {
   changed_amount     Int?
   remarks            String?
   created_by         String?        @db.ObjectId
+  createdUser        String
   confirm_settlement Boolean        @default(false)
   type               SapatiType
   sapati_satatus     SapatiStatus   @default(PENDING)

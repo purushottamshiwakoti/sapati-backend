@@ -25,8 +25,6 @@ export async function GET(req: NextRequest,searchParams: any){
 
         const status=req.nextUrl.searchParams.get("status");
         const search=req.nextUrl.searchParams.get("search");
-        console.log(search);
-        console.log(status);
 
         let data;
 
@@ -147,7 +145,6 @@ export async function GET(req: NextRequest,searchParams: any){
         if(status=='given'){
             data=data.filter((item)=>(item.status=="Lent" ))
         }else if(status=='taken'){
-            data=[...sapatiTaken]
             data=data.filter((item)=>(item.status=="Borrowed" ))
 
         }else{

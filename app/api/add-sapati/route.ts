@@ -9,7 +9,6 @@ export async function POST(req:NextRequest){
 
         
         const token=await req.headers
-
         const bearerToken=token.get("Authorization")?.split(" ")[1]
 
         const existingToken=await verifyBearerToken(bearerToken)
@@ -93,6 +92,7 @@ if(existingToken.user_id===existingUser?.id){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
+                    createdUser: user.first_name + " " + user.last_name,
                     lendings: {
                 create:{
                       user:{
@@ -125,6 +125,7 @@ if(existingToken.user_id===existingUser?.id){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
+                    createdUser: user.first_name + " " + user.last_name,
                     lendings: {
                         create:{
                             user:{
@@ -162,6 +163,7 @@ if(existingToken.user_id===existingUser?.id){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
+                    createdUser: user.first_name + " " + user.last_name,
                     borrowings: {
                        create:{
                         user:{
@@ -193,6 +195,7 @@ if(existingToken.user_id===existingUser?.id){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
+                    createdUser: user.first_name + " " + user.last_name,
                     borrowings: {
                         create:{
                          user:{
