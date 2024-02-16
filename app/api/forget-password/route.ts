@@ -43,6 +43,9 @@ export async function POST(req: NextRequest) {
         if (!user) {
             return NextResponse.json({ message: "User does not exist" }, { status: 403 });
         }
+        if (!user.is_verified) {
+            return NextResponse.json({ message: "User is not verified" }, { status: 403 });
+        }
 
         const hashedPassword = await bcrypt.hash(new_password, 10);
 

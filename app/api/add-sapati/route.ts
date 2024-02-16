@@ -5,8 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req:NextRequest){
     try {
-        const {fullName,phone,amount,taken_date,return_date,remarks,type}=await req.json()
+        let {fullName,phone,amount,taken_date,return_date,remarks,type}=await req.json()
 
+        amount=parseInt(amount);
+        return_date=new Date(return_date);
+        taken_date=new Date(taken_date);
         const requiredFields = [
             { field: fullName, fieldName: 'Full Name' },
             { field: phone, fieldName: 'Phone ' },
@@ -16,6 +19,7 @@ export async function POST(req:NextRequest){
             { field: type, fieldName: 'Type' },
         ];
         const errors:any = [];
+        
 
         requiredFields.forEach(({ field, fieldName }) => {
             if (!field) {
@@ -25,6 +29,13 @@ export async function POST(req:NextRequest){
 
         if (errors.length > 0) {
             return NextResponse.json({ error:errors[0] }, { status: 499 });
+        }
+
+        const sapatiUser={
+            fullName:fullName,
+            amount:amount,
+            taken_date:taken_date,
+            return_date:return_date,
         }
 
         const phone_number=parseInt(phone);
@@ -84,11 +95,12 @@ if(existingToken.user_id===existingUser?.id){
                     borrowings:{
                        create:{
                        user_id:existingToken.user_id
+                    //    user_id:newUser.id
                        }
                     }
                 }
             });
-        return NextResponse.json({message:"Successfully added lending"},{status:200});
+        return NextResponse.json({message:"Successfully added lending",user:sapatiUser},{status:200});
 
         }
 
@@ -115,11 +127,12 @@ if(existingToken.user_id===existingUser?.id){
                     borrowings:{
                         create:{
                          user_id:existingToken.user_id
+                        //  user_id:existingUser.id
                         }
                      }
                 }
             });
-        return NextResponse.json({message:"Successfully added lending"},{status:200});
+        return NextResponse.json({message:"Successfully added lending",user:sapatiUser},{status:200});
 
         }
 
@@ -149,7 +162,7 @@ if(existingToken.user_id===existingUser?.id){
                     }
                 }
             });
-        return NextResponse.json({message:"Successfully added borrowing"},{status:200});
+        return NextResponse.json({message:"Successfully added borrowing",user:sapatiUser},{status:200});
 
         }
         
@@ -179,7 +192,7 @@ if(existingToken.user_id===existingUser?.id){
                      }
                 }
             });
-        return NextResponse.json({message:"Successfully added borrowing"},{status:200});
+        return NextResponse.json({message:"Successfully added borrowing",user:sapatiUser},{status:200});
 
         }
 

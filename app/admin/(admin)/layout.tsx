@@ -4,10 +4,10 @@ import React from "react";
 
 const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div>
+    <div className="">
       <div className="flex space-x-10">
         <Sidebar />
-        <div>
+        <div className="w-full">
           <Navbar />
           {children}
         </div>

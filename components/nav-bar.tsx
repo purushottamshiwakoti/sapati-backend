@@ -1,9 +1,9 @@
 export const Navbar = () => {
   return (
     <>
-      <div>
+      <nav className="bg-red-500 p-2 w-[calc(100vw - 20rem)]">
         <p>sdnmdnsmnm</p>
-      </div>
+      </nav>
     </>
   );
 };

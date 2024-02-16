@@ -45,6 +45,7 @@ export async function GET(req: NextRequest) {
     });
 
     console.log(borrowings);
+    ``;
     for (const item of borrowings) {
       console.log(item);
       const phone = parseInt(item.sapati.phone);
@@ -93,9 +94,10 @@ export async function GET(req: NextRequest) {
         sapati_id: item.sapati_id,
         first_name: item.user.first_name,
         last_name: item.user.last_name,
-        fullName: item.user.fullName,
+        fullName: item.sapati.fullName,
         isverified: item.user.is_verified,
         created_at: item.sapati.created_at,
+        // status: "Borrowed",
         status: "Borrowed",
         sapati_status: item.sapati.sapati_satatus,
         confirm_settlement: item.sapati.confirm_settlement,
@@ -109,7 +111,7 @@ export async function GET(req: NextRequest) {
         sapati_id: item.sapati_id,
         first_name: item.user.first_name,
         last_name: item.user.last_name,
-        fullName: item.user.fullName,
+        fullName: item.sapati.fullName,
         isverified: item.user.is_verified,
         created_at: item.sapati.created_at,
         status: "Lent",
