@@ -1,11 +1,33 @@
+import { sendNotification } from "@/lib/notification";
 import prismadb from "@/lib/prismadb";
-import { getUserByPhone } from "@/lib/user";
+import { getUserById, getUserByPhone } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req:NextRequest){
     try {
+
+        
+        const token=await req.headers
+
+        const bearerToken=token.get("Authorization")?.split(" ")[1]
+
+        const existingToken=await verifyBearerToken(bearerToken)
+        if(!existingToken){
+            return NextResponse.json({message:"Invalid token"},{status:498})
+        }
+
+      
+
+        const user=await getUserById(existingToken.user_id);
+
+        if(!user){
+            return NextResponse.json({message:"No user found"},{status:404})
+        }
         let {fullName,phone,amount,taken_date,return_date,remarks,type}=await req.json()
+        if (phone.includes("-")) {
+            phone = phone.replace("-", "");
+        }
 
         amount=parseInt(amount);
         return_date=new Date(return_date);
@@ -54,18 +76,6 @@ export async function POST(req:NextRequest){
             })
         }
 
-        const token=await req.headers
-
-        const bearerToken=token.get("Authorization")?.split(" ")[1]
-
-        const existingToken=await verifyBearerToken(bearerToken)
-        if(!existingToken){
-            return NextResponse.json({message:"Invalid token"},{status:498})
-        }
-
-        console.log(existingToken.user_id==existingUser?.id);
-        console.log(existingUser);
-        console.log(newUser);
 
         console.log(existingToken)
 
@@ -82,19 +92,20 @@ if(existingToken.user_id===existingUser?.id){
                     fullName,
                     type,
                     remarks,
+                    created_by:existingToken.user_id,
                     lendings: {
                 create:{
                       user:{
                              connect:{
                             //    id:newUser.id,
-                               id:newUser.id,
+                            id:existingToken.user_id
                                    }
                                  }
                             }
                     },
                     borrowings:{
                        create:{
-                       user_id:existingToken.user_id
+                        user_id:newUser.id
                     //    user_id:newUser.id
                        }
                     }
@@ -103,7 +114,6 @@ if(existingToken.user_id===existingUser?.id){
         return NextResponse.json({message:"Successfully added lending",user:sapatiUser},{status:200});
 
         }
-
         if (type == "LENDED" && existingUser !== null) {
             const sapati = await prismadb.sapati.create({
                 data: {
@@ -114,24 +124,29 @@ if(existingToken.user_id===existingUser?.id){
                     fullName,
                     type,
                     remarks,
+                    created_by:existingToken.user_id,
                     lendings: {
                         create:{
                             user:{
                                 connect:{
-                                    // id:existingToken.user_id
-                                    id:existingUser.id
+                                    id:existingToken.user_id
+                                    // id:existingUser.id
                                 }
                             }
                         }
                     },
                     borrowings:{
                         create:{
-                         user_id:existingToken.user_id
-                        //  user_id:existingUser.id
+                        //  user_id:existingToken.user_id
+                         user_id:existingUser.id
                         }
                      }
                 }
             });
+           
+         if(existingUser.device_token){
+            await sendNotification(existingUser.device_token,"Amount Lended", `${user.fullName??user.first_name} have lended you ${amount}. Please verify it`)
+         }
         return NextResponse.json({message:"Successfully added lending",user:sapatiUser},{status:200});
 
         }
@@ -146,6 +161,7 @@ if(existingToken.user_id===existingUser?.id){
                     fullName,
                     type,
                     remarks,
+                    created_by:existingToken.user_id,
                     borrowings: {
                        create:{
                         user:{
@@ -176,6 +192,7 @@ if(existingToken.user_id===existingUser?.id){
                     fullName,
                     type,
                     remarks,
+                    created_by:existingToken.user_id,
                     borrowings: {
                         create:{
                          user:{
@@ -192,6 +209,9 @@ if(existingToken.user_id===existingUser?.id){
                      }
                 }
             });
+            if(existingUser.device_token){
+                await sendNotification(existingUser.device_token,"Amount Borrowed", `${user.fullName??user.first_name} have borrowed from you ${amount}. Please verify it`)
+             }
         return NextResponse.json({message:"Successfully added borrowing",user:sapatiUser},{status:200});
 
         }

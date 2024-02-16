@@ -4,7 +4,10 @@ import { NextResponse } from "next/server";
 export async function GET(){
     try {
 
-        const send=await sendNotification("fxYGxm1MSqWOPX_QYBWas4:APA91bFlYEYH6txXFOxT01tWDeCAKpvGVxB0s_ppyxiv7DcAOHTqmPd8GT9lXAWY_vVMDQmEM-gsWM7PQEmSz3uhwskdRy5TwG6i_Ax4x_BFTnq7u5Za17IumtwvXhtdjYczWmZSgsYC");
+        const title="Amount Requested"
+        const body = "hello"
+
+        const send=await sendNotification("fxYGxm1MSqWOPX_QYBWas4:APA91bFlYEYH6txXFOxT01tWDeCAKpvGVxB0s_ppyxiv7DcAOHTqmPd8GT9lXAWY_vVMDQmEM-gsWM7PQEmSz3uhwskdRy5TwG6i_Ax4x_BFTnq7u5Za17IumtwvXhtdjYczWmZSgsYC",title,body);
         console.log(send);
 
         return NextResponse.json({message:"yes"},{status:200})

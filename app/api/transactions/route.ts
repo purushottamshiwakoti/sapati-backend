@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest,searchParams: any){
     try {
+       
+
         const token = req.headers.get("Authorization");
         if (!token) {
             return NextResponse.json({ message: "Authorization token missing" }, { status: 401 });
@@ -22,6 +24,8 @@ export async function GET(req: NextRequest,searchParams: any){
         }
 
         const status=req.nextUrl.searchParams.get("status");
+        const search=req.nextUrl.searchParams.get("search");
+        console.log(search);
         console.log(status);
 
         let data;
@@ -47,15 +51,15 @@ export async function GET(req: NextRequest,searchParams: any){
         });
 
         for (const item of borrowings) {
-            console.log(item);
             const phone = parseInt(item.sapati.phone);
             if (!isNaN(phone)) {
               const borrower_user = await getUserByPhone(phone);
               item.user_id = borrower_user?.id || "";
               item.user.first_name = borrower_user?.first_name || "";
               item.user.last_name = borrower_user?.last_name || "";
-              item.user.fullName = borrower_user?.fullName || "";
-              item.user.is_verified = borrower_user?.is_verified || false;
+              item.user.fullName = existingToken.user_id === item.sapati.created_by 
+              ? (borrower_user?.fullName || "") 
+              : ((borrower_user?.first_name || "") + (borrower_user?.last_name || ""));              item.user.is_verified = borrower_user?.is_verified || false;
               item.user.image = borrower_user?.image || "";
       
               // You can access the index using 'index' variable here
@@ -67,15 +71,16 @@ export async function GET(req: NextRequest,searchParams: any){
           }
       
           for (const item of lendings) {
-            console.log(item);
             const phone = parseInt(item.sapati.phone);
             if (!isNaN(phone)) {
               const borrower_user = await getUserByPhone(phone);
               item.user_id = borrower_user?.id || "";
               item.user.first_name = borrower_user?.first_name || "";
               item.user.last_name = borrower_user?.last_name || "";
-              item.user.fullName = borrower_user?.fullName || "";
-              item.user.is_verified = borrower_user?.is_verified || false;
+              item.user.fullName = existingToken.user_id === item.sapati.created_by 
+              ? (borrower_user?.fullName || "") 
+              : ((borrower_user?.first_name || "") + (borrower_user?.last_name || ""));   
+                         item.user.is_verified = borrower_user?.is_verified || false;
               item.user.image = borrower_user?.image || "";
       
               // You can access the index using 'index' variable here
@@ -87,7 +92,7 @@ export async function GET(req: NextRequest,searchParams: any){
           }
       
 
-        const sapatiTaken=borrowings.map((item)=>(
+        let sapatiTaken=borrowings.map((item)=>(
             {
                 user_id: item.user_id,
                 sapati_id: item.sapati_id,
@@ -103,7 +108,7 @@ export async function GET(req: NextRequest,searchParams: any){
                 image:item.user.image,
             }
         ))
-        const sapatiGiven=lendings.map((item)=>(
+        let sapatiGiven=lendings.map((item)=>(
             {
                 user_id: item.user_id,
         sapati_id: item.sapati_id,
@@ -120,17 +125,33 @@ export async function GET(req: NextRequest,searchParams: any){
             }
         ));
 
-        console.log(status);
-        console.log(status=='given')
+        if (search) {
+            const searchTerm = search.toLowerCase();
+
+            sapatiTaken = sapatiTaken.filter(item =>
+                item.first_name?.toLowerCase().includes(searchTerm) ||
+                item.fullName?.toLowerCase().includes(searchTerm)
+            );
+
+            sapatiGiven = sapatiGiven.filter(item =>
+                item.first_name?.toLowerCase().includes(searchTerm) ||
+                item.fullName?.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        data=[...sapatiGiven,...sapatiTaken]
+        console.log(data);
+
+        console.log(status=="taken");
 
         if(status=='given'){
-            data=[...sapatiGiven]
+            data=data.filter((item)=>(item.status=="Lent" ))
         }else if(status=='taken'){
             data=[...sapatiTaken]
+            data=data.filter((item)=>(item.status=="Borrowed" ))
 
         }else{
-
-             data=[...sapatiGiven,...sapatiTaken]
+data
 
         }
 
@@ -139,7 +160,7 @@ export async function GET(req: NextRequest,searchParams: any){
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
         
     } catch (error) {
-        console.error(error);
+        console.log(error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

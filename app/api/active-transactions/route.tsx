@@ -57,6 +57,7 @@ export async function GET(req: NextRequest) {
         item.user.fullName = borrower_user?.fullName || "";
         item.user.is_verified = borrower_user?.is_verified || false;
         item.user.image = borrower_user?.image || "";
+        // item.creatorName = borrower_user?.first_name||"";
 
         // You can access the index using 'index' variable here
       } else {
@@ -65,6 +66,8 @@ export async function GET(req: NextRequest) {
         );
       }
     }
+
+    console.log(lendings);
 
     for (const item of lendings) {
       console.log(item);
@@ -77,6 +80,7 @@ export async function GET(req: NextRequest) {
         item.user.fullName = borrower_user?.fullName || "";
         item.user.is_verified = borrower_user?.is_verified || false;
         item.user.image = borrower_user?.image || "";
+        // item.creatorName = borrower_user?.first_name;
 
         // You can access the index using 'index' variable here
       } else {
@@ -86,23 +90,27 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    console.log(borrowings);
     const sapatiTaken = borrowings
+      .sort()
       .filter((item) => item.sapati.sapati_satatus == "PENDING")
       .map((item) => ({
         user_id: item.user_id,
         sapati_id: item.sapati_id,
         first_name: item.user.first_name,
         last_name: item.user.last_name,
-        fullName: item.sapati.fullName,
+        fullName: existingToken.user_id
+          ? item.sapati.fullName
+          : item.user.first_name,
         isverified: item.user.is_verified,
         created_at: item.sapati.created_at,
-        // status: "Borrowed",
         status: "Borrowed",
+        // status: "Lent",
         sapati_status: item.sapati.sapati_satatus,
         confirm_settlement: item.sapati.confirm_settlement,
         amount: item.sapati.amount,
         image: item.user.image,
+        creatorId: item.sapati.created_by,
+        currentUserId: existingToken.user_id,
       }));
     const sapatiGiven = lendings
       .filter((item) => item.sapati.sapati_satatus == "PENDING")
@@ -115,10 +123,13 @@ export async function GET(req: NextRequest) {
         isverified: item.user.is_verified,
         created_at: item.sapati.created_at,
         status: "Lent",
+        // status: "Borrowed",
         sapati_status: item.sapati.sapati_satatus,
         confirm_settlement: item.sapati.confirm_settlement,
         amount: item.sapati.amount,
         image: item.user.image,
+        creatorId: item.sapati.created_by,
+        currentUserId: existingToken.user_id,
       }));
 
     console.log(sapatiGiven);

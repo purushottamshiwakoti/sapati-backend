@@ -1,12 +1,12 @@
 import axios from "axios"
 
-export async function sendNotification(token:string) {
+export async function sendNotification(token:string,title:string,body:string) {
     console.log(token)
     console.log(`key`)
     await axios.post('https://fcm.googleapis.com/fcm/send', {
         'priority': 'high',
         'to': token,
-        'notification': { 'title': 'bndsnbds', 'body': 'sdnbsdbnds' },
+        'notification': { 'title': title, 'body': body },
         'data': {
             'title': 'がんばることを登録しよう',
             'body': 'がんばることをひとつでも登録してスタンプをおくってみよう！',

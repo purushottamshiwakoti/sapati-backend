@@ -11,6 +11,9 @@ export interface ExtendedUser extends User {
     balance?: number;
     lent?: number;
     overallTransactions?: number;
+    givenTransactions?: number;
+    takenTransactions?: number;
+    activeTransactions?: number;
 }
 
 export async function GET(req: NextRequest) {
@@ -37,6 +40,7 @@ export async function GET(req: NextRequest) {
                     }
                 },
                 lendings: {
+                    
                     include: {
                         sapati: true
                     }
@@ -52,6 +56,10 @@ export async function GET(req: NextRequest) {
         const lendings = getSapatiSum(user.lendings.map(item => item.sapati.amount));
         const balance = borrowings - lendings;
         const overallTransactions = user.borrowings.length + user.lendings.length;
+        const givenTransactions = user.borrowings.filter((item)=>(item.sapati.sapati_satatus=="APPROVED"))
+        const takenTransactions = user.lendings.filter((item)=>(item.sapati.sapati_satatus=="APPROVED"))
+        const pendingGiven = user.lendings.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
+        const pendingTaken = user.borrowings.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
 
         let existingUser: ExtendedUser = await getUserById(user.id) as ExtendedUser;;
 
@@ -59,6 +67,9 @@ export async function GET(req: NextRequest) {
         existingUser.lent=lendings; 
         existingUser.balance=balance; 
         existingUser.overallTransactions=overallTransactions; 
+        existingUser.givenTransactions=givenTransactions.length
+        existingUser.takenTransactions=takenTransactions.length
+        existingUser.activeTransactions=pendingGiven.length+pendingTaken.length
 
 
         
