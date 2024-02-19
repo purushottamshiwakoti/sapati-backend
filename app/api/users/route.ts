@@ -13,6 +13,7 @@ export async function GET(){
               lendings:{
                 include:{
                     sapati:true
+                    
                 }
               },
               

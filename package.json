@@ -23,6 +23,7 @@
     "cloudinary-react": "^1.8.1",
     "clsx": "^2.1.0",
     "datauri": "^4.1.0",
+    "date-fns": "^3.3.1",
     "formidable": "^3.5.1",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.321.0",

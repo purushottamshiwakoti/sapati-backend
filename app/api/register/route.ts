@@ -24,11 +24,7 @@ console.log(existingUser)
 console.log(!existingUser?.is_verified)
 
 if(!existingUser?.is_verified){
-    const user=await prismadb.user.create({
-        data:{
-            phone_number:phone
-        }
-    });
+    
     const token=await generatePhoneVerificationToken(phone);
     return NextResponse.json({message:"Otp sent successfully"},{status:200})
 

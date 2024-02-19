@@ -83,7 +83,8 @@ model Sapati {
   changed_amount     Int?
   remarks            String?
   created_by         String?        @db.ObjectId
-  createdUser        String
+  created_user_name  String?
+  created_user_image String?
   confirm_settlement Boolean        @default(false)
   type               SapatiType
   sapati_satatus     SapatiStatus   @default(PENDING)
@@ -123,12 +124,20 @@ model Admin {
   updated_at DateTime @updatedAt
 }
 
+enum NotificationStatus {
+  APPROVED
+  REJECTED
+  CHANGE
+  REQUEST
+}
+
 model Notifications {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  user_id    String   @db.ObjectId
-  user       User     @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  sapati_id  String   @unique @db.ObjectId
-  sapati     Sapati   @relation(fields: [sapati_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id         String             @id @default(auto()) @map("_id") @db.ObjectId
+  user_id    String             @db.ObjectId
+  user       User               @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  sapati_id  String             @unique @db.ObjectId
+  sapati     Sapati             @relation(fields: [sapati_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  status     NotificationStatus
+  created_at DateTime           @default(now())
+  updated_at DateTime           @updatedAt
 }

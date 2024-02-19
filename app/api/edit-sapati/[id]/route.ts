@@ -65,7 +65,7 @@ export async function PATCH(req:NextRequest,params:any){
                                  id:sapati.id
                              },
                              data:{
-                                 sapati_satatus:"CHANGE",
+                                 sapati_satatus:"DECLINED",
                                  change_reason
                              }
                          })

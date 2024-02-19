@@ -92,7 +92,8 @@ if(existingToken.user_id===existingUser?.id){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
-                    createdUser: user.first_name + " " + user.last_name,
+                    created_user_name: user.first_name + " " + user.last_name,
+                    created_user_image:user.image,
                     lendings: {
                 create:{
                       user:{
@@ -111,6 +112,13 @@ if(existingToken.user_id===existingUser?.id){
                     }
                 }
             });
+            await prismadb.notifications.create({
+                data:{
+                    sapati_id:sapati.id,
+                    status:"REQUEST",
+                    user_id:newUser.id
+                }
+            })
         return NextResponse.json({message:"Successfully added lending",user:sapatiUser},{status:200});
 
         }
@@ -125,7 +133,8 @@ if(existingToken.user_id===existingUser?.id){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
-                    createdUser: user.first_name + " " + user.last_name,
+                    created_user_name: user.first_name + " " + user.last_name,
+                    created_user_image:user.image,
                     lendings: {
                         create:{
                             user:{
@@ -144,6 +153,13 @@ if(existingToken.user_id===existingUser?.id){
                      }
                 }
             });
+            await prismadb.notifications.create({
+                data:{
+                    sapati_id:sapati.id,
+                    status:"REQUEST",
+                    user_id:existingUser.id
+                }
+            })
            
          if(existingUser.device_token){
             await sendNotification(existingUser.device_token,"Amount Lended", `${user.fullName??user.first_name} have lended you ${amount}. Please verify it`)
@@ -163,7 +179,9 @@ if(existingToken.user_id===existingUser?.id){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
-                    createdUser: user.first_name + " " + user.last_name,
+                    created_user_name: user.first_name + " " + user.last_name,
+                    created_user_image:user.image,
+
                     borrowings: {
                        create:{
                         user:{
@@ -180,6 +198,13 @@ if(existingToken.user_id===existingUser?.id){
                     }
                 }
             });
+            await prismadb.notifications.create({
+                data:{
+                    sapati_id:sapati.id,
+                    status:"REQUEST",
+                    user_id:newUser.id
+                }
+            })
         return NextResponse.json({message:"Successfully added borrowing",user:sapatiUser},{status:200});
 
         }
@@ -195,7 +220,8 @@ if(existingToken.user_id===existingUser?.id){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
-                    createdUser: user.first_name + " " + user.last_name,
+                    created_user_name: user.first_name + " " + user.last_name,
+                    created_user_image:user.image,
                     borrowings: {
                         create:{
                          user:{
@@ -212,6 +238,13 @@ if(existingToken.user_id===existingUser?.id){
                      }
                 }
             });
+            await prismadb.notifications.create({
+                data:{
+                    sapati_id:sapati.id,
+                    status:"REQUEST",
+                    user_id:existingUser.id
+                }
+            })
             if(existingUser.device_token){
                 await sendNotification(existingUser.device_token,"Amount Borrowed", `${user.fullName??user.first_name} have borrowed from you ${amount}. Please verify it`)
              }

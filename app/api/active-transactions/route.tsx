@@ -44,10 +44,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    console.log(borrowings);
-    ``;
     for (const item of borrowings) {
-      console.log(item);
       const phone = parseInt(item.sapati.phone);
       if (!isNaN(phone)) {
         const borrower_user = await getUserByPhone(phone);
@@ -66,8 +63,6 @@ export async function GET(req: NextRequest) {
         );
       }
     }
-
-    console.log(lendings);
 
     for (const item of lendings) {
       console.log(item);
@@ -111,6 +106,8 @@ export async function GET(req: NextRequest) {
         image: item.user.image,
         creatorId: item.sapati.created_by,
         currentUserId: existingToken.user_id,
+        userName: item.sapati.created_user_name,
+        userImage: item.sapati.created_user_image,
       }));
     const sapatiGiven = lendings
       .filter((item) => item.sapati.sapati_satatus == "PENDING")
@@ -130,14 +127,13 @@ export async function GET(req: NextRequest) {
         image: item.user.image,
         creatorId: item.sapati.created_by,
         currentUserId: existingToken.user_id,
+        userName: item.sapati.created_user_name,
+        userImage: item.sapati.created_user_image,
       }));
 
-    console.log(sapatiGiven);
     console.log(sapatiTaken);
 
     const data = [...sapatiTaken, ...sapatiGiven];
-
-    console.log(data);
 
     return NextResponse.json(
       { message: "Successfully fetched active transactions", data },
