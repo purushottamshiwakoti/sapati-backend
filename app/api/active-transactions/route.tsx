@@ -1,7 +1,6 @@
 import prismadb from "@/lib/prismadb";
 import { getUserById, getUserByPhone } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
-import { User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -28,7 +27,7 @@ export async function GET(req: NextRequest) {
 
     const pgnum: any = searchParams.get("pgnum") ?? 0;
     const pgsize: number = 5;
-    
+
     let borrowings = await prismadb.borrowings.findMany({
       skip: parseInt(pgnum) * pgsize,
       take: pgsize,
@@ -75,7 +74,10 @@ export async function GET(req: NextRequest) {
             : creatorUser?.first_name + " " + creatorUser?.last_name;
         //  item.user.first_name + " " + item.user.last_name;
         item.user.is_verified = borrower_user?.is_verified || false;
-        item.user.image = creatorUser?.image || "";
+        item.user.image =
+          existingToken.user_id == item.sapati.created_by
+            ? borrower_user?.image ?? null
+            : creatorUser?.image ?? null;
 
         // item.creatorName = borrower_user?.first_name||"";
 
@@ -102,7 +104,10 @@ export async function GET(req: NextRequest) {
             : creatorUser?.first_name + " " + creatorUser?.last_name;
         // item.user.first_name + " " + item.user.last_name;
         item.user.is_verified = borrower_user?.is_verified || false;
-        item.user.image = creatorUser?.image || "";
+        item.user.image =
+          existingToken.user_id == item.sapati.created_by
+            ? borrower_user?.image ?? null
+            : creatorUser?.image ?? null;
         // item.creatorName = borrower_user?.first_name;
 
         // You can access the index using 'index' variable here

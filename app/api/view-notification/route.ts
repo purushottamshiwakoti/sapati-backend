@@ -1,9 +1,8 @@
+import { formatDuration } from "@/lib/format-duration";
 import prismadb from "@/lib/prismadb";
+import { getUserById } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
-import { format, formatDistance } from 'date-fns';
-import { formatDuration } from "@/lib/format-duration";
-import { getUserById } from "@/lib/user";
 
 
 export async function GET(req:NextRequest){
@@ -33,6 +32,9 @@ export async function GET(req:NextRequest){
             include:{
                 sapati:true,
                 user:true,
+            },
+            orderBy:{
+                created_at:"desc"
             }
             
         });
@@ -56,7 +58,7 @@ const days = diff / millisecondsInDay;
 
    const fromatDate=formatDuration(days)
     const request=`Request from ${item.sapati.created_user_name} `;
-    const requestDescription=` ${item.sapati.created_user_name} is ${item.sapati.type=="LENDED"?"requesting":"lending"} you amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`;
+    const requestDescription=` ${item.sapati.created_user_name} is ${item.sapati.type=="LENDED"?"requesting":"lending from"} you amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`;
     const status=item.sapati.sapati_satatus;
     const sapatiId=item.sapati.id;
     const createdAt=item.sapati.created_at;

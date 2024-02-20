@@ -64,7 +64,8 @@ export async function POST(req:NextRequest){
         let newUser;
 
         const existingUser=await getUserByPhone(phone_number);
-        console.log(existingUser)
+
+     
 
         if(!existingUser){
           newUser=  await prismadb.user.create({
@@ -75,8 +76,12 @@ export async function POST(req:NextRequest){
             })
         }
 
+        if(existingUser?.id===existingToken.user_id){
+            return NextResponse.json({message:"You cannot add sapati for self"},{status:403})
 
-        console.log(existingToken)
+        }
+
+
 
 
         if (type == "LENDED" && newUser !== undefined) {
@@ -121,6 +126,7 @@ export async function POST(req:NextRequest){
 
         }
         if (type == "LENDED" && existingUser !== null) {
+
             const sapati = await prismadb.sapati.create({
                 data: {
                     amount,
