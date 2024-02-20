@@ -8,6 +8,7 @@ export async function GET(req: NextRequest){
        
 
         const token = req.headers.get("Authorization");
+        console.log(token);
         if (!token) {
             return NextResponse.json({ message: "Authorization token missing" }, { status: 401 });
         }

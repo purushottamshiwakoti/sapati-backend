@@ -64,32 +64,40 @@ console.log(getToken);
 
 
 export const generateBearerToken=async(id:string)=>{
+    console.log(id);
     try {
     
 
-        const existingToken=await prismadb.bearerToken.findUnique({
-            where:{
-                user_id:id,
-            }
-        })
-        if(existingToken){
-            await prismadb.bearerToken.delete({
-                where:{
-                    id:existingToken.id
-                }
-            })
-        }
+        // const existingToken=await prismadb.bearerToken.findUnique({
+        //     where:{
+        //         user_id:id,
+        //     }
+        // })
+        // if(existingToken){
+        //     await prismadb.bearerToken.delete({
+        //         where:{
+        //             id:existingToken.id
+        //         }
+        //     })
+        // }
 
         const token=uuidv4();
+        console.log(token);
 
+  try {
     await prismadb.bearerToken.create({
         data:{
             token,
             user_id:id
         }
-    })
+    });
+
+  } catch (error) {
+        console.log(error);
+  }
 
     return token;
+
     
 
 

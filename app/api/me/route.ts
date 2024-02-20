@@ -14,6 +14,9 @@ export interface ExtendedUser extends User {
     givenTransactions?: number;
     takenTransactions?: number;
     activeTransactions?: number;
+    activeBook?: number;
+    settled?: number;
+    rejected?: number;
 }
 
 export async function GET(req: NextRequest) {

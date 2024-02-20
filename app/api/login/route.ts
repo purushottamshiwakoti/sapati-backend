@@ -37,7 +37,7 @@ export async function POST(req:NextRequest){
             return NextResponse.json({ message: "User does not exist" }, { status: 404 });
         }
         if(!existingUser.password){
-            return NextResponse.json({ message: "ser does not exist" }, { status: 404 });
+            return NextResponse.json({ message: "User does not exist" }, { status: 404 });
 
         }
         const checkPassword=await bcrypt.compare(password,existingUser.password);
@@ -56,6 +56,7 @@ export async function POST(req:NextRequest){
                 device_token
             }
         })
+        console.log(token);
         
         return NextResponse.json({message:"Successfully logged in",token:token},{status:200})
 

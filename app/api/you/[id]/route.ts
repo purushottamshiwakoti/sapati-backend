@@ -50,11 +50,31 @@ export async function GET(req:NextRequest,params:any){
 
         console.log(borrowings,lendings,balance,overallTransactions)
 
+        const pendingBorrowings=user.borrowings.filter((item)=>item.sapati.sapati_satatus=="APPROVED"||item.sapati.sapati_satatus=="PENDING"&&!item.sapati.confirm_settlement);
+        const settledBorrowings=user.borrowings.filter((item)=>item.sapati.sapati_satatus=="APPROVED"&&item.sapati.confirm_settlement);
+        const rejectedBorrowings=user.borrowings.filter((item)=>item.sapati.sapati_satatus=="DECLINED"&&!item.sapati.confirm_settlement);
+        const pendingLendings=user.lendings.filter((item)=>item.sapati.sapati_satatus=="APPROVED"||item.sapati.sapati_satatus=="PENDING"&&!item.sapati.confirm_settlement);
+        const settledLendings=user.lendings.filter((item)=>item.sapati.sapati_satatus=="APPROVED"&&item.sapati.confirm_settlement);
+        const rejectedLendings=user.lendings.filter((item)=>item.sapati.sapati_satatus=="DECLINED"&&!item.sapati.confirm_settlement);
+
+
+        const activeBook=pendingBorrowings.length+pendingLendings.length
+        const settled=settledBorrowings.length+settledLendings.length
+        const rejected=rejectedBorrowings.length+rejectedLendings.length
+
+        
+        
+
         const findUser: ExtendedUser=await getUserById(id) as ExtendedUser;
-        findUser.borrowed=borrowings;
+        findUser.borrowed=borrowings; 
         findUser.lent=lendings; 
         findUser.balance=balance; 
         findUser.overallTransactions=overallTransactions; 
+        findUser.activeBook=activeBook; 
+        findUser.settled=settled; 
+        findUser.rejected=rejected; 
+
+        console.log(findUser);
 
         if(!findUser){
             return NextResponse.json({message:"No user found"},{status:404})

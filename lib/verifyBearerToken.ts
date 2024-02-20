@@ -3,7 +3,7 @@ import prismadb from "./prismadb"
 export const verifyBearerToken=async(token:any)=>{
     try {
         console.log(token);
-        const existingToken=await prismadb.bearerToken.findUnique({
+        const existingToken=await prismadb.bearerToken.findFirst({
             where:{
                 token
             }

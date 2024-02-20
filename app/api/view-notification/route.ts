@@ -43,6 +43,8 @@ export async function GET(req:NextRequest){
      const notificationsArray=[]
 for(const item of notifications){
 
+    console.log(item.sapati.sapati_satatus)
+
     console.log(item.sapati.created_by);
 
     const user:any=await getUserById(item.sapati.created_by as string)
@@ -57,8 +59,8 @@ for(const item of notifications){
 const days = diff / millisecondsInDay;
 
    const fromatDate=formatDuration(days)
-    const request=`Request from ${item.sapati.created_user_name} `;
-    const requestDescription=` ${item.sapati.created_user_name} is ${item.sapati.type=="LENDED"?"requesting":"lending from"} you amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`;
+    const request=item.status=="REQUEST"?`Request from ${item.sapati.created_user_name} `:item.sapati.sapati_satatus=="APPROVED"?`Sapati Approved from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="DECLINED"?`Sapati Rejected from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="CHANGE"?`Sapati Change Request from ${item.sapati.fullName} `:null;
+    const requestDescription=item.sapati.sapati_satatus=="PENDING"?`${item.sapati.created_user_name} is ${item.sapati.type=="LENDED"?"requesting":"lending from"} you amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:item.sapati.sapati_satatus=="APPROVED"?`${item.sapati.fullName} accepted your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:item.sapati.sapati_satatus=="DECLINED"?`${item.sapati.fullName} declined your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:item.sapati.sapati_satatus=="CHANGE"?`${item.sapati.fullName} has requested to change request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:null;
     const status=item.sapati.sapati_satatus;
     const sapatiId=item.sapati.id;
     const createdAt=item.sapati.created_at;

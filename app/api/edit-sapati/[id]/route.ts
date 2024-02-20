@@ -40,7 +40,7 @@ export async function PATCH(req:NextRequest,params:any){
         if (existingToken.user_id == lenderId||borrowerId){
             if(status=="APPROVED"){
 
-
+               
 
 
            const newSapati=await prismadb.sapati.update({
@@ -48,7 +48,8 @@ export async function PATCH(req:NextRequest,params:any){
                         id:sapati.id
                     },
                     data:{
-                        sapati_satatus:"APPROVED"
+                        sapati_satatus:"APPROVED",
+                        request_change_date:new Date()
                     }
                 })
 
@@ -72,13 +73,17 @@ export async function PATCH(req:NextRequest,params:any){
             }
             if(status=="DECLINED"){
 
+                
+
                 const newSapati=await prismadb.sapati.update({
                          where:{
                              id:sapati.id
                          },
                          data:{
                              sapati_satatus:"DECLINED",
-                             decline_reason
+                             decline_reason,
+                        request_change_date:new Date()
+
                          }
                      })
 
@@ -103,6 +108,7 @@ export async function PATCH(req:NextRequest,params:any){
                      
                  }
                  if(status=="CHANGE"){
+                  
 
                     const newSapati=await prismadb.sapati.update({
                              where:{
@@ -110,7 +116,9 @@ export async function PATCH(req:NextRequest,params:any){
                              },
                              data:{
                                  sapati_satatus:"DECLINED",
-                                 change_reason
+                                 change_reason,
+                        request_change_date:new Date()
+
                              }
                          })
                          return NextResponse.json({message:"Successfully requested to change request",newSapati, status:200})

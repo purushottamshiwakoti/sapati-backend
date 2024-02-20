@@ -122,6 +122,9 @@ export async function GET(req:NextRequest,params:any){
               confirm_settlement:item.sapati.confirm_settlement,
               amount:item.sapati.amount,
               image:item.user.image,
+              remarks:item.sapati.remarks,
+              taken_date:item.sapati.taken_date,
+              return_date:item.sapati.return_date
           }
       ))
 
@@ -140,6 +143,10 @@ export async function GET(req:NextRequest,params:any){
               confirm_settlement:item.sapati.confirm_settlement,
               amount:item.sapati.amount,
               image:item.user.image,
+              remarks:item.sapati.remarks,
+              taken_date:item.sapati.taken_date,
+            return_date:item.sapati.return_date
+
           }
       ));
 
