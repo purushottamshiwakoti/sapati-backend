@@ -78,9 +78,7 @@ export async function POST(req:NextRequest){
 
         console.log(existingToken)
 
-if(existingToken.user_id===existingUser?.id){
-    return NextResponse.json({message:"You cannot perform this action"},{status:403});
-}
+
         if (type == "LENDED" && newUser !== undefined) {
             const sapati = await prismadb.sapati.create({
                 data: {
@@ -193,6 +191,7 @@ if(existingToken.user_id===existingUser?.id){
                        }
                     },lendings:{
                         create:{
+                            // user_id:existingToken.user_id
                             user_id:newUser.id
                            }
                     }
@@ -226,14 +225,16 @@ if(existingToken.user_id===existingUser?.id){
                         create:{
                          user:{
                              connect:{
-                                 id:existingUser.id
-                                //  id:existingToken.user_id
+                                //  id:existingUser.id
+                                 id:existingToken.user_id
                              }
                          }
                         }
                      },lendings:{
                          create:{
-                             user_id:existingToken.user_id
+                            //  user_id:existingToken.user_id
+                             user_id:existingUser.id
+                            
                             }
                      }
                 }

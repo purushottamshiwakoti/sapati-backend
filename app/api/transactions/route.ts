@@ -3,7 +3,7 @@ import { getUserById, getUserByPhone } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest,searchParams: any){
+export async function GET(req: NextRequest){
     try {
        
 
@@ -26,39 +26,54 @@ export async function GET(req: NextRequest,searchParams: any){
         const status=req.nextUrl.searchParams.get("status");
         const search=req.nextUrl.searchParams.get("search");
 
+        const pgnum: any = req.nextUrl.searchParams.get("pgnum") ?? 0;
+        const pgsize: number = 5;
+
         let data;
 
 
         let borrowings=await prismadb.borrowings.findMany({
+            skip: parseInt(pgnum) * pgsize,
+            take: pgsize,
             where:{
                 user_id:existingToken.user_id,
             },
             include:{
                 sapati:true,
                 user:true,
-            }
+            },
+            orderBy: {
+                created_at: "desc",
+              },
         });
         let lendings=await prismadb.lendings.findMany({
+            skip: parseInt(pgnum) * pgsize,
+            take: pgsize,
             where:{
                 user_id:existingToken.user_id,
             },
             include:{
                 sapati:true,
                 user:true,
-            }
+            },
+            orderBy: {
+                created_at: "desc",
+              },
         });
 
         for (const item of borrowings) {
             const phone = parseInt(item.sapati.phone);
             if (!isNaN(phone)) {
               const borrower_user = await getUserByPhone(phone);
+        const creatorUser = await getUserById(item.sapati.created_by!);
+
               item.user_id = borrower_user?.id || "";
               item.user.first_name = borrower_user?.first_name || "";
               item.user.last_name = borrower_user?.last_name || "";
-              item.user.fullName = existingToken.user_id === item.sapati.created_by 
-              ? (borrower_user?.fullName || "") 
-              : ((borrower_user?.first_name || "") + (borrower_user?.last_name || ""));
-              
+              item.user.fullName =
+              existingToken.user_id == item.sapati.created_by
+                ? item.sapati.fullName
+                : creatorUser?.first_name + " " + creatorUser?.last_name;
               item.user.is_verified = borrower_user?.is_verified || false;
               item.user.image = borrower_user?.image || "";
       
@@ -72,14 +87,16 @@ export async function GET(req: NextRequest,searchParams: any){
       
           for (const item of lendings) {
             const phone = parseInt(item.sapati.phone);
+        const creatorUser = await getUserById(item.sapati.created_by!);
             if (!isNaN(phone)) {
               const borrower_user = await getUserByPhone(phone);
               item.user_id = borrower_user?.id || "";
               item.user.first_name = borrower_user?.first_name || "";
               item.user.last_name = borrower_user?.last_name || "";
-              item.user.fullName = existingToken.user_id === item.sapati.created_by 
-              ? (borrower_user?.fullName || "") 
-              : ((borrower_user?.first_name || "") + (borrower_user?.last_name || ""));   
+              item.user.fullName =
+              existingToken.user_id == item.sapati.created_by
+                ? item.sapati.fullName
+                : creatorUser?.first_name + " " + creatorUser?.last_name;
                          item.user.is_verified = borrower_user?.is_verified || false;
               item.user.image = borrower_user?.image || "";
       
@@ -92,7 +109,10 @@ export async function GET(req: NextRequest,searchParams: any){
           }
       
 
-        let sapatiTaken=borrowings.map((item)=>(
+        let sapatiTaken=borrowings.sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          ).map((item)=>(
             {
                 user_id: item.user_id,
                 sapati_id: item.sapati_id,
@@ -112,7 +132,10 @@ export async function GET(req: NextRequest,searchParams: any){
                 userImage: item.sapati.created_user_image,
             }
         ))
-        let sapatiGiven=lendings.map((item)=>(
+        let sapatiGiven=lendings.sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          ).map((item)=>(
             {
                 user_id: item.user_id,
         sapati_id: item.sapati_id,

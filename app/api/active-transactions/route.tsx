@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
     const token = req.headers.get("Authorization");
     if (!token) {
       return NextResponse.json(
@@ -24,7 +25,13 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ message: "No user found" }, { status: 404 });
     }
+
+    const pgnum: any = searchParams.get("pgnum") ?? 0;
+    const pgsize: number = 5;
+    
     let borrowings = await prismadb.borrowings.findMany({
+      skip: parseInt(pgnum) * pgsize,
+      take: pgsize,
       where: {
         user_id: existingToken.user_id,
       },
@@ -38,6 +45,8 @@ export async function GET(req: NextRequest) {
     });
 
     const lendings = await prismadb.lendings.findMany({
+      skip: parseInt(pgnum) * pgsize,
+      take: pgsize,
       where: {
         user_id: existingToken.user_id,
       },
@@ -50,6 +59,8 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    console.log(lendings.length);
+
     for (const item of borrowings) {
       const phone = parseInt(item.sapati.phone);
       if (!isNaN(phone)) {
@@ -59,13 +70,12 @@ export async function GET(req: NextRequest) {
         item.user.first_name = borrower_user?.first_name || "";
         item.user.last_name = borrower_user?.last_name || "";
         item.user.fullName =
-          existingToken.user_id === item.sapati.created_by
-            ? borrower_user?.fullName || ""
-            : (borrower_user?.first_name || "") +
-              (borrower_user?.last_name || "");
+          existingToken.user_id == item.sapati.created_by
+            ? item.sapati.fullName
+            : creatorUser?.first_name + " " + creatorUser?.last_name;
         //  item.user.first_name + " " + item.user.last_name;
         item.user.is_verified = borrower_user?.is_verified || false;
-        item.user.image = borrower_user?.image || "";
+        item.user.image = creatorUser?.image || "";
 
         // item.creatorName = borrower_user?.first_name||"";
 
@@ -87,13 +97,12 @@ export async function GET(req: NextRequest) {
         item.user.first_name = borrower_user?.first_name || "";
         item.user.last_name = borrower_user?.last_name || "";
         item.user.fullName =
-          existingToken.user_id === item.sapati.created_by
-            ? borrower_user?.fullName || ""
-            : (borrower_user?.first_name || "") +
-              (borrower_user?.last_name || "");
+          existingToken.user_id == item.sapati.created_by
+            ? item.sapati.fullName
+            : creatorUser?.first_name + " " + creatorUser?.last_name;
         // item.user.first_name + " " + item.user.last_name;
         item.user.is_verified = borrower_user?.is_verified || false;
-        item.user.image = borrower_user?.image || "";
+        item.user.image = creatorUser?.image || "";
         // item.creatorName = borrower_user?.first_name;
 
         // You can access the index using 'index' variable here
