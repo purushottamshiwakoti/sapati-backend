@@ -57,7 +57,9 @@ export async function GET(req: NextRequest,searchParams: any){
               item.user.last_name = borrower_user?.last_name || "";
               item.user.fullName = existingToken.user_id === item.sapati.created_by 
               ? (borrower_user?.fullName || "") 
-              : ((borrower_user?.first_name || "") + (borrower_user?.last_name || ""));              item.user.is_verified = borrower_user?.is_verified || false;
+              : ((borrower_user?.first_name || "") + (borrower_user?.last_name || ""));
+              
+              item.user.is_verified = borrower_user?.is_verified || false;
               item.user.image = borrower_user?.image || "";
       
               // You can access the index using 'index' variable here

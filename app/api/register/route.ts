@@ -20,7 +20,6 @@ if(phone_number.length!==10){
 }
 
 const existingUser=await getUserByPhone(phone);
-console.log(existingUser)
 
 if(existingUser&&!existingUser?.is_verified){
     

@@ -32,6 +32,9 @@ export async function GET(req: NextRequest) {
         sapati: true,
         user: true,
       },
+      orderBy: {
+        created_at: "desc",
+      },
     });
 
     const lendings = await prismadb.lendings.findMany({
@@ -42,18 +45,28 @@ export async function GET(req: NextRequest) {
         sapati: true,
         user: true,
       },
+      orderBy: {
+        created_at: "desc",
+      },
     });
 
     for (const item of borrowings) {
       const phone = parseInt(item.sapati.phone);
       if (!isNaN(phone)) {
         const borrower_user = await getUserByPhone(phone);
+        const creatorUser = await getUserById(item.sapati.created_by!);
         item.user_id = borrower_user?.id || "";
         item.user.first_name = borrower_user?.first_name || "";
         item.user.last_name = borrower_user?.last_name || "";
-        item.user.fullName = borrower_user?.fullName || "";
+        item.user.fullName =
+          existingToken.user_id === item.sapati.created_by
+            ? borrower_user?.fullName || ""
+            : (borrower_user?.first_name || "") +
+              (borrower_user?.last_name || "");
+        //  item.user.first_name + " " + item.user.last_name;
         item.user.is_verified = borrower_user?.is_verified || false;
         item.user.image = borrower_user?.image || "";
+
         // item.creatorName = borrower_user?.first_name||"";
 
         // You can access the index using 'index' variable here
@@ -65,14 +78,20 @@ export async function GET(req: NextRequest) {
     }
 
     for (const item of lendings) {
-      console.log(item);
       const phone = parseInt(item.sapati.phone);
       if (!isNaN(phone)) {
         const borrower_user = await getUserByPhone(phone);
+        const creatorUser = await getUserById(item.sapati.created_by!);
+
         item.user_id = borrower_user?.id || "";
         item.user.first_name = borrower_user?.first_name || "";
         item.user.last_name = borrower_user?.last_name || "";
-        item.user.fullName = borrower_user?.fullName || "";
+        item.user.fullName =
+          existingToken.user_id === item.sapati.created_by
+            ? borrower_user?.fullName || ""
+            : (borrower_user?.first_name || "") +
+              (borrower_user?.last_name || "");
+        // item.user.first_name + " " + item.user.last_name;
         item.user.is_verified = borrower_user?.is_verified || false;
         item.user.image = borrower_user?.image || "";
         // item.creatorName = borrower_user?.first_name;
@@ -86,16 +105,17 @@ export async function GET(req: NextRequest) {
     }
 
     const sapatiTaken = borrowings
-      .sort()
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
       .filter((item) => item.sapati.sapati_satatus == "PENDING")
       .map((item) => ({
         user_id: item.user_id,
         sapati_id: item.sapati_id,
         first_name: item.user.first_name,
         last_name: item.user.last_name,
-        fullName: existingToken.user_id
-          ? item.sapati.fullName
-          : item.user.first_name,
+        fullName: item.user.fullName,
         isverified: item.user.is_verified,
         created_at: item.sapati.created_at,
         status: "Borrowed",
@@ -116,7 +136,7 @@ export async function GET(req: NextRequest) {
         sapati_id: item.sapati_id,
         first_name: item.user.first_name,
         last_name: item.user.last_name,
-        fullName: item.sapati.fullName,
+        fullName: item.user.fullName,
         isverified: item.user.is_verified,
         created_at: item.sapati.created_at,
         status: "Lent",
@@ -130,8 +150,6 @@ export async function GET(req: NextRequest) {
         userName: item.sapati.created_user_name,
         userImage: item.sapati.created_user_image,
       }));
-
-    console.log(sapatiTaken);
 
     const data = [...sapatiTaken, ...sapatiGiven];
 
