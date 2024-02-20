@@ -21,9 +21,8 @@ if(phone_number.length!==10){
 
 const existingUser=await getUserByPhone(phone);
 console.log(existingUser)
-console.log(!existingUser?.is_verified)
 
-if(!existingUser?.is_verified){
+if(existingUser&&!existingUser?.is_verified){
     
     const token=await generatePhoneVerificationToken(phone);
     return NextResponse.json({message:"Otp sent successfully"},{status:200})

@@ -70,7 +70,7 @@ enum SapatiType {
 }
 
 model Sapati {
-  id                 String         @id @default(auto()) @map("_id") @db.ObjectId
+  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
   fullName           String?
   image              String?
   phone              String
@@ -82,17 +82,17 @@ model Sapati {
   changed_remarks    String?
   changed_amount     Int?
   remarks            String?
-  created_by         String?        @db.ObjectId
+  created_by         String?         @db.ObjectId
   created_user_name  String?
   created_user_image String?
-  confirm_settlement Boolean        @default(false)
+  confirm_settlement Boolean         @default(false)
   type               SapatiType
-  sapati_satatus     SapatiStatus   @default(PENDING)
-  created_at         DateTime       @default(now())
-  updated_at         DateTime       @updatedAt
+  sapati_satatus     SapatiStatus    @default(PENDING)
+  created_at         DateTime        @default(now())
+  updated_at         DateTime        @updatedAt
   lendings           Lendings?
   borrowings         Borrowings?
-  notifications      Notifications?
+  notifications      Notifications[]
 }
 
 model Lendings {
@@ -135,7 +135,7 @@ model Notifications {
   id         String             @id @default(auto()) @map("_id") @db.ObjectId
   user_id    String             @db.ObjectId
   user       User               @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  sapati_id  String             @unique @db.ObjectId
+  sapati_id  String             @db.ObjectId
   sapati     Sapati             @relation(fields: [sapati_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   status     NotificationStatus
   created_at DateTime           @default(now())

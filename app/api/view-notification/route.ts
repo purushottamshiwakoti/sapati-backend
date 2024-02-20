@@ -2,6 +2,8 @@ import prismadb from "@/lib/prismadb";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
 import { format, formatDistance } from 'date-fns';
+import { formatDuration } from "@/lib/format-duration";
+import { getUserById } from "@/lib/user";
 
 
 export async function GET(req:NextRequest){
@@ -35,27 +37,53 @@ export async function GET(req:NextRequest){
             
         });
 
-        const takenDate = new Date(notifications[0].sapati.taken_date);
-        const returnDate = new Date(notifications[0].sapati.return_date);
-        console.log(returnDate,takenDate)
-    
-     
         
+     const notificationsArray=[]
+for(const item of notifications){
 
+    console.log(item.sapati.created_by);
 
-        console.log(notifications[0].sapati.taken_date,notifications[0].sapati.return_date)
-
-        const request=`Request from ${notifications[0].sapati.created_user_name} `;
-        const requestDescription=` ${notifications[0].sapati.created_user_name} is requesting you amount ${notifications[0].sapati.amount} for 3 months`;
-        const status=notifications[0].sapati.sapati_satatus;
-        const sapatiId=notifications[0].sapati.id;
-        const createdAt=notifications[0].sapati.created_at;
-
-        console.log(createdAt,sapatiId,status)
+    const user:any=await getUserById(item.sapati.created_by as string)
 
 
 
-        return NextResponse.json({message:"yes",notifications,request,requestDescription},{status:200})
+    const takenDate:any = new Date(item.sapati.taken_date);
+    const returnDate:any = new Date(item.sapati.return_date);
+    const diff: number = returnDate - takenDate; // Difference in milliseconds
+   
+    const millisecondsInDay = 24 * 60 * 60 * 1000;
+const days = diff / millisecondsInDay;
+
+   const fromatDate=formatDuration(days)
+    const request=`Request from ${item.sapati.created_user_name} `;
+    const requestDescription=` ${item.sapati.created_user_name} is ${item.sapati.type=="LENDED"?"requesting":"lending"} you amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`;
+    const status=item.sapati.sapati_satatus;
+    const sapatiId=item.sapati.id;
+    const createdAt=item.sapati.created_at;
+    const image=user.image;
+    const fullName=user.first_name?user?.first_name+" "+user.last_name:user.fullName;
+    const phone=user?.phone_number;
+    const remarks =item.sapati.remarks;
+    const amount=item.sapati.amount;
+    const duration=fromatDate
+
+    notificationsArray.push(
+        {
+            request: request,
+            requestDescription:requestDescription,
+            status:status,
+            sapatiId:sapatiId,
+            createdAt:createdAt,
+            userImage:image,
+            fullName:fullName,
+            phone:phone,
+            remarks:remarks,
+            amount:amount,
+            duration:duration
+        }
+    )
+}        
+        return NextResponse.json({message:"yes",notificationsArray},{status:200})
 
         
     } catch (error) {
