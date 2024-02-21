@@ -39,10 +39,6 @@ export async function PATCH(req:NextRequest,params:any){
         const user:any=await getUserById(sapati.created_by as string);
         if (existingToken.user_id == lenderId||borrowerId){
             if(status=="APPROVED"){
-
-               
-
-
            const newSapati=await prismadb.sapati.update({
                     where:{
                         id:sapati.id

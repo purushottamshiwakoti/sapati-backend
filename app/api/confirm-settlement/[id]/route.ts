@@ -38,7 +38,8 @@ export async function PATCH(req:NextRequest,params:any){
             },
             data:{
               confirm_settlement:true,
-              sapati_satatus:"APPROVED"
+              sapati_satatus:"APPROVED",
+              settled_date:new Date(),
             }
           })
           return NextResponse.json({message: "Successfully setteled sapati",sapati},{status:200})

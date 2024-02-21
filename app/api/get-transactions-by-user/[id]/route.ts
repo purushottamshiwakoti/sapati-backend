@@ -30,18 +30,21 @@ export async function GET(req:NextRequest,params:any){
 
         
         const status=req.nextUrl.searchParams.get("status");
-        console.log(status);
         let data;
         const findUser=await getUserById(id);
 
-        console.log(findUser);
 
         if(!findUser){
             return NextResponse.json({message:"No user found"},{status:404})
         }
 
+        
+        const pgnum: any = req.nextUrl.searchParams.get("pgnum") ?? 0;
+        const pgsize: number = 20;
 
         let borrowings=await prismadb.borrowings.findMany({
+          skip: parseInt(pgnum) * pgsize,
+          take: pgsize,
             where:{
                 user_id:findUser.id,
             },
@@ -53,6 +56,8 @@ export async function GET(req:NextRequest,params:any){
 
         
         let lendings=await prismadb.lendings.findMany({
+          skip: parseInt(pgnum) * pgsize,
+          take: pgsize,
             where:{
                 user_id:findUser.id
             },
@@ -69,7 +74,6 @@ export async function GET(req:NextRequest,params:any){
           console.log(item);
           const phone = parseInt(item.sapati.phone);
           if (!isNaN(phone)) {
-         console.log("lamo",phone==user.phone_number)
             const borrower_user = await getUserByPhone(phone);
             item.user_id = borrower_user?.id || "";
             item.user.first_name = borrower_user?.first_name || "";
@@ -108,7 +112,10 @@ export async function GET(req:NextRequest,params:any){
    
     
 
-      const sapatiTaken=borrowings.map((item)=>(
+      const sapatiTaken=borrowings.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ).map((item)=>(
           {
               user_id: item.user_id,
               sapati_id: item.sapati_id,
@@ -124,12 +131,23 @@ export async function GET(req:NextRequest,params:any){
               image:item.user.image,
               remarks:item.sapati.remarks,
               taken_date:item.sapati.taken_date,
-              return_date:item.sapati.return_date
+              return_date:item.sapati.return_date,
+              request_change_date:item.sapati.request_change_date,
+              changed_remarks:item.sapati.changed_remarks,
+              decline_reason:item.sapati.decline_reason,
+              change_reason:item.sapati.change_reason,
+              created_by:item.sapati.created_by,
+              currentUser:existingToken.user_id,
+              settled_date:item.sapati.settled_date,
+              
+
           }
       ))
 
-      console.log(sapatiTaken)
-      const sapatiGiven=lendings.map((item)=>(
+      const sapatiGiven=lendings.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ).map((item)=>(
           {
               user_id: item.user_id,
       sapati_id: item.sapati_id,
@@ -145,21 +163,30 @@ export async function GET(req:NextRequest,params:any){
               image:item.user.image,
               remarks:item.sapati.remarks,
               taken_date:item.sapati.taken_date,
-            return_date:item.sapati.return_date
+            return_date:item.sapati.return_date,
+            changed_remarks:item.sapati.changed_remarks,
+            decline_reason:item.sapati.decline_reason,
+            change_reason:item.sapati.change_reason,
+            request_change_date:item.sapati.request_change_date,
+            created_user_name:item.sapati.created_user_name,
+            created_by:item.sapati.created_by,
+            currentUser:existingToken.user_id,
+            settled_date:item.sapati.settled_date,
+
 
           }
       ));
 
 
       if(status=="activebook"){
-        const given=sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"))
-        const taken=sapatiTaken.filter((item) =>(item.sapati_status=="PENDING"))
+        const given=sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"||item.sapati_status=="APPROVED"))
+        const taken=sapatiTaken.filter((item) =>(item.sapati_status=="PENDING"||item.sapati_status=="APPROVED"))
         data=[...given,...taken];
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }
       if(status=="settled"){
-        const given=sapatiGiven.filter((item) =>(item.sapati_status=="APPROVED"))
-        const taken=sapatiTaken.filter((item) =>(item.sapati_status=="APPROVED"))
+        const given=sapatiGiven.filter((item) =>(item.confirm_settlement==true))
+        const taken=sapatiTaken.filter((item) =>(item.confirm_settlement==true))
         data=[...given,...taken];
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }
@@ -172,16 +199,6 @@ export async function GET(req:NextRequest,params:any){
       }
       }
 
-     
-
-
-
-
-        
-
-
-        
-    
     catch (error) {
         console.error(error);
         return NextResponse.json(
