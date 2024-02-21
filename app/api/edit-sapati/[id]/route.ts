@@ -6,6 +6,8 @@ import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req:NextRequest,params:any){
+    const nepalTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kathmandu' });
+
     try {
         const token=await req.headers
         console.log("ssbsb");
@@ -55,7 +57,8 @@ export async function PATCH(req:NextRequest,params:any){
                     data:{
                         sapati_id:sapati.id,
                         status:"APPROVED",
-                        user_id:user.id
+                        user_id:user.id,
+                        created_at:new Date(nepalTime)
                     }
                 });
                 console.log(notification)
@@ -78,7 +81,8 @@ export async function PATCH(req:NextRequest,params:any){
                          data:{
                              sapati_satatus:"DECLINED",
                              decline_reason,
-                        request_change_date:new Date()
+                        request_change_date:new Date(),
+                        
 
                          }
                      })
@@ -87,8 +91,9 @@ export async function PATCH(req:NextRequest,params:any){
                         const notification=  await prismadb.notifications.create({
                             data:{
                                 sapati_id:sapati.id,
-                                status:"APPROVED",
-                                user_id:user.id
+                                status:"REJECTED",
+                                user_id:user.id,
+                                created_at:new Date(nepalTime)
                             }
                         });
                         console.log(notification)
@@ -96,7 +101,7 @@ export async function PATCH(req:NextRequest,params:any){
         
                     }
           if(user.device_token){
-                        await sendNotification(user.device_token,"Sapati approved",`${sapati.fullName} approved sapati` )
+                        await sendNotification(user.device_token,"Sapati rejected",`${sapati.fullName} rejected sapati` )
                      }
                      
                      return NextResponse.json({message:"Successfully declined request",newSapati, status:200})
@@ -116,7 +121,23 @@ export async function PATCH(req:NextRequest,params:any){
                         request_change_date:new Date()
 
                              }
-                         })
+                         });
+                         try {
+                            const notification=  await prismadb.notifications.create({
+                                data:{
+                                    sapati_id:sapati.id,
+                                    status:"CHANGE",
+                                    user_id:user.id,
+                                    created_at:new Date(nepalTime)
+                                }
+                            });
+                            console.log(notification)
+                         } catch (error) {
+            
+                        }
+                        if(user.device_token){
+                            await sendNotification(user.device_token,"Sapati change request",`${sapati.fullName} requested change insapati` )
+                         }
                          return NextResponse.json({message:"Successfully requested to change request",newSapati, status:200})
                      }
 

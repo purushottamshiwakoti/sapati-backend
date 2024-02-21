@@ -70,31 +70,32 @@ enum SapatiType {
 }
 
 model Sapati {
-  id                    String          @id @default(auto()) @map("_id") @db.ObjectId
-  fullName              String?
-  image                 String?
-  phone                 String
-  amount                Int
-  taken_date            DateTime
-  return_date           DateTime
-  decline_reason        String?
-  change_reason         String?
-  changed_remarks       String?
-  changed_amount        Int?
-  request_change_date   DateTime?
-  settled_date          DateTime?
-  remarks               String?
-  created_by            String?         @db.ObjectId
-  created_user_name     String?
-  created_user_image    String?
-  confirm_settlement    Boolean         @default(false)
-  type                  SapatiType
-  sapati_satatus        SapatiStatus    @default(PENDING)
-  created_at            DateTime        @default(now())
-  updated_at            DateTime        @updatedAt
-  lendings              Lendings?
-  borrowings            Borrowings?
-  notifications         Notifications[]
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  fullName            String?
+  image               String?
+  phone               String
+  amount              Int
+  taken_date          DateTime
+  return_date         DateTime
+  decline_reason      String?
+  change_reason       String?
+  changed_remarks     String?
+  changed_amount      Int?
+  request_change_date DateTime?
+  settled_date        DateTime?
+  settled_by          String?
+  remarks             String?
+  created_by          String?         @db.ObjectId
+  created_user_name   String?
+  created_user_image  String?
+  confirm_settlement  Boolean         @default(false)
+  type                SapatiType
+  sapati_satatus      SapatiStatus    @default(PENDING)
+  created_at          DateTime        @default(now())
+  updated_at          DateTime        @updatedAt
+  lendings            Lendings?
+  borrowings          Borrowings?
+  notifications       Notifications[]
 }
 
 model Lendings {
@@ -140,6 +141,6 @@ model Notifications {
   sapati_id  String             @db.ObjectId
   sapati     Sapati             @relation(fields: [sapati_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   status     NotificationStatus
-  created_at DateTime           @default(now())
+  created_at DateTime
   updated_at DateTime           @updatedAt
 }

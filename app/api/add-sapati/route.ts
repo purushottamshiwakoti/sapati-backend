@@ -5,6 +5,8 @@ import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req:NextRequest){
+    const nepalTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kathmandu' });
+
     try {
 
         
@@ -31,7 +33,7 @@ export async function POST(req:NextRequest){
         amount=parseInt(amount);
         return_date=new Date(return_date);
         taken_date=new Date(taken_date);
-        if(return_date>taken_date){
+        if(return_date<taken_date){
             return NextResponse.json({message:"Return date must be greater than taken data"},{status:400})
         }
         const requiredFields = [
@@ -122,7 +124,8 @@ export async function POST(req:NextRequest){
                 data:{
                     sapati_id:sapati.id,
                     status:"REQUEST",
-                    user_id:newUser.id
+                    user_id:newUser.id,
+                    created_at:new Date(nepalTime)
                 }
             })
         return NextResponse.json({message:"Successfully added lending",user:sapatiUser},{status:200});
@@ -164,7 +167,8 @@ export async function POST(req:NextRequest){
                 data:{
                     sapati_id:sapati.id,
                     status:"REQUEST",
-                    user_id:existingUser.id
+                    user_id:existingUser.id,
+                    created_at:new Date(nepalTime)
                 }
             })
            
@@ -210,7 +214,8 @@ export async function POST(req:NextRequest){
                 data:{
                     sapati_id:sapati.id,
                     status:"REQUEST",
-                    user_id:newUser.id
+                    user_id:newUser.id,
+                    created_at:new Date(nepalTime)
                 }
             })
         return NextResponse.json({message:"Successfully added borrowing",user:sapatiUser},{status:200});
@@ -252,7 +257,8 @@ export async function POST(req:NextRequest){
                 data:{
                     sapati_id:sapati.id,
                     status:"REQUEST",
-                    user_id:existingUser.id
+                    user_id:existingUser.id,
+                    created_at:new Date(nepalTime)
                 }
             })
             if(existingUser.device_token){

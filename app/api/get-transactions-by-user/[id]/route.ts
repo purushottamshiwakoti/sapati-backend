@@ -40,13 +40,13 @@ export async function GET(req:NextRequest,params:any){
 
         
         const pgnum: any = req.nextUrl.searchParams.get("pgnum") ?? 0;
-        const pgsize: number = 20;
+        const pgsize: number = 10;
 
         let borrowings=await prismadb.borrowings.findMany({
           skip: parseInt(pgnum) * pgsize,
           take: pgsize,
             where:{
-                user_id:findUser.id,
+                user_id:id,
             },
             include:{
                 sapati:true,
@@ -59,19 +59,21 @@ export async function GET(req:NextRequest,params:any){
           skip: parseInt(pgnum) * pgsize,
           take: pgsize,
             where:{
-                user_id:findUser.id
+                user_id:id
             },
             include:{
                 sapati:true,
                 user:true,
             }
         });
+
+      
     
 
-        borrowings=borrowings.filter((item)=>(parseInt(item.sapati.phone)===user.phone_number))
+        borrowings=borrowings.filter((item)=>(parseInt(item.sapati.phone)==user.phone_number||parseInt(item.sapati.phone)==findUser.phone_number))
+        lendings=lendings.filter((item)=>(parseInt(item.sapati.phone)==user.phone_number||parseInt(item.sapati.phone)==findUser.phone_number))
 
         for (const item of borrowings) {
-          console.log(item);
           const phone = parseInt(item.sapati.phone);
           if (!isNaN(phone)) {
             const borrower_user = await getUserByPhone(phone);
@@ -139,6 +141,7 @@ export async function GET(req:NextRequest,params:any){
               created_by:item.sapati.created_by,
               currentUser:existingToken.user_id,
               settled_date:item.sapati.settled_date,
+              settled_by:item.sapati.settled_by,
               
 
           }
@@ -172,15 +175,16 @@ export async function GET(req:NextRequest,params:any){
             created_by:item.sapati.created_by,
             currentUser:existingToken.user_id,
             settled_date:item.sapati.settled_date,
+            settled_by:item.sapati.settled_by,
 
 
           }
       ));
 
-
+          console.log(sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"||item.sapati_status=="APPROVED"&&!item.confirm_settlement)))
       if(status=="activebook"){
-        const given=sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"||item.sapati_status=="APPROVED"))
-        const taken=sapatiTaken.filter((item) =>(item.sapati_status=="PENDING"||item.sapati_status=="APPROVED"))
+        const given=sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"||item.sapati_status=="APPROVED"&&!item.confirm_settlement))
+        const taken=sapatiTaken.filter((item) =>(item.sapati_status=="PENDING"||item.sapati_status=="APPROVED"&&!item.confirm_settlement))
         data=[...given,...taken];
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }

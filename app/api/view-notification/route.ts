@@ -1,6 +1,6 @@
 import { formatDuration } from "@/lib/format-duration";
 import prismadb from "@/lib/prismadb";
-import { getUserById } from "@/lib/user";
+import { getUserById, getUserByPhone } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -39,18 +39,12 @@ export async function GET(req:NextRequest){
             
         });
 
-        
-     const notificationsArray=[]
+     let notificationsArray=[]
 for(const item of notifications){
 
-    console.log(item.sapati.sapati_satatus)
-
-    console.log(item.sapati.created_by);
 
     const user:any=await getUserById(item.sapati.created_by as string)
-
-
-
+    const borrower_user = await getUserByPhone(parseInt(item.sapati.phone));
     const takenDate:any = new Date(item.sapati.taken_date);
     const returnDate:any = new Date(item.sapati.return_date);
     const diff: number = returnDate - takenDate; // Difference in milliseconds
@@ -58,18 +52,23 @@ for(const item of notifications){
     const millisecondsInDay = 24 * 60 * 60 * 1000;
 const days = diff / millisecondsInDay;
 
+
+
    const fromatDate=formatDuration(days)
-    const request=item.status=="REQUEST"?`Request from ${item.sapati.created_user_name} `:item.sapati.sapati_satatus=="APPROVED"?`Sapati Approved from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="DECLINED"?`Sapati Rejected from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="CHANGE"?`Sapati Change Request from ${item.sapati.fullName} `:null;
-    const requestDescription=item.sapati.sapati_satatus=="PENDING"?`${item.sapati.created_user_name} is ${item.sapati.type=="LENDED"?"requesting":"lending from"} you amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:item.sapati.sapati_satatus=="APPROVED"?`${item.sapati.fullName} accepted your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:item.sapati.sapati_satatus=="DECLINED"?`${item.sapati.fullName} declined your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:item.sapati.sapati_satatus=="CHANGE"?`${item.sapati.fullName} has requested to change request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:null;
+    const request=(item.status=="REQUEST")?`Request from ${item.sapati.created_user_name} `:item.sapati.sapati_satatus=="APPROVED"?`Sapati Approved from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="DECLINED"?`Sapati Rejected from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="CHANGE"?`Sapati Change Request from ${item.sapati.fullName} `:null;
+    const requestDescription=item.status=="REQUEST"?`${item.sapati.created_user_name} is ${item.sapati.type=="LENDED"?"lending from":"requesting"} you amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:(item.status=="APPROVED"&&item.sapati.sapati_satatus=="APPROVED")?`${item.sapati.fullName} accepted your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:(item.sapati.sapati_satatus=="DECLINED"&&item.status=="REJECTED")?`${item.sapati.fullName} declined your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:(item.sapati.sapati_satatus=="CHANGE"&&item.status=="CHANGE")?`${item.sapati.fullName} has requested to change request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:null;
     const status=item.sapati.sapati_satatus;
     const sapatiId=item.sapati.id;
-    const createdAt=item.sapati.created_at;
-    const image=user.image;
+    const createdAt=item.created_at;
+    const image=   existingToken.user_id == item.sapati.created_by
+    ? borrower_user?.image ?? null
+    : user?.image ?? null;
     const fullName=user.first_name?user?.first_name+" "+user.last_name:user.fullName;
     const phone=user?.phone_number;
     const remarks =item.sapati.remarks;
     const amount=item.sapati.amount;
-    const duration=fromatDate
+    const duration=fromatDate;
+    
 
     notificationsArray.push(
         {
@@ -86,7 +85,12 @@ const days = diff / millisecondsInDay;
             duration:duration
         }
     )
-}        
+}    
+
+    notificationsArray.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
         return NextResponse.json({message:"yes",notificationsArray},{status:200})
 
         

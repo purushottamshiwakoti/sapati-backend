@@ -181,12 +181,29 @@ export async function GET(req: NextRequest){
 
 
         if(status=='given'){
-            data=data.filter((item)=>(item.status=="Lent" ))
+            data=data.sort(
+              (a, b) =>
+                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            ).filter((item)=>(item.status=="Lent"&&item.sapati_status=="APPROVED" ))
         }else if(status=='taken'){
-            data=data.filter((item)=>(item.status=="Borrowed" ))
+            data=data.sort(
+              (a, b) =>
+                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            ).filter((item)=>(item.status=="Borrowed"&&item.sapati_status=="APPROVED" ))
 
-        }else{
-data
+        }else if(status=='active'){
+          data=data.sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          ).filter((item)=>(item.sapati_status=="PENDING" ))
+
+      }
+        
+        else{
+data.sort(
+  (a, b) =>
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+)
 
         }
 
