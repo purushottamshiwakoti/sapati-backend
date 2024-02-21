@@ -28,7 +28,7 @@ export async function GET(req: NextRequest){
         const search=req.nextUrl.searchParams.get("search");
 
         const pgnum: any = req.nextUrl.searchParams.get("pgnum") ?? 0;
-        const pgsize: number = 5;
+        const pgsize: number = 10;
 
         let data;
 
@@ -76,7 +76,10 @@ export async function GET(req: NextRequest){
                 ? item.sapati.fullName
                 : creatorUser?.first_name + " " + creatorUser?.last_name;
               item.user.is_verified = borrower_user?.is_verified || false;
-              item.user.image = borrower_user?.image || "";
+              item.user.image =
+          existingToken.user_id == item.sapati.created_by
+            ? borrower_user?.image ?? null
+            : creatorUser?.image ?? null;
       
               // You can access the index using 'index' variable here
             } else {
@@ -99,7 +102,10 @@ export async function GET(req: NextRequest){
                 ? item.sapati.fullName
                 : creatorUser?.first_name + " " + creatorUser?.last_name;
                          item.user.is_verified = borrower_user?.is_verified || false;
-              item.user.image = borrower_user?.image || "";
+                         item.user.image =
+                         existingToken.user_id == item.sapati.created_by
+                           ? borrower_user?.image ?? null
+                           : creatorUser?.image ?? null;
       
               // You can access the index using 'index' variable here
             } else {

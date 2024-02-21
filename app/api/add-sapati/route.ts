@@ -31,6 +31,9 @@ export async function POST(req:NextRequest){
         amount=parseInt(amount);
         return_date=new Date(return_date);
         taken_date=new Date(taken_date);
+        if(return_date>taken_date){
+            return NextResponse.json({message:"Return date must be greater than taken data"},{status:400})
+        }
         const requiredFields = [
             { field: fullName, fieldName: 'Full Name' },
             { field: phone, fieldName: 'Phone ' },

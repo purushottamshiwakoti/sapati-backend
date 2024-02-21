@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     }
 
     const pgnum: any = searchParams.get("pgnum") ?? 0;
-    const pgsize: number = 5;
+    const pgsize: number = 10;
 
     let borrowings = await prismadb.borrowings.findMany({
       skip: parseInt(pgnum) * pgsize,
