@@ -1,24 +1,22 @@
-import { LayoutDashboard, ShieldCheck, UsersRound } from "lucide-react";
+import { PersonIcon } from "@radix-ui/react-icons";
+import { LayoutDashboard, ShieldCheck } from "lucide-react";
 
 export const adminNavs=[
     {
-        title:"Menu",
-        navs:[
-            {
-                name:"Overview",
-                icon:LayoutDashboard,
-                href:"/admin/dashboard"
-            },
-            {
-                name:"Users",
-                icon:UsersRound,
-                href:"/admin/users"
-            },
-            {
-                name:"Admins",
-                icon:ShieldCheck,
-                href:"/admin/admins"
-            },
-        ]
+        name:"Dashboard",
+        href:"/dashboard",
+        icon:LayoutDashboard
+    },
+    {
+        name:"Admins",
+        href:"/admins",
+        icon:ShieldCheck,
+        superAdmin:true
+    },
+    {
+        name:"Users",
+        href:"/users",
+        icon:PersonIcon,
+      
     }
 ]

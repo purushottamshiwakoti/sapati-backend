@@ -16,3 +16,19 @@ export const getAdminByEmail=async(email:string)=>{
     }
 
 }
+export const getAdminById=async(id:string)=>{
+    try {
+
+        const admin=await prismadb.admin.findUnique({
+            where:{
+                id
+            }
+        });
+
+        return admin
+        
+    } catch (error) {
+        return null;
+    }
+
+}

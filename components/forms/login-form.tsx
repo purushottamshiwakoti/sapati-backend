@@ -16,13 +16,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState, useTransition } from "react";
-import { adminLogin } from "@/actions/admin";
 
 import { Eye, EyeOff } from "lucide-react";
 import { FormSuccess } from "../form-success";
 import { FormError } from "../form-error";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { login } from "@/actions/admin";
 
 export const LoginForm = () => {
   const [isPending, startTransistion] = useTransition();
@@ -46,14 +46,9 @@ export const LoginForm = () => {
     // ✅ This will be type-safe and validated.
     startTransistion(() => {
       setError("");
-      adminLogin(values).then((data) => {
+      login(values).then((data) => {
         if (data?.error) {
           setError(data.error);
-        }
-        if (data?.success) {
-          toast.success(data?.success);
-          router.push("/admin/dashboard");
-          setSuccess(data.success);
         }
       });
     });

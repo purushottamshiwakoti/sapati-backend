@@ -69,9 +69,12 @@ export async function GET(req:NextRequest,params:any){
 
       
     
+        console.log(findUser)
+        borrowings=borrowings.filter((item)=>((item.sapati.created_by==user.id&&parseInt(item.sapati.phone)==user?.phone_number!)||(parseInt(item.sapati.phone)==findUser?.phone_number!)))
+        console.log(borrowings)
 
-        borrowings=borrowings.filter((item)=>(parseInt(item.sapati.phone)==user.phone_number||parseInt(item.sapati.phone)==findUser.phone_number))
-        lendings=lendings.filter((item)=>(parseInt(item.sapati.phone)==user.phone_number||parseInt(item.sapati.phone)==findUser.phone_number))
+        
+        lendings=lendings.filter((item)=>(parseInt(item.sapati.phone)==user?.phone_number!||(parseInt(item.sapati.phone)==findUser?.phone_number!)))
 
         for (const item of borrowings) {
           const phone = parseInt(item.sapati.phone);

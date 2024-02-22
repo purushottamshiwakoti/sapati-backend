@@ -72,6 +72,7 @@ enum SapatiType {
 model Sapati {
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
   fullName            String?
+  role                String?
   image               String?
   phone               String
   amount              Int
@@ -118,13 +119,19 @@ model Borrowings {
   updated_at DateTime @updatedAt
 }
 
+enum AdminRole {
+  SUPERADMIN
+  ADMIN
+}
+
 model Admin {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   full_name  String
-  email      String   @unique
+  email      String    @unique
+  role       AdminRole @default(ADMIN)
   password   String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 }
 
 enum NotificationStatus {

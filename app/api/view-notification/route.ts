@@ -38,6 +38,7 @@ export async function GET(req:NextRequest){
             }
             
         });
+        console.log(notifications)
 
      let notificationsArray=[]
 for(const item of notifications){
@@ -68,6 +69,7 @@ const days = diff / millisecondsInDay;
     const remarks =item.sapati.remarks;
     const amount=item.sapati.amount;
     const duration=fromatDate;
+    const userId=item.status=="REQUEST"?item.sapati.created_by:borrower_user?.id
     
 
     notificationsArray.push(
@@ -82,7 +84,8 @@ const days = diff / millisecondsInDay;
             phone:phone,
             remarks:remarks,
             amount:amount,
-            duration:duration
+            duration:duration,
+            userId:userId,
         }
     )
 }    
