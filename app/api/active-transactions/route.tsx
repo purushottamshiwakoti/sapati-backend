@@ -121,7 +121,7 @@ export async function GET(req: NextRequest) {
     const sapatiTaken = borrowings
       .sort(
         (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          new Date(b.updated_at).getTime() - new Date(a.created_at).getTime()
       )
       .filter((item) => item.sapati.sapati_satatus == "PENDING")
       .map((item) => ({
@@ -149,7 +149,7 @@ export async function GET(req: NextRequest) {
         user_id: item.user_id,
         sapati_id: item.sapati_id,
         first_name: item.user.first_name,
-        last_name: item.user.last_name,
+        last_name: item.user.last_name, 
         fullName: item.user.fullName,
         isverified: item.user.is_verified,
         created_at: item.sapati.created_at,
