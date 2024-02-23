@@ -63,6 +63,7 @@ enum SapatiStatus {
   CHANGE
   CHANGED
   DUE
+  SETTLED
 }
 
 enum SapatiType {
