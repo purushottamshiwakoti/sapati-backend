@@ -62,6 +62,7 @@ enum SapatiStatus {
   DECLINED
   CHANGE
   CHANGED
+  DUE
 }
 
 enum SapatiType {
@@ -85,6 +86,7 @@ model Sapati {
   request_change_date DateTime?
   settled_date        DateTime?
   settled_by          String?
+  settled_by_name     String?
   remarks             String?
   created_by          String?         @db.ObjectId
   created_user_name   String?
@@ -139,6 +141,8 @@ enum NotificationStatus {
   REJECTED
   CHANGE
   REQUEST
+  DUE
+  SETTLED
 }
 
 model Notifications {

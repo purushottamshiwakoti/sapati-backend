@@ -7,13 +7,10 @@ const client = new Twilio(accountSid, authToken);
 
 export async function GET() {
   try {
-    const message = await client.messages
-      .create({
-        from: "+9779869304327",
-        to: "+9779849390103",
-        body: "La hai paisa chaiyo malai",
-      })
-      .then((message) => console.log(message.sid));
+    const message = await client.verify.v2
+      .services("VA13360a0a728700ca6328138eac68b5ec")
+      .verifications.create({ to: "+9779869304327", channel: "call" })
+      .then((verification) => console.log(verification.sid));
 
     console.log(message);
     return NextResponse.json({ message: "success" }, { status: 200 });
