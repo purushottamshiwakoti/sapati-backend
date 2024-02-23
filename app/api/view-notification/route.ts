@@ -86,6 +86,8 @@ const days = diff / millisecondsInDay;
             amount:amount,
             duration:duration,
             userId:userId,
+            returnDate:returnDate,
+            takenDate:takenDate
         }
     )
 }    
