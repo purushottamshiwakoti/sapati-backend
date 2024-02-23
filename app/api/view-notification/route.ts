@@ -56,7 +56,7 @@ const days = diff / millisecondsInDay;
 
 
    const fromatDate=formatDuration(days)
-    const request=(item.status=="REQUEST")?`Request from ${item.sapati.created_user_name} `:item.sapati.sapati_satatus=="APPROVED"?`Sapati Approved from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="DECLINED"?`Sapati Rejected from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="CHANGE"?`Sapati Change Request from ${item.sapati.fullName} `:item.status=="SETTLED"?`Settled from ${item.sapati.settled_by_name} `:null;
+    const request=(item.status=="REQUEST")?`Request from ${item.sapati.created_user_name} `:(item.sapati.sapati_satatus=="APPROVED"&&item.status!=="SETTLED")?`Sapati Approved from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="DECLINED"?`Sapati Rejected from ${item.sapati.fullName} `:item.sapati.sapati_satatus=="CHANGE"?`Sapati Change Request from ${item.sapati.fullName} `:item.status=="SETTLED"?`Settled from ${item.sapati.settled_by_name} `:null;
     const requestDescription=item.status=="REQUEST"?`${item.sapati.created_user_name} is ${item.sapati.type=="LENDED"?"lending from":"requesting"} you amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:(item.status=="APPROVED"&&item.sapati.sapati_satatus=="APPROVED")?`${item.sapati.fullName} accepted your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:(item.sapati.sapati_satatus=="DECLINED"&&item.status=="REJECTED")?`${item.sapati.fullName} declined your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:(item.sapati.sapati_satatus=="CHANGE"&&item.status=="CHANGE")?`${item.sapati.fullName} has requested to change request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`:item.status=="SETTLED"?` ${item.sapati.settled_by_name} have successfully settled sapati`:null;
     const status=item.status!=="SETTLED"?item.sapati.sapati_satatus:item.status;
     const sapatiId=item.sapati.id;
@@ -90,10 +90,13 @@ const days = diff / millisecondsInDay;
     )
 }    
 
+
     notificationsArray.sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       )
+
+      console.log(notificationsArray)
         return NextResponse.json({message:"yes",notificationsArray},{status:200})
 
         
