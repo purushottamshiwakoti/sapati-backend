@@ -24,10 +24,9 @@ export const changePasswordSchema = z.object({
   path: ["confirmPassword"],
 });
 
-const phoneRegex = new RegExp(
-  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
-);
+const phoneRegex = new RegExp(/^\+?\d+$/);
+
 
 export const registerSchema = z.object({
-  phone_number:z.string().min(8,{message:"Phone number must be minimum of 8 characters"}).regex(phoneRegex, 'Invalid Number!'),
+  phone_number:z.string().min(8,{message:"Phone number must be minimum of 8 characters"}).max(15,{message:"Phone number can't be more than 15 characters"}).regex(phoneRegex, 'Invalid Number!'),
 });

@@ -17,6 +17,7 @@ export const sendSms=async(to:any,body:any)=>{
           body: body,
         })
         .then((message) => console.log(message.sid));
+
         return message;
     } catch (error) {
         console.log(error)

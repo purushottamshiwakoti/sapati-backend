@@ -26,10 +26,11 @@ if(existingUser&&!existingUser?.is_verified){
     
     const token=await generatePhoneVerificationToken(phone);
    const sms= await sendSms(existingUser.phone_number,`Your otp for sapati is ${token}. Please verify it`);
-    if(!sms){
-    return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
+   console.log(sms);
+    // if(!sms){
+    // return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
 
-    }
+    // }
     return NextResponse.json({message:"Otp sent successfully"},{status:200})
 
 }
@@ -46,10 +47,11 @@ if(!existingUser){
     });
     const token=await generatePhoneVerificationToken(user.phone_number);
     const sms= await sendSms(user.phone_number,`Your otp for sapati is ${token}. Please verify it`);
-    if(!sms){
-        return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
+    console.log(sms);
+    // if(!sms){
+    //     return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
     
-        }
+    //     }
     return NextResponse.json({message:"Otp sent successfully"},{status:200})
 }
 
