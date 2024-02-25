@@ -32,26 +32,24 @@ export async function POST(req: NextRequest) {
         }
 
 
-        // const token = await getPhoneNumberToken(otp);
+        const token = await getPhoneNumberToken(otp);
+        console.log(token);
 
-        // if (!token) {
-        //     return NextResponse.json({ message: "Invalid token" }, { status: 498 });
-        // }
-
-        // if (token.expires < new Date()) {
-        //     return NextResponse.json({ message: "Otp has been already expired" }, { status: 498 });
-        // }
-
-
-        // if(token.phone_number!==phone){
-        //     return NextResponse.json({ message: "Phone number does not match" }, { status: 498 });
-
-        // }
-
-        if(otp!=="123456"){
-            return NextResponse.json({ message: "Otp does not match" }, { status: 401 });
+        if (!token) {
+            return NextResponse.json({ message: "Invalid token" }, { status: 498 });
         }
 
+        if (token.expires < new Date()) {
+            return NextResponse.json({ message: "Otp has been already expired" }, { status: 498 });
+        }
+
+
+        if(token.phone_number!==phone){
+            return NextResponse.json({ message: "Phone number does not match" }, { status: 498 });
+
+        }
+
+      
 
 
         await prismadb.user.update({
@@ -63,11 +61,11 @@ export async function POST(req: NextRequest) {
             }
         })
 
-        // await prismadb.verifyPhoneNumber.delete({
-        //     where:{
-        //         token:otp
-        //     }
-        // })
+        await prismadb.verifyPhoneNumber.delete({
+            where:{
+                token:otp
+            }
+        })
 
 
         return NextResponse.json({ message: "Otp verified successfully" }, { status: 200 });
