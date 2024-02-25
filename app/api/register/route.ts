@@ -26,7 +26,6 @@ if(existingUser&&!existingUser?.is_verified){
     
     const token=await generatePhoneVerificationToken(phone);
    const sms= await sendSms(existingUser.phone_number,`Your otp for sapati is ${token}. Please verify it`);
-   console.log(sms);
     // if(!sms){
     // return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
 

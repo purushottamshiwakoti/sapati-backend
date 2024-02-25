@@ -29,15 +29,11 @@ export async function GET(req:NextRequest,params:any){
             },
             include: {
                 borrowings: {
-                    skip: parseInt(pgnum) * pgsize,
-                    take: pgsize,
                     include: {
                         sapati: true
                     }
                 },
                 lendings: {
-                    skip: parseInt(pgnum) * pgsize,
-                    take: pgsize,
                     include: {
                         sapati: true
                     }
@@ -48,50 +44,66 @@ export async function GET(req:NextRequest,params:any){
             return NextResponse.json({ message: "No user found" }, { status: 404 });
         }
 
-        const currentUser=await getUserById(existingToken.user_id)
-        console.log(user.borrowings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))));
-        const borrowings = getSapatiSum(user.borrowings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).map((item)=>item.sapati.amount));
-        
+        console.log(user.lendings)
+        console.log(user.borrowings)
 
-        const lendings = getSapatiSum(user.lendings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).map((item)=>item.sapati.amount));
+        // getting user lending 
+    //    user lendings is borrowings for me 
+       let borrowingsForMe=user.lendings.filter((item)=>((item.sapati.created_by==user.id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==existingToken.user_id)))
 
-        console.log(borrowings);
-        console.log(lendings);
-        // const balance = borrowings - lendings;
-        const balance = lendings - borrowings;
-        const overallTransactions = user.borrowings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).length + user.lendings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).length;
-        const pendingBorrowings=user.borrowings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).filter((item)=>!item.sapati.confirm_settlement&&item.sapati.sapati_satatus=="APPROVED"||item.sapati.sapati_satatus=="PENDING");
-        const settledBorrowings=user.borrowings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).filter((item)=>item.sapati.sapati_satatus=="APPROVED"&&item.sapati.confirm_settlement);
-        const rejectedBorrowings=user.borrowings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).filter((item)=>item.sapati.sapati_satatus=="DECLINED"&&!item.sapati.confirm_settlement);
-        const pendingLendings=user.lendings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).filter((item)=>!item.sapati.confirm_settlement&&item.sapati.sapati_satatus=="APPROVED"||item.sapati.sapati_satatus=="PENDING");
-        const settledLendings=user.lendings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).filter((item)=>item.sapati.sapati_satatus=="APPROVED"&&item.sapati.confirm_settlement);
-        const rejectedLendings=user.lendings.filter((item)=>(parseInt(item.sapati.phone)==currentUser?.phone_number!||(parseInt(item.sapati.phone)==user?.phone_number!))).filter((item)=>item.sapati.sapati_satatus=="DECLINED"&&!item.sapati.confirm_settlement);
+    
+
+    //    getting borrowings from user
+    //  user borrowings is lendings for me 
+       let lendingsForMe=user.borrowings.filter((item)=>((item.sapati.created_by==user.id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==user.id)))
+
+       const borrowed= getSapatiSum(borrowingsForMe.map((item)=>item.sapati.amount))
+       const lent= getSapatiSum(lendingsForMe.map((item)=>item.sapati.amount))
+       const balance=lent-borrowed;
+       const overallTransactions=lendingsForMe.length+borrowingsForMe.length
+       const settledLent=lendingsForMe.filter((item)=>(item.sapati.confirm_settlement==true))
+       const rejectedLent=lendingsForMe.filter((item)=>(item.sapati.sapati_satatus=="DECLINED"))
+       const pendingLent=lendingsForMe.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
+       const settledBorrowings=borrowingsForMe.filter((item)=>(item.sapati.confirm_settlement==true))
+       const rejectedBorrowings=borrowingsForMe.filter((item)=>(item.sapati.sapati_satatus=="DECLINED"))
+       const pendingBorrowings=borrowingsForMe.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
+       const settled=settledLent.length+settledBorrowings.length;
+       const rejected=rejectedLent.length+rejectedBorrowings.length;
+       const activeBook=pendingLent.length+pendingBorrowings.length;
+
+       const modifiedUser={
+      id:user.id,
+      fullName:user.fullName,
+      first_name:user.first_name,
+      last_names:user.last_name,
+      image:user.image,
+      is_verified:user.is_verified,
+      phone_number:user.phone_number,
+      borrowed,
+      lent,
+      balance,
+      overallTransactions,
+      activeBook,
+      settled,
+      rejected
+       }
+
+      
 
 
-        const activeBook=pendingBorrowings.length+pendingLendings.length
-        const settled=settledBorrowings.length+settledLendings.length
-        const rejected=rejectedBorrowings.length+rejectedLendings.length
+       
 
-        
-        
+  
 
-        const findUser: ExtendedUser=await getUserById(id) as ExtendedUser;
-        // findUser.borrowed=borrowings; 
-        findUser.borrowed=lendings; 
-        // findUser.lent=lendings; 
-        findUser.lent=borrowings; 
-        findUser.balance=balance; 
-        findUser.overallTransactions=overallTransactions; 
-        findUser.activeBook=activeBook; 
-        findUser.settled=settled; 
-        findUser.rejected=rejected; 
+       
+       
 
 
-        if(!findUser){
-            return NextResponse.json({message:"No user found"},{status:404})
-        }
+        // if(!findUser){
+        //     return NextResponse.json({message:"No user found"},{status:404})
+        // }
 
-        return NextResponse.json({message:"Successfully fetched user",user:findUser},{status:200});
+        return NextResponse.json({message:"Successfully fetched user",user:modifiedUser},{status:200});
         
     } catch (error) {
         console.log(error);
