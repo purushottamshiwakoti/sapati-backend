@@ -100,6 +100,7 @@ export async function POST(req:NextRequest){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
+                    created_for:newUser.id,
                     created_user_name: user.first_name + " " + user.last_name,
                     created_user_image:user.image,
                     lendings: {
@@ -143,6 +144,7 @@ export async function POST(req:NextRequest){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
+                    created_for:existingUser.id,
                     created_user_name: user.first_name + " " + user.last_name,
                     created_user_image:user.image,
                     lendings: {
@@ -190,6 +192,7 @@ export async function POST(req:NextRequest){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
+                    created_for:newUser.id,
                     created_user_name: user.first_name + " " + user.last_name,
                     created_user_image:user.image,
 
@@ -233,6 +236,7 @@ export async function POST(req:NextRequest){
                     type,
                     remarks,
                     created_by:existingToken.user_id,
+                    created_for:existingUser.id,
                     created_user_name: user.first_name + " " + user.last_name,
                     created_user_image:user.image,
                     borrowings: {

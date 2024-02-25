@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         console.log(token);
 
         if (!token) {
-            return NextResponse.json({ message: "Invalid token" }, { status: 498 });
+            return NextResponse.json({ message: "Invalid Otp" }, { status: 498 });
         }
 
         if (token.expires < new Date()) {

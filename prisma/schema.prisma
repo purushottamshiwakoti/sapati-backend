@@ -90,6 +90,7 @@ model Sapati {
   settled_by_name     String?
   remarks             String?
   created_by          String?         @db.ObjectId
+  created_for         String?         @db.ObjectId
   created_user_name   String?
   created_user_image  String?
   confirm_settlement  Boolean         @default(false)
