@@ -147,6 +147,11 @@ enum NotificationStatus {
   SETTLED
 }
 
+enum DueType {
+  GET
+  PAY
+}
+
 model Notifications {
   id         String             @id @default(auto()) @map("_id") @db.ObjectId
   user_id    String             @db.ObjectId
@@ -154,6 +159,7 @@ model Notifications {
   sapati_id  String             @db.ObjectId
   sapati     Sapati             @relation(fields: [sapati_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   status     NotificationStatus
+  due_type   DueType?
   created_at DateTime
   updated_at DateTime           @updatedAt
 }

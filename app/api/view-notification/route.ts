@@ -70,7 +70,7 @@ const days = diff / millisecondsInDay;
     const amount=item.sapati.amount;
     const duration=fromatDate;
     const userId=item.status=="REQUEST"?item.sapati.created_by:borrower_user?.id
-    
+    const updatedAt=item.updated_at
 
     notificationsArray.push(
         {
@@ -87,7 +87,8 @@ const days = diff / millisecondsInDay;
             duration:duration,
             userId:userId,
             returnDate:returnDate,
-            takenDate:takenDate
+            takenDate:takenDate,
+            updatedAt:updatedAt,
         }
     )
 }    
@@ -95,7 +96,7 @@ const days = diff / millisecondsInDay;
 
     notificationsArray.sort(
         (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       )
 
       console.log(notificationsArray)
