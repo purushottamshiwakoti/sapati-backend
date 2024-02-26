@@ -4,6 +4,7 @@ import { generatePhoneVerificationToken } from "@/lib/tokens";
 import { getUserByPhone } from "@/lib/user";
 import { registerSchema } from "@/schema";
 import { NextRequest, NextResponse } from "next/server";
+import { number } from "zod";
 
 export async function POST(req:NextRequest){
 
@@ -11,12 +12,12 @@ export async function POST(req:NextRequest){
 const body=await req.json();
 try {
    const abc= registerSchema.parse(body);
-   console.log(abc);
   } catch (validationError:any) {
     return NextResponse.json({ message: validationError.errors[0].message }, { status: 400 });
   }
-const {phone_number}=body
+const {phone_number,country_code}=body
 const phone =parseInt(phone_number)
+
 
 
 
@@ -25,7 +26,7 @@ const existingUser=await getUserByPhone(phone);
 if(existingUser&&!existingUser?.is_verified){
     
     const token=await generatePhoneVerificationToken(phone);
-   const sms= await sendSms(existingUser.phone_number,`Your otp for sapati is ${token}. Please verify it`);
+   const sms= await sendSms(existingUser.country_code+existingUser.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`);
     // if(!sms){
     // return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
 
@@ -41,11 +42,12 @@ if(existingUser&&existingUser.is_verified){
 if(!existingUser){
     const user=await prismadb.user.create({
         data:{
-            phone_number:phone
+            phone_number:phone,
+            country_code
         }
     });
     const token=await generatePhoneVerificationToken(user.phone_number);
-    const sms= await sendSms(user.phone_number,`Your otp for sapati is ${token}. Please verify it`);
+    const sms= await sendSms(user.country_code+user.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`);
     console.log(sms);
     // if(!sms){
     //     return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
@@ -53,6 +55,7 @@ if(!existingUser){
     //     }
     return NextResponse.json({message:"Otp sent successfully"},{status:200})
 }
+
 
 
     

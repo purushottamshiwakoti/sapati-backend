@@ -65,7 +65,7 @@ export async function PATCH(req:NextRequest,params:any){
              } catch (error) {
 
             }
-  if(user.device_token){
+  if(user.device_token&&user.notification){
                 await sendNotification(user.device_token,"Sapati approved",`${sapati.fullName} approved sapati` )
              }
                 return NextResponse.json({message:"Successfully approved request",newSapati, status:200})
@@ -100,7 +100,7 @@ export async function PATCH(req:NextRequest,params:any){
                      } catch (error) {
         
                     }
-          if(user.device_token){
+          if(user.device_token&&user.notification){
                         await sendNotification(user.device_token,"Sapati rejected",`${sapati.fullName} rejected sapati` )
                      }
                      
@@ -135,7 +135,7 @@ export async function PATCH(req:NextRequest,params:any){
                          } catch (error) {
             
                         }
-                        if(user.device_token){
+                        if(user.device_token&&user.notification){
                             await sendNotification(user.device_token,"Sapati change request",`${sapati.fullName} requested change insapati` )
                          }
                          return NextResponse.json({message:"Successfully requested to change request",newSapati, status:200})

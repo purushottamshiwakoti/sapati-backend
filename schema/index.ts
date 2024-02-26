@@ -28,5 +28,5 @@ const phoneRegex = new RegExp(/^\+?\d+$/);
 
 
 export const registerSchema = z.object({
-  phone_number:z.string().min(8,{message:"Phone number must be minimum of 8 characters"}).max(15,{message:"Phone number can't be more than 15 characters"}).regex(phoneRegex, 'Invalid Number!'),
+  phone_number:z.string().min(1,{message:"Phone number must be minimum of 1 characters"}).max(30,{message:"Phone number can't be more than 30 characters"}).regex(phoneRegex, 'Invalid Number!'),
 });

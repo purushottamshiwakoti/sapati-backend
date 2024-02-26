@@ -1,16 +1,15 @@
 import prismadb from "@/lib/prismadb";
 import { getPhoneNumberToken } from "@/lib/tokens";
-import { getUserByPhone, getVerificationTokenByPhone } from "@/lib/user";
+import { getUserById, getUserByPhone, getVerificationTokenByPhone } from "@/lib/user";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { otp, phone_number } = body;
+        const { otp } = body;
 
-        const phone=parseInt(phone_number)
 
-        const requiredFields = [{ field: otp, fieldName: 'Otp' }, { field: phone_number, fieldName: 'Phone number' }];
+        const requiredFields = [{ field: otp, fieldName: 'Otp' }];
         const errors:any = [];
 
         requiredFields.forEach(({ field, fieldName }) => {
@@ -23,17 +22,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error:errors[0] }, { status: 499 });
         }
 
-        const user=await getUserByPhone(phone);
-        console.log(user);
+     
 
-        if(!user){
-            return NextResponse.json({ message: "User does not exists" }, { status: 403 });
-
-        }
-
+      
 
         const token = await getPhoneNumberToken(otp);
-        console.log(token);
+    
 
         if (!token) {
             return NextResponse.json({ message: "Invalid Otp" }, { status: 498 });
@@ -42,11 +36,9 @@ export async function POST(req: NextRequest) {
         if (token.expires < new Date()) {
             return NextResponse.json({ message: "Otp has been already expired" }, { status: 498 });
         }
-
-
-        if(token.phone_number!==phone){
-            return NextResponse.json({ message: "Phone number does not match" }, { status: 498 });
-
+        const user=await getUserByPhone(token.phone_number);
+        if(!user){
+            return NextResponse.json({message:"User not found"},{status:403})
         }
 
       
@@ -54,7 +46,7 @@ export async function POST(req: NextRequest) {
 
         await prismadb.user.update({
             where:{
-                phone_number:phone
+                phone_number:user.phone_number
             },
             data:{
                 is_verified:true,

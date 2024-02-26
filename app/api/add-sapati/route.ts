@@ -25,7 +25,7 @@ export async function POST(req:NextRequest){
         if(!user){
             return NextResponse.json({message:"No user found"},{status:404})
         }
-        let {fullName,phone,amount,taken_date,return_date,remarks,type}=await req.json()
+        let {fullName,phone,amount,taken_date,return_date,remarks,type,country_code}=await req.json()
         if (phone.includes("-")) {
             phone = phone.replace("-", "");
         }
@@ -45,6 +45,7 @@ export async function POST(req:NextRequest){
             { field: type, fieldName: 'Type' },
         ];
         const errors:any = [];
+
         
 
         requiredFields.forEach(({ field, fieldName }) => {
@@ -70,13 +71,17 @@ export async function POST(req:NextRequest){
 
         const existingUser=await getUserByPhone(phone_number);
 
+        if(country_code==null){
+            country_code=user.country_code
+        }
+
      
 
         if(!existingUser){
           newUser=  await prismadb.user.create({
                 data:{
                     phone_number,
-                    fullName
+                    fullName,country_code
                 }
             })
         }
@@ -174,7 +179,7 @@ export async function POST(req:NextRequest){
                 }
             })
            
-         if(existingUser.device_token){
+         if(existingUser.device_token&&existingUser.notification){
             await sendNotification(existingUser.device_token,"Amount Lended", `${user.fullName??user.first_name} have lended you ${amount}. Please verify it`)
          }
         return NextResponse.json({message:"Successfully added lending",user:sapatiUser},{status:200});
@@ -265,7 +270,7 @@ export async function POST(req:NextRequest){
                     created_at:new Date(nepalTime)
                 }
             })
-            if(existingUser.device_token){
+            if(existingUser.device_token&&existingUser.notification){
                 await sendNotification(existingUser.device_token,"Amount Borrowed", `${user.fullName??user.first_name} have borrowed from you ${amount}. Please verify it`)
              }
         return NextResponse.json({message:"Successfully added borrowing",user:sapatiUser},{status:200});
