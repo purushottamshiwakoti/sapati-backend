@@ -78,9 +78,17 @@ export async function GET(req:NextRequest,params:any){
            let rejected=[...rejectedBorrowings,...rejectedLendings]
            let settled=[...settledBorrowings,...settledLendings]
            let active=[...activeBorrowings,...activeLendings]
+           const activeBook=[]
            console.log(settled)
            console.log(active)
            console.log(rejected)
+
+     for (const item of active) {
+      const remarks=item.sapati.remarks
+      const amount=item.sapati.amount
+      const type=item.sapati.type=="BORROWED"?"LENDED":"BORROWED"
+      const returnDate=item.sapati.return_date      
+     }
 
 
            if(status=="settled"){

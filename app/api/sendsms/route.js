@@ -7,15 +7,16 @@ const client = new Twilio(accountSid, authToken);
 
 export async function GET() {
   try {
-    const message = await client.messages
-      .create({
-        from: "+15168149873",
-        to: "+9779869304327",
-        body: "Yout otp is 8909899 Please verify it",
-      })
-      .then((message) => console.log(message.sid));
+//     const message = await client.messages
+//       .create({
+//         from: "+15168149873",
+//         to: "+9779869304327",
+//         body: "Yout otp is 8909899 Please verify it",
+//       })
+//       .then((message) => console.log(message.sid));
+// onsole.log(message.sid));
 
-    console.log(message);
+//     console.log(message);
     return NextResponse.json({ message: "success" }, { status: 200 });
   } catch (error) {
     console.log(error);
