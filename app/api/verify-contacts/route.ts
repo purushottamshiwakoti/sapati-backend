@@ -12,7 +12,7 @@ export async function POST(req:NextRequest){
 
         const existingToken=await verifyBearerToken(bearerToken)
         if(!existingToken){
-            return NextResponse.json({message:"Invalid token"},{status:498})
+            return NextResponse.json({message:"Invalid token"},{status:400})
         }
 
         const {contacts}=body;

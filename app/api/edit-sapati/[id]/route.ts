@@ -16,7 +16,7 @@ export async function PATCH(req:NextRequest,params:any){
 
         const existingToken=await verifyBearerToken(bearerToken)
         if(!existingToken){
-            return NextResponse.json({message:"Invalid token"},{status:498})
+            return NextResponse.json({message:"Invalid token"},{status:400})
         }
 
 

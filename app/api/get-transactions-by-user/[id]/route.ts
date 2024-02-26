@@ -75,9 +75,12 @@ export async function GET(req:NextRequest,params:any){
            const rejectedLendings=lendingsForMe.filter((item)=>(item.sapati.sapati_satatus=="DECLINED"))
            const settledLendings=lendingsForMe.filter((item)=>(item.sapati.confirm_settlement))
            const activeLendings=lendingsForMe.filter((item)=>(!item.sapati.confirm_settlement&&item.sapati.sapati_satatus!=="DECLINED"&&item.sapati.sapati_satatus!=="CHANGE"))
-           const rejected=[...rejectedBorrowings,...rejectedLendings]
-           const settled=[...settledBorrowings,...settledLendings]
-           const active=[...activeBorrowings,...activeLendings]
+           let rejected=[...rejectedBorrowings,...rejectedLendings]
+           let settled=[...settledBorrowings,...settledLendings]
+           let active=[...activeBorrowings,...activeLendings]
+           console.log(settled)
+           console.log(active)
+           console.log(rejected)
 
 
            if(status=="settled"){
