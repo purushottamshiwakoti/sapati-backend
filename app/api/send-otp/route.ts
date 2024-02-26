@@ -18,7 +18,7 @@ const existingUser=await getUserByPhone(phone);
     return NextResponse.json({message:"User doesnot exists"},{status:409})
 
         }
-
+        console.log(existingUser.country_code+existingUser.phone_number.toString())
 const token=await generatePhoneVerificationToken(phone);
 const sms= await sendSms(existingUser.country_code+existingUser.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`);
 console.log(sms)
