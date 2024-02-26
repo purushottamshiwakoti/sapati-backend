@@ -9,10 +9,11 @@ export async function POST(req:NextRequest){
     try {
         const body=await req.json();
         console.log(body);
-        const {phone_number,password,device_token}=body;
+        const {phone_number,password,device_token,country_code}=body;
 
         const requiredFields = [
             { field: phone_number, fieldName: 'Phone number ' },
+            { field: country_code, fieldName: 'Country Code ' },
             { field: password, fieldName: 'Password' },
             { field: device_token, fieldName: 'Device Token' }
         ];

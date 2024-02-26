@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     try {
 
         const body = await req.json();
-        const {  phone_number } = body;
+        const { country_code ,phone_number } = body;
         if(!phone_number){
             return NextResponse.json({message:"Phone number is required"},{status:499})
         }
@@ -20,7 +20,7 @@ const existingUser=await getUserByPhone(phone);
         }
 
 const token=await generatePhoneVerificationToken(phone);
-const sms= await sendSms(existingUser.phone_number,`Your otp for sapati is ${token}. Please verify it`);
+const sms= await sendSms(existingUser.country_code+existingUser.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`);
 console.log(sms)
 // if(!sms){
 // return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
