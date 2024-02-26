@@ -49,24 +49,26 @@ export async function GET(req:NextRequest,params:any){
 
         // getting user lending 
     //    user lendings is borrowings for me 
-       let borrowingsForMe=user.lendings.filter((item)=>((item.sapati.created_by==user.id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==existingToken.user_id)))
+       let borrowingsForMe=user.lendings.filter((item)=>((item.sapati.created_by==user.id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==user.id)))
 
-    
+       console.log((user.lendings[0].sapati.created_by==user.id&&user.lendings[0].sapati.created_for==existingToken.user_id)||(user.lendings[0].sapati.created_by==existingToken.user_id&&user.lendings[0].sapati.created_for==existingToken.user_id))
 
-    //    getting borrowings from user
-    //  user borrowings is lendings for me 
+       //    getting borrowings from user
+       //  user borrowings is lendings for me 
        let lendingsForMe=user.borrowings.filter((item)=>((item.sapati.created_by==user.id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==user.id)))
-
+       console.log(lendingsForMe.map((item)=>(item.sapati.amount)))
+       console.log(borrowingsForMe.map((item)=>(item.sapati.amount)))
+       console.log(borrowingsForMe.length,lendingsForMe.length)
        const borrowed= getSapatiSum(borrowingsForMe.map((item)=>item.sapati.amount))
        const lent= getSapatiSum(lendingsForMe.map((item)=>item.sapati.amount))
        const balance=lent-borrowed;
        const overallTransactions=lendingsForMe.length+borrowingsForMe.length
        const settledLent=lendingsForMe.filter((item)=>(item.sapati.confirm_settlement==true))
        const rejectedLent=lendingsForMe.filter((item)=>(item.sapati.sapati_satatus=="DECLINED"))
-       const pendingLent=lendingsForMe.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
+       const pendingLent=lendingsForMe.filter((item)=>(!item.sapati.confirm_settlement&&item.sapati.sapati_satatus!=="DECLINED"&&item.sapati.sapati_satatus!=="CHANGE"))
        const settledBorrowings=borrowingsForMe.filter((item)=>(item.sapati.confirm_settlement==true))
        const rejectedBorrowings=borrowingsForMe.filter((item)=>(item.sapati.sapati_satatus=="DECLINED"))
-       const pendingBorrowings=borrowingsForMe.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
+       const pendingBorrowings=borrowingsForMe.filter((item)=>(!item.sapati.confirm_settlement&&item.sapati.sapati_satatus!=="DECLINED"&&item.sapati.sapati_satatus!=="CHANGE"))
        const settled=settledLent.length+settledBorrowings.length;
        const rejected=rejectedLent.length+rejectedBorrowings.length;
        const activeBook=pendingLent.length+pendingBorrowings.length;
@@ -74,6 +76,7 @@ export async function GET(req:NextRequest,params:any){
        const modifiedUser={
       id:user.id,
       fullName:user.fullName,
+
       first_name:user.first_name,
       last_names:user.last_name,
       image:user.image,

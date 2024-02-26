@@ -59,7 +59,7 @@ export async function GET(req:NextRequest,params:any){
         if (!user) {
             return NextResponse.json({ message: "No user found" }, { status: 404 });
         }
-        let borrowingsForMe=user.lendings.filter((item)=>((item.sapati.created_by==user.id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==existingToken.user_id)))
+        let borrowingsForMe=user.lendings.filter((item)=>((item.sapati.created_by==user.id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==user.id)))
 
     
 
@@ -67,8 +67,7 @@ export async function GET(req:NextRequest,params:any){
         //  user borrowings is lendings for me 
            let lendingsForMe=user.borrowings.filter((item)=>((item.sapati.created_by==user.id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==user.id)))
 
-           console.log(borrowingsForMe)
-           console.log(lendingsForMe)
+          
 
            const rejectedBorrowings=borrowingsForMe.filter((item)=>(item.sapati.sapati_satatus=="DECLINED"))
            const settledBorrowings=borrowingsForMe.filter((item)=>(item.sapati.confirm_settlement))

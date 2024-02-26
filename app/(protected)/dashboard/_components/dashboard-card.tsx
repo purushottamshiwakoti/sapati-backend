@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
-
+import Link from "next/link";
 export const DashboardCard = ({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) => {
@@ -22,6 +22,9 @@ export const DashboardCard = ({
     from: undefined,
     to: undefined,
   });
+
+  const fromDate = date!.from ? format(date!.from, "yyyy-MM-dd") : undefined;
+  const toDate = date!.to ? format(date!.to, "yyyy-MM-dd") : undefined;
 
   return (
     <>
@@ -31,7 +34,7 @@ export const DashboardCard = ({
         <div>
           <h2 className="text-3xl font-bold tracking-wide">Dashboard</h2>
         </div>
-        {/* <div className="md:flex md:space-x-4 space-y-4 md:space-y-0 mt-2 md:mt-0">
+        <div className="md:flex md:space-x-4 space-y-4 md:space-y-0 mt-2 md:mt-0">
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -68,15 +71,31 @@ export const DashboardCard = ({
               />
               <div className="p-2">
                 <PopoverClose asChild>
-                  <Button className="w-full">Done</Button>
+                  <Button className="w-full" asChild>
+                    <Link
+                      href={{
+                        pathname: "/dashboard",
+                        query: {
+                          date:
+                            fromDate && toDate
+                              ? `${fromDate},${toDate}`
+                              : undefined,
+                        },
+                      }}
+                    >
+                      Done
+                    </Link>
+                  </Button>
                 </PopoverClose>
               </div>
             </PopoverContent>
           </Popover>
           <div>
-            <Button className="w-full md:w-auto">Download</Button>
+            <Button className="w-full md:w-auto" asChild>
+              <Link href={"/dashboard"}>Lifetime</Link>
+            </Button>
           </div>
-        </div> */}
+        </div>
       </div>
     </>
   );

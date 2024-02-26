@@ -14,25 +14,49 @@ import { BarChart } from "./_components/barchart";
 import { PieChartComponent } from "./_components/pie-chart-component";
 import prismadb from "@/lib/prismadb";
 
-async function getData() {
+async function getData(from: Date, to: Date) {
   const user = prismadb.user.aggregate({
     _count: {
       _all: true,
+    },
+    where: {
+      created_at: {
+        gte: from,
+        lte: to,
+      },
     },
   });
   const borrowings = prismadb.borrowings.aggregate({
     _count: {
       _all: true,
     },
+    where: {
+      created_at: {
+        gte: from,
+        lte: to,
+      },
+    },
   });
   const lendings = prismadb.lendings.aggregate({
     _count: {
       _all: true,
     },
+    where: {
+      created_at: {
+        gte: from,
+        lte: to,
+      },
+    },
   });
   const sapati = prismadb.sapati.aggregate({
     _count: {
       _all: true,
+    },
+    where: {
+      created_at: {
+        gte: from,
+        lte: to,
+      },
     },
   });
 
@@ -46,8 +70,12 @@ async function getData() {
   return data;
 }
 
-const DashboardPage = async () => {
-  const data = await getData();
+const DashboardPage = async ({ searchParams }: { searchParams: any }) => {
+  const searchDate = searchParams.date;
+  const from = new Date(searchDate?.split(",")[0] || null);
+  const to = new Date(searchDate?.split(",")[1] || null);
+
+  const data = await getData(from, to);
 
   const pieChartData = {
     labels: ["Sapatis", "Users", "Borrowings", "Lendings"],
