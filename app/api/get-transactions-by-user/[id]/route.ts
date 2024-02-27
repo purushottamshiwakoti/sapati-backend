@@ -115,7 +115,7 @@ export async function GET(req:NextRequest,params:any){
           }
 
           if(status=="activebook"){
-            return NextResponse.json({message:"Successfully fetched transactions",data:active},{status:200})
+            return NextResponse.json({message:"Successfully fetched transactions of user",data:active},{status:200})
 
           }
            return NextResponse.json({message:"yes",},{status:200})
