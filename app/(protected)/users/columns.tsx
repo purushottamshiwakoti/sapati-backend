@@ -25,6 +25,7 @@ export type Users = {
   total_borrowings: string | number;
   total_lendings: string | number;
   is_verified: boolean;
+  country_code: string | null;
 };
 
 export const columns: ColumnDef<Users>[] = [
@@ -34,22 +35,27 @@ export const columns: ColumnDef<Users>[] = [
   },
   {
     accessorKey: "first_name",
+    header: "First Name ",
+  },
+  {
+    accessorKey: "country_code",
+    header: "Country Code ",
+  },
+  {
+    accessorKey: "phone_number",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          First Name
+          Phone Number
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
-  {
-    accessorKey: "phone_number",
-    header: "Phone Number",
-  },
+
   {
     accessorKey: "is_verified",
     header: "Verified Status",

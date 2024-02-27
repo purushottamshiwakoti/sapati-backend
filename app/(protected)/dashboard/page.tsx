@@ -14,66 +14,105 @@ import { BarChart } from "./_components/barchart";
 import { PieChartComponent } from "./_components/pie-chart-component";
 import prismadb from "@/lib/prismadb";
 
-async function getData(from: Date, to: Date) {
-  const user = prismadb.user.aggregate({
-    _count: {
-      _all: true,
-    },
-    where: {
-      created_at: {
-        gte: from,
-        lte: to,
+async function getData(from: Date | null, to: Date | null) {
+  let userPromise;
+  let borrowingsPromise;
+  let lendingsPromise;
+  let sapatiPromise;
+
+  if (from !== null && to !== null) {
+    userPromise = prismadb.user.aggregate({
+      _count: {
+        _all: true,
       },
-    },
-  });
-  const borrowings = prismadb.borrowings.aggregate({
-    _count: {
-      _all: true,
-    },
-    where: {
-      created_at: {
-        gte: from,
-        lte: to,
+      where: {
+        created_at: {
+          gte: from,
+          lte: to,
+        },
       },
-    },
-  });
-  const lendings = prismadb.lendings.aggregate({
-    _count: {
-      _all: true,
-    },
-    where: {
-      created_at: {
-        gte: from,
-        lte: to,
+    });
+    borrowingsPromise = prismadb.sapati.aggregate({
+      _max: {
+        amount: true,
       },
-    },
-  });
-  const sapati = prismadb.sapati.aggregate({
-    _count: {
-      _all: true,
-    },
-    where: {
-      created_at: {
-        gte: from,
-        lte: to,
+      where: {
+        created_at: {
+          gte: from,
+          lte: to,
+        },
       },
-    },
-  });
+    });
+    lendingsPromise = prismadb.lendings.aggregate({
+      _count: {
+        _all: true,
+      },
+      where: {
+        created_at: {
+          gte: from,
+          lte: to,
+        },
+      },
+    });
+
+    sapatiPromise = prismadb.sapati.aggregate({
+      _count: {
+        _all: true,
+      },
+      where: {
+        created_at: {
+          gte: from,
+          lte: to,
+        },
+      },
+    });
+  } else {
+    userPromise = prismadb.user.aggregate({
+      _count: {
+        _all: true,
+      },
+    });
+
+    borrowingsPromise = prismadb.sapati.aggregate({
+      _max: {
+        amount: true,
+      },
+    });
+    lendingsPromise = prismadb.lendings.aggregate({
+      _count: {
+        _all: true,
+      },
+    });
+    sapatiPromise = prismadb.sapati.aggregate({
+      _count: {
+        _all: true,
+      },
+    });
+  }
+
+  const [user, borrowings, lendings, sapati] = await Promise.all([
+    userPromise,
+    borrowingsPromise,
+    lendingsPromise,
+    sapatiPromise,
+  ]);
 
   const data = {
-    totalUsers: (await user)._count._all,
-    totalBorrowings: (await borrowings)._count._all,
-    totalLendings: (await lendings)._count._all,
-    totalSapati: (await sapati)._count._all,
+    totalUsers: user._count._all,
+    totalBorrowings: borrowings._max.amount,
+    totalLendings: lendings._count._all,
+    totalSapati: sapati._count._all,
   };
 
   return data;
 }
 
-const DashboardPage = async ({ searchParams }: { searchParams: any }) => {
+const DashboardPage: React.FC<{ searchParams: any }> = async ({
+  searchParams,
+}) => {
   const searchDate = searchParams.date;
-  const from = new Date(searchDate?.split(",")[0] || null);
-  const to = new Date(searchDate?.split(",")[1] || null);
+  const from = searchDate ? new Date(searchDate.split(",")[0]) : null;
+  const to = searchDate ? new Date(searchDate.split(",")[1]) : null;
 
   const data = await getData(from, to);
 
@@ -142,7 +181,7 @@ const DashboardPage = async ({ searchParams }: { searchParams: any }) => {
           description="Users are lending too!"
         />
         <StatusCard
-          title="Total Borrowings"
+          title="Total Sapati Transactions"
           icon={Banknote}
           amount={`+ ${data.totalBorrowings}`}
           description="Users are borrowing too!"
