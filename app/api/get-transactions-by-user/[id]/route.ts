@@ -73,14 +73,22 @@ export async function GET(req:NextRequest,params:any){
         console.log(lendings);
      
 
-        borrowings=borrowings.filter((item)=>((item.sapati.created_by==id||item.sapati.created_for==existingToken.user_id)&&(item.sapati.created_by==existingToken.user_id||item.sapati.created_for==id)))
-        console.log(borrowings);
+        borrowings=borrowings.filter((item)=>((item.sapati.created_by==id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==id)))
+
+
+        console.log(id)
+        console.log(existingToken.user_id)
+        console.log((lendings[1].sapati.created_for==existingToken.user_id||lendings[1].sapati.created_for==id)&&(lendings[1].sapati.created_for==existingToken.user_id||lendings[1].sapati.created_for==id))
+
+        lendings=lendings.filter((item)=>((item.sapati.created_by==id &&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==id)))
+        console.log(lendings)
 
         for (const item of borrowings) {
           console.log(item);
           const phone = parseInt(item.sapati.phone);
           if (!isNaN(phone)) {
             const borrower_user = await getUserByPhone(phone);
+            item.sapati.type="LENDED"?"BORROWED":"LENDED"
             item.user_id = borrower_user?.id || "";
             item.user.first_name = borrower_user?.first_name || "";
             item.user.last_name = borrower_user?.last_name || "";
@@ -100,6 +108,7 @@ export async function GET(req:NextRequest,params:any){
           const phone = parseInt(item.sapati.phone);
           if (!isNaN(phone)) {
             const borrower_user = await getUserByPhone(phone);
+            item.sapati.type="LENDED"?"BORROWED":"LENDED"
             item.user_id = borrower_user?.id || "";
             item.user.first_name = borrower_user?.first_name || "";
             item.user.last_name = borrower_user?.last_name || "";
@@ -130,7 +139,7 @@ export async function GET(req:NextRequest,params:any){
               fullName:item.user.fullName,
               isverified:item.user.is_verified,
               created_at:item.sapati.created_at,
-              status:"Borrowed",
+              status:item.sapati.type,
               sapati_status:item.sapati.sapati_satatus,
               confirm_settlement:item.sapati.confirm_settlement,
               amount:item.sapati.amount,
@@ -162,7 +171,7 @@ export async function GET(req:NextRequest,params:any){
               fullName:item.user.fullName,
               isverified:item.user.is_verified,
               created_at:item.sapati.created_at,
-              status:"Lent",
+              status:item.sapati.type,
               sapati_status:item.sapati.sapati_satatus,
               confirm_settlement:item.sapati.confirm_settlement,
               amount:item.sapati.amount,

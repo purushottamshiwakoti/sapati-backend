@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/register-account/route.ts", "middleware.js", "app/api/sendsms/route.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/register-account/route.ts", "middleware.js", "app/api/sendsms/route.js", "app/api/get-transactions-by-user/[id]/route.ts"],
   "exclude": ["node_modules"]
 }
