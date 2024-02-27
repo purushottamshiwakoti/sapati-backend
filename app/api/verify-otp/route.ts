@@ -30,11 +30,11 @@ export async function POST(req: NextRequest) {
     
 
         if (!token) {
-            return NextResponse.json({ message: "Invalid Otp" }, { status: 498 });
+            return NextResponse.json({ message: "Invalid Otp" }, { status: 400 });
         }
 
         if (token.expires < new Date()) {
-            return NextResponse.json({ message: "Otp has been already expired" }, { status: 498 });
+            return NextResponse.json({ message: "Otp has been already expired" }, { status: 400 });
         }
         const user=await getUserByPhone(token.phone_number);
         if(!user){

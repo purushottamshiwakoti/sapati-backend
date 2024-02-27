@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const bearerToken = token.split(" ")[1];
     const existingToken = await verifyBearerToken(bearerToken);
     if (!existingToken) {
-      return NextResponse.json({ message: "Invalid token" }, { status: 498 });
+      return NextResponse.json({ message: "Invalid token" }, { status: 400 });
     }
 
     const user = await getUserById(existingToken.user_id);
