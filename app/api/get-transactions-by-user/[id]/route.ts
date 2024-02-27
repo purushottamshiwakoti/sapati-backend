@@ -195,9 +195,9 @@ export async function GET(req:NextRequest,params:any){
       console.log(sapatiTaken)
 
       if(status=="activebook"){
-        const given=sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"||item.sapati_status=="APPROVED"))
+        const given=sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"&&!item.confirm_settlement||item.sapati_status=="APPROVED"&&!item.confirm_settlement))
         
-        const taken=sapatiTaken.filter((item) =>(item.sapati_status=="PENDING"||item.sapati_status=="APPROVED"))
+        const taken=sapatiTaken.filter((item) =>(item.sapati_status=="PENDING"&&!item.confirm_settlement||item.sapati_status=="APPROVED"&&!item.confirm_settlement))
         data=[...given,...taken];
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }
