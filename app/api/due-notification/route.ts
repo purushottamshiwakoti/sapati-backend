@@ -43,14 +43,18 @@ export async function GET() {
                 {
                     sapati_id:item.id,
                     status:"DUE",
-                    user_id:creator!,
+                    // user_id:creator!,
+                    user_id:receiver!,
+
                     created_at:new Date(nepalTime),
                     due_type:"GET",
                 },
                 {
                     sapati_id:item.id,
                     status:"DUE",
-                    user_id:receiver!,
+                    // user_id:receiver!,
+                    user_id:creator!,
+
                     created_at:new Date(nepalTime),
                     due_type:"PAY",
                 },
@@ -71,14 +75,16 @@ export async function GET() {
                 {
                     sapati_id:item.id,
                     status:"DUE",
-                    user_id:receiver!,
+                    // user_id:receiver!,
+                    user_id:creator!,
                     created_at:new Date(nepalTime),
                     due_type:"GET",
                 },
                 {
                     sapati_id:item.id,
                     status:"DUE",
-                    user_id:creator!,
+                    // user_id:creator!,
+                    user_id:receiver!,
                     created_at:new Date(nepalTime),
                     due_type:"PAY",
                 },

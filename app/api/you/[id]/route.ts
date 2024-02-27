@@ -76,7 +76,7 @@ export async function GET(req:NextRequest,params:any){
       fullName:user.fullName,
 
       first_name:user.first_name,
-      last_names:user.last_name,
+      last_name:user.last_name,
       image:user.image,
       is_verified:user.is_verified,
       phone_number:user.phone_number,
