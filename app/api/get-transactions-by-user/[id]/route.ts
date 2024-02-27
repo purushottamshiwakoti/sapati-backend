@@ -84,10 +84,23 @@ export async function GET(req:NextRequest,params:any){
            console.log(rejected)
 
      for (const item of active) {
-      const remarks=item.sapati.remarks
-      const amount=item.sapati.amount
+      const createbBy=item.sapati.created_by
+      const receivedBy=item.sapati.created_for
+      const creatorUser=await getUserById(createbBy!)
+      const receiverUser=await getUserById(receivedBy!)
+
+      console.log(receiverUser)
+      console.log(creatorUser)
+      console.log(createbBy,receivedBy);
+      
+      const remarks=item.sapati.remarks;
+      const amount=item.sapati.amount;
       const type=item.sapati.type=="BORROWED"?"LENDED":"BORROWED"
-      const returnDate=item.sapati.return_date      
+      console.log(type)
+      const returnDate=item.sapati.return_date     
+      const paymentDate=item.sapati.taken_date
+      // const isVerified=
+
      }
 
 

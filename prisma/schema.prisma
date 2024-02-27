@@ -16,25 +16,27 @@ enum Gender {
 }
 
 model User {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  first_name   String?
-  last_name    String?
-  fullName     String?
-  password     String?
-  image        String?
-  email        String?
-  notification Boolean?      @default(true)
-  is_verified  Boolean       @default(false)
-  gender       Gender?
-  country_code String
-  phone_number Int           @unique
-  dob          String?
-  created_at   DateTime      @default(now())
-  updated_at   DateTime      @updatedAt
-  bearerToken  BearerToken[]
-  device_token String?
-  lendings     Lendings[]
-  borrowings   Borrowings[]
+  id                String        @id @default(auto()) @map("_id") @db.ObjectId
+  first_name        String?
+  last_name         String?
+  fullName          String?
+  password          String?
+  image             String?
+  email             String?
+  tokensNumber      Int?
+  tokensCreatedDate DateTime?
+  notification      Boolean?      @default(true)
+  is_verified       Boolean       @default(false)
+  gender            Gender?
+  country_code      String
+  phone_number      Int           @unique
+  dob               String?
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+  bearerToken       BearerToken[]
+  device_token      String?
+  lendings          Lendings[]
+  borrowings        Borrowings[]
 
   Notifications Notifications[]
 }
