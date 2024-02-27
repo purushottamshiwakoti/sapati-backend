@@ -42,7 +42,7 @@ export async function GET(req:NextRequest){
 
      let notificationsArray=[]
 for(const item of notifications){
-
+    console.log(item)
 
     const user:any=await getUserById(item.sapati.created_by as string)
     const borrower_user = await getUserByPhone(parseInt(item.sapati.phone));
@@ -69,7 +69,10 @@ const days = diff / millisecondsInDay;
     const remarks =item.sapati.remarks;
     const amount=item.sapati.amount;
     const duration=fromatDate;
-    const userId=item.status=="REQUEST"?item.sapati.created_by:borrower_user?.id
+    const userId = 
+    (item.status === "DUE" && item.due_type === "GET") ? item.sapati.created_by :
+    (item.status === "REQUEST") ? item.sapati.created_by :
+    item.sapati.created_for;
     const updatedAt=item.updated_at
 
     notificationsArray.push(
