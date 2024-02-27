@@ -62,7 +62,7 @@ export async function GET() {
             await sendNotification(creatorUser.device_token,"Due Date Crossed", `${receiverUser?.first_name?receiverUser?.first_name+""+ receiverUser.last_name:receiverUser?.fullName} has to pay you ${item.amount}`)
          }
         if(receiverUser&&receiverUser.device_token&&receiverUser.notification){
-            await sendNotification(receiverUser.device_token,"Due Date Crossed", `You must pay to ${creatorUser?.first_name?receiverUser?.first_name+""+ creatorUser.last_name:creatorUser?.fullName} amount ${item.amount}`)
+            await sendNotification(receiverUser.device_token,"Due Date Crossed", `You must pay to ${creatorUser?.first_name?creatorUser?.first_name+""+ creatorUser.last_name:creatorUser?.fullName} amount ${item.amount}`)
          }
 
       }else{
