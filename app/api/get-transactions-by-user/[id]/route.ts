@@ -78,13 +78,12 @@ export async function GET(req:NextRequest,params:any){
 
         console.log(id)
         console.log(existingToken.user_id)
-        console.log((lendings[1].sapati.created_for==existingToken.user_id||lendings[1].sapati.created_for==id)&&(lendings[1].sapati.created_for==existingToken.user_id||lendings[1].sapati.created_for==id))
+   
 
         lendings=lendings.filter((item)=>((item.sapati.created_by==id &&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==id)))
         console.log(lendings)
 
         for (const item of borrowings) {
-          console.log(item);
           const phone = parseInt(item.sapati.phone);
           if (!isNaN(phone)) {
             const borrower_user = await getUserByPhone(phone);
@@ -218,7 +217,7 @@ export async function GET(req:NextRequest,params:any){
       }
 
     catch (error) {
-        console.error(error);
+        console.log(error);
         return NextResponse.json(
           { error: "Internal server error" },
           { status: 500 }

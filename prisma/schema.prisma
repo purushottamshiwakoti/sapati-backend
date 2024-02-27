@@ -28,7 +28,7 @@ model User {
   notification      Boolean?      @default(true)
   is_verified       Boolean       @default(false)
   gender            Gender?
-  country_code      String
+  country_code      String?
   phone_number      Int           @unique
   dob               String?
   created_at        DateTime      @default(now())
