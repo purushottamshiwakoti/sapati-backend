@@ -1,6 +1,7 @@
 import { sendSms } from "@/lib/send-sms";
 import { generatePhoneVerificationToken } from "@/lib/tokens";
 import { getUserByPhone } from "@/lib/user";
+import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -20,12 +21,12 @@ const existingUser=await getUserByPhone(phone);
         }
         console.log(existingUser.country_code+existingUser.phone_number.toString())
 const token=await generatePhoneVerificationToken(phone);
-const sms= await sendSms(existingUser.country_code+existingUser.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`);
+const sms= await sendSms(existingUser.country_code+existingUser.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`,existingUser.phone_number);
 console.log(sms)
-// if(!sms){
-// return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
+if(sms.error){
+return NextResponse.json({message:sms.error},{status:400})
 
-// }
+}
 
 return NextResponse.json({message:"Otp sent successfully"},{status:200})
 

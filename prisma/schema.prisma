@@ -23,7 +23,7 @@ model User {
   password          String?
   image             String?
   email             String?
-  tokensNumber      Int?
+  tokensNumber      Int?          @default(0)
   tokensCreatedDate DateTime?
   notification      Boolean?      @default(true)
   is_verified       Boolean       @default(false)

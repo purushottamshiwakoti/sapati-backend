@@ -23,18 +23,19 @@ const phone =parseInt(phone_number)
 
 const existingUser=await getUserByPhone(phone);
 
-if(existingUser&&!existingUser?.is_verified){
+if(existingUser&&!existingUser?.is_verified&&existingUser.country_code==country_code){
     
     const token=await generatePhoneVerificationToken(phone);
-   const sms= await sendSms(existingUser.country_code+existingUser.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`);
-    // if(!sms){
-    // return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
+   const sms= await sendSms(existingUser.country_code+existingUser.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`,existingUser.phone_number);
+   console.log(sms)
+    if(sms.error){
+    return NextResponse.json({message:sms.error,sms},{status:400})
 
-    // }
+    }
     return NextResponse.json({message:"Otp sent successfully"},{status:200})
 
 }
-if(existingUser&&existingUser.is_verified){
+if(existingUser&&existingUser.is_verified&&existingUser.country_code==country_code){
     return NextResponse.json({message:"User already exists"},{status:409})
 
 }
@@ -47,12 +48,12 @@ if(!existingUser){
         }
     });
     const token=await generatePhoneVerificationToken(user.phone_number);
-    const sms= await sendSms(user.country_code+user.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`);
-    console.log(sms);
-    // if(!sms){
-    //     return NextResponse.json({message:"Unable to send otp!Please try again later",sms},{status:400})
+    const sms= await sendSms(user.country_code+user.phone_number.toString(),`Your otp for sapati is ${token}. Please verify it`,user.phone_number);
+
+    if(sms.error){
+        return NextResponse.json({message:sms.error},{status:400})
     
-    //     }
+        }
     return NextResponse.json({message:"Otp sent successfully"},{status:200})
 }
 
