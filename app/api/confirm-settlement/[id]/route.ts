@@ -50,7 +50,7 @@ console.log(sapati);
             },
             data:{
               confirm_settlement:true,
-              sapati_satatus:"APPROVED",
+              sapati_satatus:"SETTLED",
               settled_date:new Date(),
               settled_by:existingToken.user_id,
               settled_by_name:user.first_name+" "+user.last_name

@@ -182,7 +182,7 @@ export async function GET(req: NextRequest){
             const searchTerm = search.toLowerCase();
             data = data
                 .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                .filter(item => item.status === "Lent" && item.sapati_status === "APPROVED"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm))
+                .filter(item => item.status === "Lent" && item.sapati_status === "APPROVED"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
                 .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
           }else{
             data = data
@@ -195,7 +195,7 @@ export async function GET(req: NextRequest){
           const searchTerm = search.toLowerCase();
           data = data
           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-          .filter(item => item.status === "Borrowed" && item.sapati_status === "APPROVED"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm))
+          .filter(item => item.status === "Borrowed" && item.sapati_status === "APPROVED"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
         }
           data = data
@@ -207,7 +207,7 @@ export async function GET(req: NextRequest){
           const searchTerm = search.toLowerCase();
           data = data
               .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-              .filter(item => item.sapati_status === "PENDING"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm))
+              .filter(item => item.sapati_status === "PENDING"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
               .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
         }else{
           data = data
@@ -220,7 +220,7 @@ export async function GET(req: NextRequest){
         if(search){
           const searchTerm = search.toLowerCase();
           data = data
-          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).filter((item)=>item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm))
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).filter((item)=>item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
         }else{
           data = data
