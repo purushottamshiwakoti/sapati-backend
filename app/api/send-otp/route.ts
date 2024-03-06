@@ -28,7 +28,7 @@ return NextResponse.json({message:sms.error},{status:400})
 
 }
 
-return NextResponse.json({message:"Otp sent successfully"},{status:200})
+return NextResponse.json({message:"OTP Sent Successfully"},{status:200})
 
         
         

@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
             if (sms.error) {
                 return NextResponse.json({ message: sms.error }, { status: 400 });
             }
-            return NextResponse.json({ message: "Otp sent successfully" }, { status: 200 });
+            return NextResponse.json({ message: "OTP Sent Successfully" }, { status: 200 });
         }
 
         if (existingUser && existingUser.is_verified && existingUser.country_code == country_code) {
@@ -49,12 +49,12 @@ export async function POST(req: NextRequest) {
             if (sms.error) {
                 return NextResponse.json({ message: sms.error }, { status: 400 });
             }
-            return NextResponse.json({ message: "Otp sent successfully" }, { status: 200 });
+            return NextResponse.json({ message: "OTP Sent Successfully" }, { status: 200 });
         }
         
         // Add a default response to handle any other cases
       
-        return NextResponse.json({ message: "Otp sent successfully" }, { status: 200 });
+        return NextResponse.json({ message: "OTP Sent Successfully" }, { status: 200 });
     } catch (e) {
         console.log(e);
         return NextResponse.json({ error: e }, { status: 500 });

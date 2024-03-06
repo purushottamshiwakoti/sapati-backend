@@ -67,22 +67,18 @@ export async function GET(req:NextRequest,params:any){
             }
         });
 
-        console.log(id)
-        console.log(existingToken.user_id)
-        console.log(borrowings);
-        console.log(lendings);
+      
      
 
         borrowings=borrowings.filter((item)=>((item.sapati.created_by==id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==id)))
 
 
-        console.log(id)
-        console.log(existingToken.user_id)
+     
    
 
         lendings=lendings.filter((item)=>((item.sapati.created_by==id &&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==id)))
-        console.log(lendings)
 
+        console.log(borrowings)
         for (const item of borrowings) {
           const phone = parseInt(item.sapati.phone);
           if (!isNaN(phone)) {
@@ -102,12 +98,15 @@ export async function GET(req:NextRequest,params:any){
             );
           }
         }
-    
+        console.log(borrowings)
+
+
+console.log(lendings);    
         for (const item of lendings) {
           const phone = parseInt(item.sapati.phone);
           if (!isNaN(phone)) {
             const borrower_user = await getUserByPhone(phone);
-            item.sapati.type="LENDED"?"BORROWED":"LENDED"
+            item.sapati.type="BORROWED"?"LENDED":"BORROWED"
             item.user_id = borrower_user?.id || "";
             item.user.first_name = borrower_user?.first_name || "";
             item.user.last_name = borrower_user?.last_name || "";
@@ -123,6 +122,7 @@ export async function GET(req:NextRequest,params:any){
           }
         }
 
+console.log(lendings);    
    
     
 
@@ -153,6 +153,7 @@ export async function GET(req:NextRequest,params:any){
               created_by:item.sapati.created_by,
               currentUser:existingToken.user_id,
               settled_date:item.sapati.settled_date,
+              updated_at:item.sapati.updated_at
               
 
           }
@@ -186,31 +187,47 @@ export async function GET(req:NextRequest,params:any){
             created_by:item.sapati.created_by,
             currentUser:existingToken.user_id,
             settled_date:item.sapati.settled_date,
+            updated_at:item.sapati.updated_at
 
 
           }
       ));
 
-      console.log(sapatiGiven)
-      console.log(sapatiTaken)
+
 
       if(status=="activebook"){
         const given=sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"&&!item.confirm_settlement||item.sapati_status=="APPROVED"&&!item.confirm_settlement))
         
         const taken=sapatiTaken.filter((item) =>(item.sapati_status=="PENDING"&&!item.confirm_settlement||item.sapati_status=="APPROVED"&&!item.confirm_settlement))
         data=[...given,...taken];
+        data.sort(
+          (a, b) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        )
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }
       if(status=="settled"){
-        const given=sapatiGiven.filter((item) =>(item.confirm_settlement==true))
-        const taken=sapatiTaken.filter((item) =>(item.confirm_settlement==true))
+        const given=sapatiGiven.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        ).filter((item) =>(item.confirm_settlement==true))
+        const taken=sapatiTaken.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        ).filter((item) =>(item.confirm_settlement==true))
         data=[...given,...taken];
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }
 
       if(status=="rejected"){
-        const given=sapatiGiven.filter((item) =>(item.sapati_status=="DECLINED"))
-        const taken=sapatiTaken.filter((item) =>(item.sapati_status=="DECLINED"))
+        const given=sapatiGiven.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        ).filter((item) =>(item.sapati_status=="DECLINED"))
+        const taken=sapatiTaken.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        ).filter((item) =>(item.sapati_status=="DECLINED"))
         data=[...given,...taken];
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }

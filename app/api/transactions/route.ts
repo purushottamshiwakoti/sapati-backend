@@ -34,8 +34,8 @@ export async function GET(req: NextRequest){
 
 
         let borrowings=await prismadb.borrowings.findMany({
-            skip: parseInt(pgnum) * pgsize,
-            take: pgsize,
+            // skip: parseInt(pgnum) * pgsize,
+            // take: pgsize,
             where:{
                 user_id:existingToken.user_id,
             },
@@ -48,8 +48,8 @@ export async function GET(req: NextRequest){
               },
         });
         let lendings=await prismadb.lendings.findMany({
-            skip: parseInt(pgnum) * pgsize,
-            take: pgsize,
+            // skip: parseInt(pgnum) * pgsize,
+            // take: pgsize,
             where:{
                 user_id:existingToken.user_id,
             },
@@ -167,45 +167,37 @@ export async function GET(req: NextRequest){
             const searchTerm = search.toLowerCase();
 
             sapatiTaken = sapatiTaken.filter(item =>
-                item.first_name?.toLowerCase().includes(searchTerm) ||
-                item.fullName?.toLowerCase().includes(searchTerm)
-            );
+                // item.first_name?.toLowerCase().includes(searchTerm) ||
+                item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm));
 
             sapatiGiven = sapatiGiven.filter(item =>
-                item.first_name?.toLowerCase().includes(searchTerm) ||
-                item.fullName?.toLowerCase().includes(searchTerm)
-            );
+              item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm));
         }
 
         data=[...sapatiGiven,...sapatiTaken]
 
 
-        if(status=='given'){
-            data=data.sort(
-              (a, b) =>
-                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-            ).filter((item)=>(item.status=="Lent"&&item.sapati_status=="APPROVED" ))
-        }else if(status=='taken'){
-            data=data.sort(
-              (a, b) =>
-                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-            ).filter((item)=>(item.status=="Borrowed"&&item.sapati_status=="APPROVED" ))
-
-        }else if(status=='active'){
-          data=data.sort(
-            (a, b) =>
-              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          ).filter((item)=>(item.sapati_status=="PENDING" ))
-
+        if (status === 'given') {
+          data = data
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .filter(item => item.status === "Lent" && item.sapati_status === "APPROVED")
+              .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      } else if (status === 'taken') {
+          data = data
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .filter(item => item.status === "Borrowed" && item.sapati_status === "APPROVED")
+              .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      } else if (status === 'active') {
+          data = data
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .filter(item => item.sapati_status === "PENDING")
+              .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      } else {
+          data = data
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
-        
-        else{
-data.sort(
-  (a, b) =>
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-)
 
-        }
 
 
 

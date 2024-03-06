@@ -27,7 +27,7 @@ export async function POST(req:NextRequest){
         }
         let {fullName,phone,amount,taken_date,return_date,remarks,type,country_code}=await req.json()
         if (phone.includes("-")) {
-            phone = phone.replace("-", "");
+            phone = phone.split("-").join("");
         }
 
         amount=parseInt(amount);

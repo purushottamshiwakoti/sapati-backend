@@ -74,6 +74,7 @@ const days = diff / millisecondsInDay;
     (item.status === "REQUEST") ? item.sapati.created_by :
     item.sapati.created_for;
     const updatedAt=item.updated_at
+    const sapatiStatus=item.sapati.type
 
     notificationsArray.push(
         {
@@ -92,6 +93,8 @@ const days = diff / millisecondsInDay;
             returnDate:returnDate,
             takenDate:takenDate,
             updatedAt:updatedAt,
+            sapatiStatus:sapatiStatus,
+
         }
     )
 }    

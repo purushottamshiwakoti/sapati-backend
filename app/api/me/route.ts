@@ -55,12 +55,12 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: "No user found" }, { status: 404 });
         }
 
-        console.log(user);
 
         const borrowings = getSapatiSum(user.borrowings.map(item => item.sapati.amount));
         const lendings = getSapatiSum(user.lendings.map(item => item.sapati.amount));
         const balance = borrowings - lendings;
-        const overallTransactions = user.borrowings.length + user.lendings.length;
+        const overallTransactions = user.borrowings.
+        length + user.lendings.length;
         const takenTransactions = user.borrowings.filter((item)=>(item.sapati.sapati_satatus=="APPROVED"))
         const givenTransactions = user.lendings.filter((item)=>(item.sapati.sapati_satatus=="APPROVED"))
         const pendingGiven = user.lendings.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
