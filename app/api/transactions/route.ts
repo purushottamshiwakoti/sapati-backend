@@ -163,39 +163,70 @@ export async function GET(req: NextRequest){
             }
         ));
 
-        if (search) {
-            const searchTerm = search.toLowerCase();
+        // if (search) {
+        //     const searchTerm = search.toLowerCase();
 
-            sapatiTaken = sapatiTaken.filter(item =>
-                // item.first_name?.toLowerCase().includes(searchTerm) ||
-                item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm));
+        //     sapatiTaken = sapatiTaken.filter(item =>
+        //         // item.first_name?.toLowerCase().includes(searchTerm) ||
+        //         item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm));
 
-            sapatiGiven = sapatiGiven.filter(item =>
-              item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm));
-        }
+        //     sapatiGiven = sapatiGiven.filter(item =>
+        //       item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm));
+        // }
 
         data=[...sapatiGiven,...sapatiTaken]
 
 
         if (status === 'given') {
-          data = data
-              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-              .filter(item => item.status === "Lent" && item.sapati_status === "APPROVED")
-              .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+          if(search){
+            const searchTerm = search.toLowerCase();
+            data = data
+                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                .filter(item => item.status === "Lent" && item.sapati_status === "APPROVED"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm))
+                .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+          }else{
+            data = data
+            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+            .filter(item => item.status === "Lent" && item.sapati_status === "APPROVED")
+            .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+          }
       } else if (status === 'taken') {
+        if(search){
+          const searchTerm = search.toLowerCase();
+          data = data
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .filter(item => item.status === "Borrowed" && item.sapati_status === "APPROVED"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm))
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+        }
           data = data
               .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
               .filter(item => item.status === "Borrowed" && item.sapati_status === "APPROVED")
               .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       } else if (status === 'active') {
+        if(search){
+          const searchTerm = search.toLowerCase();
+          data = data
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .filter(item => item.sapati_status === "PENDING"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm))
+              .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+        }else{
           data = data
               .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
               .filter(item => item.sapati_status === "PENDING")
               .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+        }
+          
       } else {
+        if(search){
+          const searchTerm = search.toLowerCase();
+          data = data
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).filter((item)=>item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().includes(searchTerm):item.first_name?.toLowerCase().includes(searchTerm))
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+        }else{
           data = data
               .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
               .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+        }
       }
 
 
