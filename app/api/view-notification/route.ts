@@ -10,7 +10,7 @@ export async function GET(req:NextRequest){
         const { searchParams } = new URL(req.url);
         const token = req.headers.get("Authorization");
         if (!token) {
-            return NextResponse.json({ message: "Authorization token missing" }, { status: 401 });
+            return NextResponse.json({ message: "Authorization token missing" }, { status: 400 });
         }
 
         const bearerToken = token.split(" ")[1];

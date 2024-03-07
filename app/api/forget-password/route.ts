@@ -27,13 +27,13 @@ export async function POST(req: NextRequest) {
         }
 
         if (new_password !== confirm_new_password) {
-            return NextResponse.json({ message: "Password does not match" }, { status: 401 });
+            return NextResponse.json({ message: "Password does not match" }, { status: 400 });
         }
 
         // Password validation
         const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$/;
         if (!passwordRegex.test(new_password)) {
-            return NextResponse.json({ message: "Password must be at least 8 characters long and contain at least one number, one special character, and one capital letter." }, { status: 401 });
+            return NextResponse.json({ message: "Password must be at least 8 characters long and contain at least one number, one special character, and one capital letter." }, { status: 400 });
         }
 
         const phone = parseInt(phone_number);

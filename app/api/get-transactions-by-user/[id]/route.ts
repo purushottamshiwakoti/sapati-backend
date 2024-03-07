@@ -12,7 +12,7 @@ export async function GET(req:NextRequest,params:any){
         if (!token) {
           return NextResponse.json(
             { message: "Authorization token missing" },
-            { status: 401 }
+            { status: 400 }
           );
         }
     
