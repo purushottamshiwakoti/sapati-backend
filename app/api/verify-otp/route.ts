@@ -6,7 +6,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { otp,phone_number } = body;
+        let { otp,phone_number } = body;
+
+        phone_number=parseInt(phone_number)
+
+        
 
         console.log(otp,phone_number)
 
