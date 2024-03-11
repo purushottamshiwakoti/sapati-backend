@@ -4,6 +4,7 @@ import prismadb from "./prismadb";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
+// const authToken = "process.env.TWILIO_AUTH_TOKEN";
 const client = new Twilio(accountSid, authToken);
 
 export const sendSms = async (to: any, body: any, phone: number) => {
@@ -32,10 +33,11 @@ export const sendSms = async (to: any, body: any, phone: number) => {
         const message = await client.messages
             .create({
                 from: "+15168149873",
-                to: `+${to}`,
+                to: `+${to}`,   
                 body: body,
             })
-            .then((message) => console.log(message.sid));
+            .then((message) => console.log(message  ));
+
 
         // Updating user's tokensNumber and tokensCreatedDate
         if (user) {

@@ -58,13 +58,20 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    console.log(lendings.length);
-
     for (const item of borrowings) {
       const phone = parseInt(item.sapati.phone);
       if (!isNaN(phone)) {
         const borrower_user = await getUserByPhone(phone);
         const creatorUser = await getUserById(item.sapati.created_by!);
+        const phone_number =
+          creatorUser?.id == existingToken.user_id
+            ? borrower_user?.phone_number
+            : creatorUser?.phone_number;
+        const fullName =
+          creatorUser?.id === existingToken.user_id
+            ? (borrower_user?.first_name ?? "") +
+              (borrower_user?.last_name ?? "")
+            : (creatorUser?.first_name ?? "") + (creatorUser?.last_name ?? "");
         item.user_id = borrower_user?.id || "";
         item.user.first_name = borrower_user?.first_name || "";
         item.user.last_name = borrower_user?.last_name || "";
@@ -94,6 +101,16 @@ export async function GET(req: NextRequest) {
       if (!isNaN(phone)) {
         const borrower_user = await getUserByPhone(phone);
         const creatorUser = await getUserById(item.sapati.created_by!);
+
+        const phone_number =
+          creatorUser?.id == existingToken.user_id
+            ? borrower_user?.phone_number
+            : creatorUser?.phone_number;
+        const fullName =
+          creatorUser?.id === existingToken.user_id
+            ? (borrower_user?.first_name ?? "") +
+              (borrower_user?.last_name ?? "")
+            : (creatorUser?.first_name ?? "") + (creatorUser?.last_name ?? "");
 
         item.user_id = borrower_user?.id || "";
         item.user.first_name = borrower_user?.first_name || "";
@@ -125,7 +142,7 @@ export async function GET(req: NextRequest) {
         sapati_id: item.sapati_id,
         first_name: item.user.first_name,
         last_name: item.user.last_name,
-        fullName: item.user.fullName,
+        // fullName: item.user.fullName,
         isverified: item.user.is_verified,
         created_at: item.sapati.created_at,
         status: "Borrowed",
@@ -138,6 +155,8 @@ export async function GET(req: NextRequest) {
         currentUserId: existingToken.user_id,
         userName: item.sapati.created_user_name,
         userImage: item.sapati.created_user_image,
+        phone_number: item.user.phone_number,
+        fullName: item.user.fullName,
       }));
     const sapatiGiven = lendings
 
@@ -147,7 +166,7 @@ export async function GET(req: NextRequest) {
         sapati_id: item.sapati_id,
         first_name: item.user.first_name,
         last_name: item.user.last_name,
-        fullName: item.user.fullName,
+        // fullName: item.user.fullName,
         isverified: item.user.is_verified,
         created_at: item.sapati.created_at,
         status: "Lent",
@@ -160,6 +179,8 @@ export async function GET(req: NextRequest) {
         currentUserId: existingToken.user_id,
         userName: item.sapati.created_user_name,
         userImage: item.sapati.created_user_image,
+        phone_number: item.user.phone_number,
+        fullName: item.user.fullName,
       }));
 
     let data = [...sapatiTaken, ...sapatiGiven];
