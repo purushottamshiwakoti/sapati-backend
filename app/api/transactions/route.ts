@@ -68,18 +68,34 @@ export async function GET(req: NextRequest){
               const borrower_user = await getUserByPhone(phone);
         const creatorUser = await getUserById(item.sapati.created_by!);
 
+        const phone_number =
+        creatorUser?.id == existingToken.user_id
+          ? borrower_user?.phone_number
+          : creatorUser?.phone_number;
+      const fullName =
+        creatorUser?.id === existingToken.user_id
+          ? (borrower_user?.first_name?.trim() ?? "") +
+            (borrower_user?.last_name?.trim() ?? "")
+          : (creatorUser?.first_name?.trim() ?? "") +
+            (creatorUser?.last_name?.trim() ?? "");
+      item.user_id = borrower_user?.id || "";
+
               item.user_id = borrower_user?.id || "";
               item.user.first_name = borrower_user?.first_name || "";
               item.user.last_name = borrower_user?.last_name || "";
-              item.user.fullName =
-              existingToken.user_id == item.sapati.created_by
-                ? item.sapati.fullName
-                : creatorUser?.first_name + " " + creatorUser?.last_name;
+              // item.user.fullName =
+              // existingToken.user_id == item.sapati.created_by
+              //   ? item.sapati.fullName
+              //   : creatorUser?.first_name + " " + creatorUser?.last_name;
+
+              item.user.fullName = fullName;
               item.user.is_verified = borrower_user?.is_verified || false;
               item.user.image =
           existingToken.user_id == item.sapati.created_by
             ? borrower_user?.image ?? null
             : creatorUser?.image ?? null;
+
+            item.user.phone_number = phone_number!;
       
               // You can access the index using 'index' variable here
             } else {
@@ -91,21 +107,36 @@ export async function GET(req: NextRequest){
       
           for (const item of lendings) {
             const phone = parseInt(item.sapati.phone);
-        const creatorUser = await getUserById(item.sapati.created_by!);
             if (!isNaN(phone)) {
+              const creatorUser = await getUserById(item.sapati.created_by!);
               const borrower_user = await getUserByPhone(phone);
+
+              const phone_number =
+              creatorUser?.id == existingToken.user_id
+                ? borrower_user?.phone_number
+                : creatorUser?.phone_number;
+            const fullName =
+              creatorUser?.id === existingToken.user_id
+                ? (borrower_user?.first_name?.trim() ?? "") +
+                  (borrower_user?.last_name?.trim() ?? "")
+                : (creatorUser?.first_name?.trim() ?? "") +
+                  (creatorUser?.last_name?.trim() ?? "");
+              
               item.user_id = borrower_user?.id || "";
               item.user.first_name = borrower_user?.first_name || "";
               item.user.last_name = borrower_user?.last_name || "";
-              item.user.fullName =
-              existingToken.user_id == item.sapati.created_by
-                ? item.sapati.fullName
-                : creatorUser?.first_name + " " + creatorUser?.last_name;
-                         item.user.is_verified = borrower_user?.is_verified || false;
-                         item.user.image =
-                         existingToken.user_id == item.sapati.created_by
-                           ? borrower_user?.image ?? null
-                           : creatorUser?.image ?? null;
+              // item.user.fullName =
+              // existingToken.user_id == item.sapati.created_by
+              //   ? item.sapati.fullName
+              //   : creatorUser?.first_name + " " + creatorUser?.last_name;
+              //            item.user.is_verified = borrower_user?.is_verified || false;
+              //            item.user.image =
+              //            existingToken.user_id == item.sapati.created_by
+              //              ? borrower_user?.image ?? null
+              //              : creatorUser?.image ?? null;
+
+              item.user.fullName = fullName;
+              item.user.phone_number = phone_number!;
       
               // You can access the index using 'index' variable here
             } else {
