@@ -8,7 +8,6 @@ export async function GET(req: NextRequest){
        
 
         const token = req.headers.get("Authorization");
-        console.log(token);
         if (!token) {
             return NextResponse.json({ message: "Authorization token missing" }, { status: 400 });
         }
@@ -156,7 +155,6 @@ export async function GET(req: NextRequest){
                 sapati_id: item.sapati_id,
                 first_name: item.user.first_name,
                 last_name: item.user.last_name,
-                fullName:item.user.fullName,
                 isverified:item.user.is_verified,
                 created_at:item.sapati.created_at,
                 status:"Borrowed",
@@ -168,6 +166,8 @@ export async function GET(req: NextRequest){
                 currentUserId: existingToken.user_id,
                 userName: item.sapati.created_user_name,
                 userImage: item.sapati.created_user_image,
+                phone_number: item.user.phone_number,
+                fullName: item.user.fullName,
             }
         ))
         let sapatiGiven=lendings.sort(
@@ -179,7 +179,6 @@ export async function GET(req: NextRequest){
         sapati_id: item.sapati_id,
         first_name: item.user.first_name,
         last_name: item.user.last_name,
-                fullName:item.user.fullName,
                 isverified:item.user.is_verified,
                 created_at:item.sapati.created_at,
                 status:"Lent",
@@ -191,6 +190,8 @@ export async function GET(req: NextRequest){
         currentUserId: existingToken.user_id,
         userName: item.sapati.created_user_name,
         userImage: item.sapati.created_user_image,
+        phone_number: item.user.phone_number,
+        fullName: item.user.fullName,
             }
         ));
 
