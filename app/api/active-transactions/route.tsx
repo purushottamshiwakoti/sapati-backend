@@ -69,22 +69,25 @@ export async function GET(req: NextRequest) {
             : creatorUser?.phone_number;
         const fullName =
           creatorUser?.id === existingToken.user_id
-            ? (borrower_user?.first_name ?? "") +
-              (borrower_user?.last_name ?? "")
-            : (creatorUser?.first_name ?? "") + (creatorUser?.last_name ?? "");
+            ? (borrower_user?.first_name?.trim() ?? "") +
+              (borrower_user?.last_name?.trim() ?? "")
+            : (creatorUser?.first_name?.trim() ?? "") +
+              (creatorUser?.last_name?.trim() ?? "");
         item.user_id = borrower_user?.id || "";
         item.user.first_name = borrower_user?.first_name || "";
         item.user.last_name = borrower_user?.last_name || "";
-        item.user.fullName =
-          existingToken.user_id == item.sapati.created_by
-            ? item.sapati.fullName
-            : creatorUser?.first_name + " " + creatorUser?.last_name;
+        item.user.fullName = fullName;
+        // existingToken.user_id == item.sapati.created_by
+        //   ? item.sapati.fullName
+        //   : creatorUser?.first_name + " " + creatorUser?.last_name;
         //  item.user.first_name + " " + item.user.last_name;
         item.user.is_verified = borrower_user?.is_verified || false;
         item.user.image =
           existingToken.user_id == item.sapati.created_by
             ? borrower_user?.image ?? null
             : creatorUser?.image ?? null;
+
+        item.user.phone_number = phone_number!;
 
         // item.creatorName = borrower_user?.first_name||"";
 
@@ -108,17 +111,19 @@ export async function GET(req: NextRequest) {
             : creatorUser?.phone_number;
         const fullName =
           creatorUser?.id === existingToken.user_id
-            ? (borrower_user?.first_name ?? "") +
-              (borrower_user?.last_name ?? "")
-            : (creatorUser?.first_name ?? "") + (creatorUser?.last_name ?? "");
+            ? (borrower_user?.first_name?.trim() ?? "") +
+              (borrower_user?.last_name?.trim() ?? "")
+            : (creatorUser?.first_name?.trim() ?? "") +
+              (creatorUser?.last_name?.trim() ?? "");
 
         item.user_id = borrower_user?.id || "";
         item.user.first_name = borrower_user?.first_name || "";
         item.user.last_name = borrower_user?.last_name || "";
-        item.user.fullName =
-          existingToken.user_id == item.sapati.created_by
-            ? item.sapati.fullName
-            : creatorUser?.first_name + " " + creatorUser?.last_name;
+        item.user.fullName = fullName;
+        // item.user.fullName =
+        //   existingToken.user_id == item.sapati.created_by
+        //     ? item.sapati.fullName
+        //     : creatorUser?.first_name + " " + creatorUser?.last_name;
         // item.user.first_name + " " + item.user.last_name;
         item.user.is_verified = borrower_user?.is_verified || false;
         item.user.image =
@@ -126,6 +131,8 @@ export async function GET(req: NextRequest) {
             ? borrower_user?.image ?? null
             : creatorUser?.image ?? null;
         // item.creatorName = borrower_user?.first_name;
+
+        item.user.phone_number = phone_number!;
 
         // You can access the index using 'index' variable here
       } else {
