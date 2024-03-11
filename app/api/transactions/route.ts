@@ -187,11 +187,11 @@ export async function GET(req: NextRequest){
                 amount:item.sapati.amount,
                 image:item.user.image,
                 creatorId: item.sapati.created_by,
-        currentUserId: existingToken.user_id,
-        userName: item.sapati.created_user_name,
-        userImage: item.sapati.created_user_image,
-        phone_number: item.user.phone_number,
-        fullName: item.user.fullName,
+               currentUserId: existingToken.user_id,
+               userName: item.sapati.created_user_name,
+               userImage: item.sapati.created_user_image,
+               phone_number: item.user.phone_number,
+               fullName: item.user.fullName,
             }
         ));
 
