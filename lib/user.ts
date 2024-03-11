@@ -4,15 +4,20 @@ import prismadb from "./prismadb";
 export const getUserByPhone=async(phone:number)=>{
     try {
 
+        console.log(phone);
+
+        
         const user=await prismadb.user.findUnique({
             where:{
                 phone_number:phone
             }
         });
 
+        console.log(user);
         return user;
         
     } catch (error) {
+        console.log(error);
         return null;
     }
 }

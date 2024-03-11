@@ -8,6 +8,8 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { otp,phone_number } = body;
 
+        console.log(otp,phone_number)
+
 
         const requiredFields = [{ field: otp, fieldName: 'Otp' }];
         const errors:any = [];
@@ -42,6 +44,7 @@ export async function POST(req: NextRequest) {
         // }
 
          const user=await getUserByPhone(phone_number);
+         console.log(user);
         if(!user){
             return NextResponse.json({message:"User not found"},{status:403})
         }
@@ -58,11 +61,11 @@ export async function POST(req: NextRequest) {
             }
         })
 
-        await prismadb.verifyPhoneNumber.delete({
-            where:{
-                token:otp
-            }
-        })
+        // await prismadb.verifyPhoneNumber.delete({
+        //     where:{
+        //         token:otp
+        //     }
+        // })
 
 
         return NextResponse.json({ message: "Otp verified successfully" }, { status: 200 });
