@@ -23,11 +23,11 @@ export async function POST(req: NextRequest) {
 
         if (existingUser && !existingUser.is_verified && existingUser.country_code == country_code) {
             const token = await generatePhoneVerificationToken(phone);
-            // const sms = await sendSms(existingUser.country_code + existingUser.phone_number.toString(), `Your otp for sapati is ${token}. Please verify it`, existingUser.phone_number);
-            // if (sms.error) {
-            //     return NextResponse.json({ message: sms.error }, { status: 400 });
-            // }
-            // return NextResponse.json({ message: "OTP Sent Successfully" }, { status: 200 });
+            const sms = await sendSms(existingUser.country_code ,existingUser.phone_number.toString(), `Your otp for sapati is ${token}. Please verify it`, existingUser.phone_number);
+            if (sms.error) {
+                return NextResponse.json({ message: sms.error }, { status: 400 });
+            }
+            return NextResponse.json({ message: "OTP Sent Successfully" }, { status: 200 });
         }
 
         if (existingUser && existingUser.is_verified && existingUser.country_code == country_code) {
@@ -45,10 +45,10 @@ export async function POST(req: NextRequest) {
             });
         
             const token = await generatePhoneVerificationToken(user.phone_number);
-            // const sms = await sendSms(user.country_code + user.phone_number.toString(), `Your otp for sapati is ${token}. Please verify it`, user.phone_number);
-            // if (sms.error) {
-            //     return NextResponse.json({ message: sms.error }, { status: 400 });
-            // }
+            const sms = await sendSms(user.country_code, user.phone_number.toString(), `Your otp for sapati is ${token}. Please verify it`, user.phone_number);
+            if (sms.error) {
+                return NextResponse.json({ message: sms.error }, { status: 400 });
+            }
             return NextResponse.json({ message: "OTP Sent Successfully" }, { status: 200 });
         }
         

@@ -1,15 +1,16 @@
 import { Twilio } from "twilio";
 import { getUserByPhone } from "./user";
 import prismadb from "./prismadb";
+import axios from "axios";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 // const authToken = "process.env.TWILIO_AUTH_TOKEN";
 const client = new Twilio(accountSid, authToken);
 
-export const sendSms = async (to: any, body: any, phone: number) => {
+export const sendSms = async (country_code:any,to: any, body: any, phone: number) => {
     try {
-        console.log(to);
+        console.log(country_code=="+977");
         const user = await getUserByPhone(phone);
         if (user) {
             // Checking if user.tokensCreatedDate is not null before accessing .getDate()
@@ -30,13 +31,32 @@ export const sendSms = async (to: any, body: any, phone: number) => {
             }
         }
         // Sending SMS
-        const message = await client.messages
-            .create({
-                from: "+15168149873",
-                to: `+${to}`,   
-                body: body,
-            })
-            .then((message) => console.log(message  ));
+
+        console.log(country_code=="+977")
+        if(country_code=="+977"){
+
+         const res=   await axios.post(
+                "https://sms.aakashsms.com/sms/v3/send/",
+                {
+                  auth_token: process.env.AAKASH_AUTH_TOKEN,
+                  to: to,
+                  text: body,
+                }
+              );
+
+              console.log(res);
+
+             
+        }else{
+
+            const message = await client.messages
+                .create({
+                    from: "+15168149873",
+                    to: `${country_code}${to}`,   
+                    body: body,
+                })
+                .then((message) => console.log(message  ));
+        }
 
 
         // Updating user's tokensNumber and tokensCreatedDate
