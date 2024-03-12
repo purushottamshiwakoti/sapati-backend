@@ -32,23 +32,21 @@ export async function POST(req: NextRequest) {
 
       
 
-        // const token = await getPhoneNumberToken(otp);
+        const token = await getPhoneNumberToken(otp);
     
 
-        // if (!token) {
-        //     return NextResponse.json({ message: "Invalid Otp" }, { status: 400 });
-        // }
+        if (!token) {
+            return NextResponse.json({ message: "Invalid Otp" }, { status: 400 });
+        }
 
-        // if (token.expires < new Date()) {
-        //     return NextResponse.json({ message: "Otp has been already expired" }, { status: 400 });
-        // }
-        // const user=await getUserByPhone(token.phone_number);
-        // if(!user){
-        //     return NextResponse.json({message:"User not found"},{status:403})
-        // }
+        if (token.expires < new Date()) {
+            return NextResponse.json({ message: "Otp has been already expired" }, { status: 400 });
+        }
+        const user=await getUserByPhone(token.phone_number);
+        if(!user){
+            return NextResponse.json({message:"User not found"},{status:403})
+        }
 
-         const user=await getUserByPhone(phone_number);
-         console.log(user);
         if(!user){
             return NextResponse.json({message:"User not found"},{status:403})
         }
