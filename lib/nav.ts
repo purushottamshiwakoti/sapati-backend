@@ -18,5 +18,17 @@ export const adminNavs=[
         href:"/users",
         icon:PersonIcon,
       
-    }
+    },
+    {
+        name:"Terms and conditions",
+        href:"/create-terms-and-conditions",
+        icon:PersonIcon,
+      
+    },
+    {
+        name:"Privacy Policy",
+        href:"/create-privacy-policy",
+        icon:PersonIcon,
+      
+    },
 ]

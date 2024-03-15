@@ -1,8 +1,9 @@
 import { BackButton } from "@/components/admin/back-button";
 import { AddUserForm } from "@/components/admin/forms/add-user-form";
+import prismadb from "@/lib/prismadb";
 import React from "react";
 
-const AddUserPage = () => {
+const AddUserPage = async () => {
   return (
     <>
       <div className="p-2">

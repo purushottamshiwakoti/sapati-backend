@@ -1,5 +1,7 @@
 export const publicRoutes=[
-   "/"
+   "/",
+   "/terms-and-conditions",
+   "/privacy-policy"
   
     
 ]
