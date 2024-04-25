@@ -30,19 +30,7 @@ export const sendSms = async (country_code:any,to: any, body: any, phone: number
                 return { error: "You can only request 3 OTPs per day" };
             }
         }
-        // Sending SMS
-
         
-        // const res=   await axios.post(
-        //     "https://sms.aakashsms.com/sms/v3/send/",
-        //     {
-        //       auth_token: process.env.AAKASH_AUTH_TOKEN,
-        //       to: to,
-        //       text: body,
-        //     }
-        //   );
-
-        //   console.log(res);
 
         if(country_code=="+977"){
 
@@ -61,12 +49,17 @@ export const sendSms = async (country_code:any,to: any, body: any, phone: number
         }else{
 
             const message = await client.messages
-                .create({
-                    from: "+15168149873",
-                    to: `${country_code}${to}`,   
-                    body: body,
-                })
-                .then((message) => console.log(message  ));
+            .create({
+                from: "+15168149873",
+                to: `${country_code}${to}`,   
+                body: body,
+            })
+            .then((message) => {
+                console.log(message);
+            })
+            .catch((error) => {
+                console.error("Error creating message:", error);
+            });
         }
 
 
