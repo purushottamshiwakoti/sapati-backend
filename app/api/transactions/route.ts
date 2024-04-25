@@ -256,7 +256,7 @@ export async function GET(req: NextRequest){
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
         }else{
           data = data
-              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).filter((item)=>item.sapati_status!=="DECLINED")
               .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
         }
       }

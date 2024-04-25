@@ -44,8 +44,7 @@ export async function GET(req:NextRequest,params:any){
             return NextResponse.json({ message: "No user found" }, { status: 404 });
         }
 
-        console.log(user.lendings)
-        console.log(user.borrowings)
+       
 
         // getting user lending 
     //    user lendings is borrowings for me 
@@ -55,8 +54,8 @@ export async function GET(req:NextRequest,params:any){
        //    getting borrowings from user
        //  user borrowings is lendings for me 
        let lendingsForMe=user.borrowings.filter((item)=>((item.sapati.created_by==user.id&&item.sapati.created_for==existingToken.user_id)||(item.sapati.created_by==existingToken.user_id&&item.sapati.created_for==user.id)))
-       const borrowed= getSapatiSum(borrowingsForMe.map((item)=>item.sapati.amount))
-       const lent= getSapatiSum(lendingsForMe.map((item)=>item.sapati.amount))
+       const borrowed= getSapatiSum(borrowingsForMe.filter((item)=>item.sapati.sapati_satatus!=="DECLINED").map((item)=>item.sapati.amount))
+       const lent= getSapatiSum(lendingsForMe.filter((item)=>item.sapati.sapati_satatus!=="DECLINED").map((item)=>item.sapati.amount))
        const balance=lent-borrowed;
        const overallTransactions=lendingsForMe.length+borrowingsForMe.length
        const settledLent=lendingsForMe.filter((item)=>(item.sapati.confirm_settlement==true))

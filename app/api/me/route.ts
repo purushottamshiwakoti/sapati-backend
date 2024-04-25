@@ -56,8 +56,8 @@ export async function GET(req: NextRequest) {
         }
 
 
-        const borrowings = getSapatiSum(user.borrowings.map(item => item.sapati.amount));
-        const lendings = getSapatiSum(user.lendings.map(item => item.sapati.amount));
+        const borrowings = getSapatiSum(user.borrowings.filter((item)=>item.sapati.sapati_satatus!=="DECLINED").map(item => item.sapati.amount));
+        const lendings = getSapatiSum(user.lendings.filter((item)=>item.sapati.sapati_satatus!=="DECLINED").map(item => item.sapati.amount));
         const balance = borrowings - lendings;
         const overallTransactions = user.borrowings.
         length + user.lendings.length;
