@@ -63,7 +63,7 @@ const days = diff / millisecondsInDay;
     const image=   existingToken.user_id == item.sapati.created_by
     ? borrower_user?.image ?? null
     : user?.image ?? null;
-    const fullName=user.first_name?user?.first_name+" "+user.last_name:user.fullName;
+    const fullName = user && user.first_name ? user.first_name + " " + user.last_name : user && user.fullName;
     const phone=user?.phone_number;
     const remarks =item.sapati.remarks;
     const declineReason =item.sapati.decline_reason;
