@@ -59,10 +59,10 @@ export async function GET(req: NextRequest) {
         const borrowings = getSapatiSum(user.borrowings.filter((item)=>item.sapati.sapati_satatus!=="DECLINED").map(item => item.sapati.amount));
         const lendings = getSapatiSum(user.lendings.filter((item)=>item.sapati.sapati_satatus!=="DECLINED").map(item => item.sapati.amount));
         const balance = borrowings - lendings;
-        const overallTransactions = user.borrowings.
-        length + user.lendings.length;
+        const overallTransactions = user.borrowings.filter((item)=>item.sapati.sapati_satatus!=="DECLINED").
+        length + user.lendings.filter((item)=>item.sapati.sapati_satatus!=="DECLINED").length;
         const takenTransactions = user.borrowings.filter((item)=>(item.sapati.sapati_satatus=="APPROVED"))
-        const givenTransactions = user.lendings.filter((item)=>(item.sapati.sapati_satatus=="APPROVED"))
+        const givenTransactions = user.lendings.filter((item) => (item.sapati.sapati_satatus === "APPROVED" ));
         const pendingGiven = user.lendings.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
         const pendingTaken = user.borrowings.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
 
