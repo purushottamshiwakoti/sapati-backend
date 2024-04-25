@@ -45,7 +45,7 @@ try {
 }
 
 
-export const getPhoneNumberToken=async(token:string)=>{
+export const getPhoneNumberToken=async(token:string,phone_number:number)=>{
     try {
         console.log(token);
         const getToken=await prismadb.verifyPhoneNumber.findFirst({
@@ -53,7 +53,9 @@ export const getPhoneNumberToken=async(token:string)=>{
                 token
             }
         });
-console.log(getToken);
+
+        
+
         return getToken;
     } catch (error) {
         console.log(error);

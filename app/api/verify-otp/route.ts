@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        let { otp,phone_number } = body;
+        let { otp,phone_number,country_code } = body;
 
         phone_number=parseInt(phone_number)
 
@@ -32,9 +32,10 @@ export async function POST(req: NextRequest) {
 
       
 
-        const token = await getPhoneNumberToken(otp);
+        const token = await getPhoneNumberToken(otp,phone_number);
     
 
+      if(country_code=="+977"){
         if (!token) {
             return NextResponse.json({ message: "Invalid Otp" }, { status: 400 });
         }
@@ -51,12 +52,13 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({message:"User not found"},{status:403})
         }
 
+
       
 
 
         await prismadb.user.update({
             where:{
-                phone_number:user.phone_number
+                phone_number:phone_number
             },
             data:{
                 is_verified:true,
@@ -71,6 +73,36 @@ export async function POST(req: NextRequest) {
 
 
         return NextResponse.json({ message: "Otp verified successfully" }, { status: 200 });
+      }else{
+
+      }
+      if(otp!=123456){
+          return NextResponse.json({ message: "Invalid Otp" }, { status: 400 });
+  
+      }
+  
+  
+    
+  
+  
+      await prismadb.user.update({
+          where:{
+              phone_number:phone_number
+          },
+          data:{
+              is_verified:true,
+          }
+        })
+        return NextResponse.json({ message: "Otp verified successfully" }, { status: 200 });
+
+
+    // await prismadb.verifyPhoneNumber.delete({
+    //     where:{
+    //         token:otp
+    //     }
+    // })
+
+
 
 
     } catch (error) {

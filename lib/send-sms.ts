@@ -33,41 +33,41 @@ export const sendSms = async (country_code:any,to: any, body: any, phone: number
         // Sending SMS
 
         
-        const res=   await axios.post(
-            "https://sms.aakashsms.com/sms/v3/send/",
-            {
-              auth_token: process.env.AAKASH_AUTH_TOKEN,
-              to: to,
-              text: body,
-            }
-          );
+        // const res=   await axios.post(
+        //     "https://sms.aakashsms.com/sms/v3/send/",
+        //     {
+        //       auth_token: process.env.AAKASH_AUTH_TOKEN,
+        //       to: to,
+        //       text: body,
+        //     }
+        //   );
 
-          console.log(res);
+        //   console.log(res);
 
-        // if(country_code=="+977"){
+        if(country_code=="+977"){
 
-        //  const res=   await axios.post(
-        //         "https://sms.aakashsms.com/sms/v3/send/",
-        //         {
-        //           auth_token: process.env.AAKASH_AUTH_TOKEN,
-        //           to: to,
-        //           text: body,
-        //         }
-        //       );
+         const res=   await axios.post(
+                "https://sms.aakashsms.com/sms/v3/send/",
+                {
+                  auth_token: process.env.AAKASH_AUTH_TOKEN,
+                  to: to,
+                  text: body,
+                }
+              );
 
-        //       console.log(res);
+              console.log(res);
 
              
-        // }else{
+        }else{
 
-        //     const message = await client.messages
-        //         .create({
-        //             from: "+15168149873",
-        //             to: `${country_code}${to}`,   
-        //             body: body,
-        //         })
-        //         .then((message) => console.log(message  ));
-        // }
+            const message = await client.messages
+                .create({
+                    from: "+15168149873",
+                    to: `${country_code}${to}`,   
+                    body: body,
+                })
+                .then((message) => console.log(message  ));
+        }
 
 
         // Updating user's tokensNumber and tokensCreatedDate
