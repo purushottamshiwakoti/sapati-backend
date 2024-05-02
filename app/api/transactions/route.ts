@@ -148,15 +148,19 @@ export async function GET(req: NextRequest){
               .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       } else if (status === 'active') {
         if(search){
+            console.log(search);
           const searchTerm = search.toLowerCase();
           data = data
               .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-              .filter(item => item.sapati_status === "PENDING"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
+            //   .filter(item => item.sapati_status === "PENDING"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
+              .filter(item => item.sapati_status === "APPROVED"&&!item.confirm_settlement&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
               .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
         }else{
+        
           data = data
               .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-              .filter(item => item.sapati_status === "PENDING")
+            //   .filter(item => item.sapati_status === "PENDING")
+              .filter(item => item.sapati_status === "APPROVED"&&!item.confirm_settlement)
               .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
         }
           

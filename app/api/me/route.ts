@@ -63,8 +63,8 @@ export async function GET(req: NextRequest) {
         length + user.lendings.filter((item)=>item.sapati.sapati_satatus!=="DECLINED").length;
         const takenTransactions = user.borrowings.filter((item)=>(item.sapati.sapati_satatus=="APPROVED"||item.sapati.sapati_satatus=="SETTLED"))
         const givenTransactions = user.lendings.filter((item) => (item.sapati.sapati_satatus == "APPROVED"||item.sapati.sapati_satatus=="SETTLED" ));
-        const pendingGiven = user.lendings.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
-        const pendingTaken = user.borrowings.filter((item)=>(item.sapati.sapati_satatus=="PENDING"))
+        const pendingGiven = user.lendings.filter((item)=>(item.sapati.sapati_satatus=="APPROVED"&&!item.sapati.confirm_settlement))
+        const pendingTaken = user.borrowings.filter((item)=>(item.sapati.sapati_satatus=="APPROVED"&&!item.sapati.confirm_settlement))
         // const overallTransactions =givenTransactions.length+takenTransactions.length+pendingGiven.length+pendingTaken.length
 
         let existingUser: ExtendedUser = await getUserById(user.id) as ExtendedUser;;
