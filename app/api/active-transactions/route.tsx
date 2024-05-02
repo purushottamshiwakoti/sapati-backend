@@ -143,7 +143,12 @@ export async function GET(req: NextRequest) {
     }
 
     const sapatiTaken = borrowings
-      .filter((item) => item.sapati.sapati_satatus == "PENDING")
+      // .filter((item) => item.sapati.sapati_satatus == "PENDING")
+      .filter(
+        (item) =>
+          item.sapati.sapati_satatus == "APPROVED" &&
+          !item.sapati.confirm_settlement
+      )
       .map((item) => ({
         user_id: item.user_id,
         sapati_id: item.sapati_id,
@@ -167,7 +172,12 @@ export async function GET(req: NextRequest) {
       }));
     const sapatiGiven = lendings
 
-      .filter((item) => item.sapati.sapati_satatus == "PENDING")
+      // .filter((item) => item.sapati.sapati_satatus == "PENDING")
+      .filter(
+        (item) =>
+          item.sapati.sapati_satatus == "APPROVED" &&
+          !item.sapati.confirm_settlement
+      )
       .map((item) => ({
         user_id: item.user_id,
         sapati_id: item.sapati_id,
