@@ -60,10 +60,10 @@ export async function GET(req:NextRequest,params:any){
        const overallTransactions=lendingsForMe.length+borrowingsForMe.length
        const settledLent=lendingsForMe.filter((item)=>(item.sapati.confirm_settlement==true))
        const rejectedLent=lendingsForMe.filter((item)=>(item.sapati.sapati_satatus=="DECLINED"))
-       const pendingLent=lendingsForMe.filter((item)=>(!item.sapati.confirm_settlement&&item.sapati.sapati_satatus!=="DECLINED"&&item.sapati.sapati_satatus!=="CHANGE"))
+       const pendingLent=lendingsForMe.filter((item)=>(!item.sapati.confirm_settlement&&item.sapati.sapati_satatus=="APPROVED"))
        const settledBorrowings=borrowingsForMe.filter((item)=>(item.sapati.confirm_settlement==true))
        const rejectedBorrowings=borrowingsForMe.filter((item)=>(item.sapati.sapati_satatus=="DECLINED"))
-       const pendingBorrowings=borrowingsForMe.filter((item)=>(!item.sapati.confirm_settlement&&item.sapati.sapati_satatus!=="DECLINED"&&item.sapati.sapati_satatus!=="CHANGE"))
+       const pendingBorrowings=borrowingsForMe.filter((item)=>(!item.sapati.confirm_settlement&&item.sapati.sapati_satatus=="APPROVED"))
        const settled=settledLent.length+settledBorrowings.length;
        const rejected=rejectedLent.length+rejectedBorrowings.length;
        const activeBook=pendingLent.length+pendingBorrowings.length;

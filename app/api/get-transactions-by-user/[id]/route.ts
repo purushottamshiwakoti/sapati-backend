@@ -236,7 +236,7 @@ console.log(lendings);
     catch (error) {
         console.log(error);
         return NextResponse.json(
-          { error: "Internal server error" },
+          { error: "Internal server error",message:error },
           { status: 500 }
         );
         
