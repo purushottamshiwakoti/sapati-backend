@@ -43,8 +43,7 @@ export async function GET(req:NextRequest,params:any){
         const pgsize: number = 20;
 
         let borrowings=await prismadb.borrowings.findMany({
-          skip: parseInt(pgnum) * pgsize,
-          take: pgsize,
+       
             where:{
                 user_id:findUser.id,
             },
@@ -56,8 +55,7 @@ export async function GET(req:NextRequest,params:any){
 
         
         let lendings=await prismadb.lendings.findMany({
-          skip: parseInt(pgnum) * pgsize,
-          take: pgsize,
+       
             where:{
                 user_id:findUser.id
             },
@@ -203,7 +201,7 @@ console.log(lendings);
         data.sort(
           (a, b) =>
             new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        )
+        ).slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize)
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }
       if(status=="settled"){
@@ -216,6 +214,7 @@ console.log(lendings);
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         ).filter((item) =>(item.confirm_settlement==true))
         data=[...given,...taken];
+        data .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize)
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }
 
@@ -229,6 +228,7 @@ console.log(lendings);
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         ).filter((item) =>(item.sapati_status=="DECLINED"))
         data=[...given,...taken];
+        data.slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize)
         return NextResponse.json({message:"Successfully fetched transactions",data},{status:200})
       }
       }
