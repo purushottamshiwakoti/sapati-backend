@@ -20,17 +20,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Invalid token" }, { status: 400 });
     }
 
-    const user = await getUserById(existingToken.user_id);
-    if (!user) {
-      return NextResponse.json({ message: "No user found" }, { status: 404 });
-    }
+    const pgnum: any = parseInt(searchParams.get("pgnum") as string) || 0;
+    const pgsize: any = parseInt(searchParams.get("pgsize") as string) || 10;
 
-    const pgnum: any = searchParams.get("pgnum") ?? 0;
-    const pgsize: number = 10;
+    const skip = pgnum * pgsize;
 
-    let borrowings = await prismadb.borrowings.findMany({
-      skip: parseInt(pgnum) * pgsize,
-      take: pgsize,
+    const borrowings = await prismadb.borrowings.findMany({
       where: {
         user_id: existingToken.user_id,
       },
@@ -44,8 +39,6 @@ export async function GET(req: NextRequest) {
     });
 
     const lendings = await prismadb.lendings.findMany({
-      skip: parseInt(pgnum) * pgsize,
-      take: pgsize,
       where: {
         user_id: existingToken.user_id,
       },
@@ -58,6 +51,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    // Remaining code for processing and formatting results...
     for (const item of borrowings) {
       const phone = parseInt(item.sapati.phone);
       if (!isNaN(phone)) {
@@ -201,10 +195,12 @@ export async function GET(req: NextRequest) {
       }));
 
     let data = [...sapatiTaken, ...sapatiGiven];
-    data.sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
+    data
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+      .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
 
     return NextResponse.json(
       { message: "Successfully fetched active transactions", data },
