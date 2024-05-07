@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prismadb";
 import { getUserById, getUserByPhone } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
+import { Item } from "@radix-ui/react-dropdown-menu";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -195,6 +196,62 @@ export async function GET(req: NextRequest) {
       }));
 
     let data = [...sapatiTaken, ...sapatiGiven];
+
+    console.log(data); // Print the original data for reference
+
+    const ids: any[] = [];
+    const userData: any[] = [];
+
+    // Loop through the data to obtain unique creatorIds
+    for (const item of data) {
+      if (!ids.includes(item.creatorId)) {
+        ids.push(item.creatorId);
+      }
+    }
+
+    // Now, iterate over the unique creatorIds
+    for (const id of ids) {
+      // Initialize total amount for this creatorId
+      let totalAmount = 0;
+
+      // Loop through data to aggregate amounts for the current creatorId
+      for (const item of data) {
+        if (item.creatorId === id) {
+          // Adjust amount based on sapati_status
+          if (item.status == "Borrowed") {
+            totalAmount -= item.amount;
+          } else if (item.status == "Lend") {
+            totalAmount += item.amount;
+          }
+        }
+      }
+
+      // Find the first item with this creatorId to include additional data
+      const firstItem = data.find((item) => item.creatorId === id);
+
+      // Push the aggregated data for this creatorId to userData array
+      userData.push({
+        creatorId: id,
+        totalAmount: totalAmount,
+        user_id: firstItem?.user_id,
+        first_name: firstItem?.first_name,
+        last_name: firstItem?.last_name,
+        isverified: firstItem?.isverified,
+        created_at: firstItem?.created_at,
+        status: firstItem?.status,
+        sapati_status: firstItem?.sapati_status,
+        confirm_settlement: firstItem?.confirm_settlement,
+        amount: firstItem?.amount,
+        image: firstItem?.image,
+        currentUserId: firstItem?.currentUserId,
+        userName: firstItem?.userName,
+        userImage: firstItem?.userImage,
+        phone_number: firstItem?.phone_number,
+        fullName: firstItem?.fullName,
+      });
+    }
+
+    data = userData;
     data
       .sort(
         (a, b) =>
