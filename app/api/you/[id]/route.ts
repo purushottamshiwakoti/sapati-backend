@@ -75,7 +75,26 @@ export async function GET(req: NextRequest, params: any) {
         .filter((item) => item.sapati.sapati_satatus !== "DECLINED")
         .map((item) => item.sapati.amount)
     );
-    const balance = lent - borrowed;
+    const borrowedTotal = getSapatiSum(
+      borrowingsForMe
+        .filter(
+          (item) =>
+            item.sapati.sapati_satatus !== "DECLINED" &&
+            item.sapati.sapati_satatus != "SETTLED"
+        )
+        .map((item) => item.sapati.amount)
+    );
+    const lentTotal = getSapatiSum(
+      lendingsForMe
+        .filter(
+          (item) =>
+            item.sapati.sapati_satatus !== "DECLINED" &&
+            item.sapati.sapati_satatus != "SETTLED"
+        )
+        .map((item) => item.sapati.amount)
+    );
+
+    const balance = lentTotal - borrowedTotal;
     const overallTransactions = lendingsForMe.length + borrowingsForMe.length;
     const settledLent = lendingsForMe.filter(
       (item) => item.sapati.confirm_settlement == true
@@ -121,7 +140,6 @@ export async function GET(req: NextRequest, params: any) {
       rejected,
     };
 
-    console.log(modifiedUser);
 
     // if(!findUser){
     //     return NextResponse.json({message:"No user found"},{status:404})
