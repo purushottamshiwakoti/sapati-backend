@@ -65,6 +65,7 @@ export async function GET(req: NextRequest, params: any) {
         (item.sapati.created_by == existingToken.user_id &&
           item.sapati.created_for == user.id)
     );
+    console.log(lendingsForMe);
     const borrowed = getSapatiSum(
       borrowingsForMe
         .filter((item) => item.sapati.sapati_satatus !== "DECLINED")
@@ -139,7 +140,6 @@ export async function GET(req: NextRequest, params: any) {
       settled,
       rejected,
     };
-
 
     // if(!findUser){
     //     return NextResponse.json({message:"No user found"},{status:404})

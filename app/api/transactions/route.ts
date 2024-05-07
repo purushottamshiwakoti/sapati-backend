@@ -98,6 +98,7 @@ export async function GET(req: NextRequest) {
       amount: item.sapati.amount,
       image: item.user.image,
       creatorId: item.sapati.created_by,
+      createdForId: item.sapati.created_for,
       currentUserId: existingToken.user_id,
       userName: item.sapati.created_user_name,
       userImage: item.sapati.created_user_image,
@@ -118,6 +119,7 @@ export async function GET(req: NextRequest) {
       amount: item.sapati.amount,
       image: item.user.image,
       creatorId: item.sapati.created_by,
+      createdForId: item.sapati.created_for,
       currentUserId: existingToken.user_id,
       userName: item.sapati.created_user_name,
       userImage: item.sapati.created_user_image,
@@ -131,9 +133,13 @@ export async function GET(req: NextRequest) {
 
     // Loop through the data to obtain unique creatorIds
     for (const item of data) {
+      console.log(item);
       if (!ids.includes(item.creatorId)) {
         ids.push(item.creatorId);
       }
+      // if (!ids.includes(item.currentUserId)) {
+      //   ids.push(item.currentUserId);
+      // }
     }
 
     // Now, iterate over the unique creatorIds
@@ -145,12 +151,20 @@ export async function GET(req: NextRequest) {
       for (const item of data) {
         if (item.creatorId === id) {
           // Adjust amount based on sapati_status
+          console.log(item);
+
           if (item.status == "Borrowed") {
+            console.log("borrowed");
             totalAmount -= item.amount;
-          } else if (item.status == "Lend") {
+            console.log("borrowed", totalAmount);
+          } else if (item.status == "Lent") {
+            console.log("lend");
+
             totalAmount += item.amount;
+            console.log("lend", totalAmount);
           }
         }
+        console.log(totalAmount);
       }
 
       // Find the first item with this creatorId to include additional data
@@ -178,18 +192,57 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    data = userData;
+    const combinedTransactions: any = {};
+    for (const item of data) {
+      const key = `${item.creatorId}-${item.createdForId}`;
+      if (!combinedTransactions[key]) {
+        combinedTransactions[key] = {
+          creatorId: item.creatorId,
+          createdForId: item.createdForId,
+          totalAmount: 0,
+          user_id: item.user_id,
+          first_name: item.first_name,
+          last_name: item.last_name,
+          isverified: item.isverified,
+          created_at: item.created_at,
+          status: item.status,
+          sapati_status: item.sapati_status,
+          confirm_settlement: item.confirm_settlement,
+          amount: item.amount,
+          image: item.image,
+          currentUserId: item.currentUserId,
+          userName: item.userName,
+          userImage: item.userImage,
+          phone_number: item.phone_number,
+          fullName: item.fullName,
+          // Add more properties as needed
+        };
+      }
+      // Adjust total amount based on status
+      if (item.status === "Borrowed") {
+        combinedTransactions[key].totalAmount -= item.amount;
+      } else if (item.status === "Lent") {
+        combinedTransactions[key].totalAmount += item.amount;
+      }
+    }
+
+    // Convert the combined transactions object to an array
+    const combinedTransactionsArray: any[] =
+      Object.values(combinedTransactions);
+
+    console.log(combinedTransactionsArray);
+    data = Object.values(combinedTransactions);
 
     if (status === "given") {
       if (search) {
         const searchTerm = search.toLowerCase();
         data = data
           .sort(
-            (a, b) =>
+            (a: any, b: any) =>
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
-          .filter((item) =>
+          .filter((item: any) =>
             item.status === "Lent" &&
             (item.sapati_status === "APPROVED" ||
               item.sapati_status == "SETTLED") &&
@@ -201,12 +254,12 @@ export async function GET(req: NextRequest) {
       } else {
         data = data
           .sort(
-            (a, b) =>
+            (a: any, b: any) =>
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
           .filter(
-            (item) =>
+            (item: any) =>
               item.status === "Lent" &&
               (item.sapati_status === "APPROVED" ||
                 item.sapati_status == "SETTLED")
@@ -218,11 +271,11 @@ export async function GET(req: NextRequest) {
         const searchTerm = search.toLowerCase();
         data = data
           .sort(
-            (a, b) =>
+            (a: any, b: any) =>
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
-          .filter((item) =>
+          .filter((item: any) =>
             item.status === "Borrowed" &&
             (item.sapati_status === "APPROVED" ||
               item.sapati_status == "SETTLED") &&
@@ -234,11 +287,11 @@ export async function GET(req: NextRequest) {
       }
       data = data
         .sort(
-          (a, b) =>
+          (a: any, b: any) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
         .filter(
-          (item) =>
+          (item: any) =>
             item.status === "Borrowed" &&
             (item.sapati_status === "APPROVED" ||
               item.sapati_status == "SETTLED")
@@ -250,12 +303,12 @@ export async function GET(req: NextRequest) {
         const searchTerm = search.toLowerCase();
         data = data
           .sort(
-            (a, b) =>
+            (a: any, b: any) =>
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
           //   .filter(item => item.sapati_status === "PENDING"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
-          .filter((item) =>
+          .filter((item: any) =>
             item.sapati_status === "APPROVED" &&
             !item.confirm_settlement &&
             item.creatorId != item.currentUserId
@@ -266,13 +319,13 @@ export async function GET(req: NextRequest) {
       } else {
         data = data
           .sort(
-            (a, b) =>
+            (a: any, b: any) =>
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
           //   .filter(item => item.sapati_status === "PENDING")
           .filter(
-            (item) =>
+            (item: any) =>
               item.sapati_status === "APPROVED" && !item.confirm_settlement
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
@@ -282,11 +335,11 @@ export async function GET(req: NextRequest) {
         const searchTerm = search.toLowerCase();
         data = data
           .sort(
-            (a, b) =>
+            (a: any, b: any) =>
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
-          .filter((item) =>
+          .filter((item: any) =>
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
               : item.first_name?.toLowerCase().startsWith(searchTerm)
@@ -295,11 +348,11 @@ export async function GET(req: NextRequest) {
       } else {
         data = data
           .sort(
-            (a, b) =>
+            (a: any, b: any) =>
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
-          .filter((item) => item.sapati_status != "DECLINED")
+          .filter((item: any) => item.sapati_status != "DECLINED")
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
     }
