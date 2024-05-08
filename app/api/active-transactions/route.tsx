@@ -197,8 +197,6 @@ export async function GET(req: NextRequest) {
 
     let data = [...sapatiTaken, ...sapatiGiven];
 
-    console.log(lendings);
-
     console.log(data); // Print the original data for reference
 
     const ids: any[] = [];
@@ -218,6 +216,7 @@ export async function GET(req: NextRequest) {
 
       // Loop through data to aggregate amounts for the current creatorId
       for (const item of data) {
+        console.log(item);
         if (item.creatorId === id) {
           // Adjust amount based on sapati_status
           if (item.status == "Borrowed") {

@@ -68,12 +68,22 @@ export async function GET(req: NextRequest, params: any) {
     console.log(lendingsForMe);
     const borrowed = getSapatiSum(
       borrowingsForMe
-        .filter((item) => item.sapati.sapati_satatus !== "DECLINED")
+        .filter(
+          (item) =>
+            item.sapati.sapati_satatus !== "DECLINED" &&
+            item.sapati.sapati_satatus !== "SETTLED" &&
+            item.sapati.sapati_satatus == "APPROVED"
+        )
         .map((item) => item.sapati.amount)
     );
     const lent = getSapatiSum(
       lendingsForMe
-        .filter((item) => item.sapati.sapati_satatus !== "DECLINED")
+        .filter(
+          (item) =>
+            item.sapati.sapati_satatus !== "DECLINED" &&
+            item.sapati.sapati_satatus !== "SETTLED" &&
+            item.sapati.sapati_satatus == "APPROVED"
+        )
         .map((item) => item.sapati.amount)
     );
     const borrowedTotal = getSapatiSum(
