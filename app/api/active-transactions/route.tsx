@@ -197,6 +197,8 @@ export async function GET(req: NextRequest) {
 
     let data = [...sapatiTaken, ...sapatiGiven];
 
+    console.log(lendings);
+
     console.log(data); // Print the original data for reference
 
     const ids: any[] = [];
@@ -220,10 +222,11 @@ export async function GET(req: NextRequest) {
           // Adjust amount based on sapati_status
           if (item.status == "Borrowed") {
             totalAmount -= item.amount;
-          } else if (item.status == "Lend") {
+          } else if (item.status == "Lent") {
             totalAmount += item.amount;
           }
         }
+        console.log(totalAmount);
       }
 
       // Find the first item with this creatorId to include additional data
@@ -238,7 +241,7 @@ export async function GET(req: NextRequest) {
         last_name: firstItem?.last_name,
         isverified: firstItem?.isverified,
         created_at: firstItem?.created_at,
-        status: firstItem?.status,
+        // status: firstItem?.status,
         sapati_status: firstItem?.sapati_status,
         confirm_settlement: firstItem?.confirm_settlement,
         amount: firstItem?.amount,

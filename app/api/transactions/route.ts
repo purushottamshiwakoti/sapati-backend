@@ -205,7 +205,7 @@ export async function GET(req: NextRequest) {
           last_name: item.last_name,
           isverified: item.isverified,
           created_at: item.created_at,
-          status: item.status,
+          // status: item.status,
           sapati_status: item.sapati_status,
           confirm_settlement: item.confirm_settlement,
           amount: item.amount,
@@ -232,6 +232,7 @@ export async function GET(req: NextRequest) {
 
     console.log(combinedTransactionsArray);
     data = Object.values(combinedTransactions);
+    console.log(data);
 
     if (status === "given") {
       if (search) {
