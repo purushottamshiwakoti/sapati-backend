@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    console.log("sanasn");
     const token = req.headers.get("Authorization");
     if (!token) {
       return NextResponse.json(
@@ -173,7 +174,6 @@ export async function GET(req: NextRequest) {
       // }
 
       for (const item of data) {
-        console.log(item);
         if (item.phone_number === id) {
           // Adjust amount based on sapati_status
           if (item.status == "Borrowed") {
@@ -258,7 +258,9 @@ export async function GET(req: NextRequest) {
       Object.values(combinedTransactions);
 
     console.log(combinedTransactionsArray);
-    data = Object.values(combinedTransactions);
+    // data = Object.values(combinedTransactions);
+    console.log({ userData });
+    data = userData;
     console.log(data);
 
     if (status === "given") {
