@@ -204,20 +204,26 @@ export async function GET(req: NextRequest) {
 
     // Loop through the data to obtain unique creatorIds
     for (const item of data) {
-      if (!ids.includes(item.creatorId)) {
-        ids.push(item.creatorId);
+      if (!ids.includes(item.phone_number)) {
+        ids.push(item.phone_number);
       }
     }
+    // for (const item of data) {
+    //   if (!ids.includes(item.creatorId)) {
+    //     ids.push(item.creatorId);
+    //   }
+    // }
 
     // Now, iterate over the unique creatorIds
     for (const id of ids) {
+      console.log(id);
       // Initialize total amount for this creatorId
       let totalAmount = 0;
 
       // Loop through data to aggregate amounts for the current creatorId
       for (const item of data) {
         console.log(item);
-        if (item.creatorId === id) {
+        if (item.phone_number === id) {
           // Adjust amount based on sapati_status
           if (item.status == "Borrowed") {
             totalAmount -= item.amount;
@@ -225,11 +231,19 @@ export async function GET(req: NextRequest) {
             totalAmount += item.amount;
           }
         }
+        // if (item.creatorId === id) {
+        //   // Adjust amount based on sapati_status
+        //   if (item.status == "Borrowed") {
+        //     totalAmount -= item.amount;
+        //   } else if (item.status == "Lent") {
+        //     totalAmount += item.amount;
+        //   }
+        // }
         console.log(totalAmount);
       }
 
       // Find the first item with this creatorId to include additional data
-      const firstItem = data.find((item) => item.creatorId === id);
+      const firstItem = data.find((item) => item.phone_number === id);
 
       // Push the aggregated data for this creatorId to userData array
       userData.push({

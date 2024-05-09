@@ -132,43 +132,70 @@ export async function GET(req: NextRequest) {
     const userData: any[] = [];
 
     // Loop through the data to obtain unique creatorIds
-    for (const item of data) {
-      console.log(item);
-      if (!ids.includes(item.creatorId)) {
-        ids.push(item.creatorId);
-      }
-      // if (!ids.includes(item.currentUserId)) {
-      //   ids.push(item.currentUserId);
-      // }
-    }
+    // for (const item of data) {
+    //   console.log(item);
+    //   if (!ids.includes(item.creatorId)) {
+    //     ids.push(item.creatorId);
+    //   }
+    //   // if (!ids.includes(item.currentUserId)) {
+    //   //   ids.push(item.currentUserId);
+    //   // }
+    // }
 
+    for (const item of data) {
+      if (!ids.includes(item.phone_number)) {
+        ids.push(item.phone_number);
+      }
+    }
     // Now, iterate over the unique creatorIds
     for (const id of ids) {
       // Initialize total amount for this creatorId
       let totalAmount = 0;
 
       // Loop through data to aggregate amounts for the current creatorId
+      // for (const item of data) {
+      //   if (item.creatorId === id) {
+      //     // Adjust amount based on sapati_status
+      //     console.log(item);
+
+      //     if (item.status == "Borrowed") {
+      //       console.log("borrowed");
+      //       totalAmount -= item.amount;
+      //       console.log("borrowed", totalAmount);
+      //     } else if (item.status == "Lent") {
+      //       console.log("lend");
+
+      //       totalAmount += item.amount;
+      //       console.log("lend", totalAmount);
+      //     }
+      //   }
+      //   console.log(totalAmount);
+      // }
+
       for (const item of data) {
-        if (item.creatorId === id) {
+        console.log(item);
+        if (item.phone_number === id) {
           // Adjust amount based on sapati_status
-          console.log(item);
-
           if (item.status == "Borrowed") {
-            console.log("borrowed");
             totalAmount -= item.amount;
-            console.log("borrowed", totalAmount);
           } else if (item.status == "Lent") {
-            console.log("lend");
-
             totalAmount += item.amount;
-            console.log("lend", totalAmount);
           }
         }
+        // if (item.creatorId === id) {
+        //   // Adjust amount based on sapati_status
+        //   if (item.status == "Borrowed") {
+        //     totalAmount -= item.amount;
+        //   } else if (item.status == "Lent") {
+        //     totalAmount += item.amount;
+        //   }
+        // }
         console.log(totalAmount);
       }
 
       // Find the first item with this creatorId to include additional data
-      const firstItem = data.find((item) => item.creatorId === id);
+      // const firstItem = data.find((item) => item.creatorId === id);
+      const firstItem = data.find((item) => item.phone_number === id);
 
       // Push the aggregated data for this creatorId to userData array
       userData.push({
