@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    console.log("sanasn");
     const token = req.headers.get("Authorization");
     if (!token) {
       return NextResponse.json(
@@ -196,10 +195,12 @@ export async function GET(req: NextRequest) {
       // Find the first item with this creatorId to include additional data
       // const firstItem = data.find((item) => item.creatorId === id);
       const firstItem = data.find((item) => item.phone_number === id);
+      const newUser = await getUserByPhone(id);
 
       // Push the aggregated data for this creatorId to userData array
       userData.push({
-        creatorId: id,
+        // creatorId: id,
+        creatorId: newUser?.id,
         totalAmount: totalAmount,
         user_id: firstItem?.user_id,
         first_name: firstItem?.first_name,
