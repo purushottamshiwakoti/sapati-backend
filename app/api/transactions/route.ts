@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const search = req.nextUrl.searchParams.get("search");
 
     const pgnum: any = req.nextUrl.searchParams.get("pgnum") ?? 0;
-    const pgsize: number = 10;
+    const pgsize: number = 500;
 
     let data;
 
