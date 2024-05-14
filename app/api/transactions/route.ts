@@ -295,6 +295,7 @@ export async function GET(req: NextRequest) {
             item.status === "Lent" &&
             (item.sapati_status === "APPROVED" ||
               item.sapati_status == "SETTLED") &&
+            item.totalAmount1 > 0 &&
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
               : item.first_name?.toLowerCase().startsWith(searchTerm)
@@ -311,7 +312,8 @@ export async function GET(req: NextRequest) {
             (item: any) =>
               item.status === "Lent" &&
               (item.sapati_status === "APPROVED" ||
-                item.sapati_status == "SETTLED")
+                item.sapati_status == "SETTLED") &&
+              item.totalAmount > 0
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
@@ -328,6 +330,7 @@ export async function GET(req: NextRequest) {
             item.status === "Borrowed" &&
             (item.sapati_status === "APPROVED" ||
               item.sapati_status == "SETTLED") &&
+            item.totalAmount > 0 &&
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
               : item.first_name?.toLowerCase().startsWith(searchTerm)
@@ -343,7 +346,8 @@ export async function GET(req: NextRequest) {
           (item: any) =>
             item.status === "Borrowed" &&
             (item.sapati_status === "APPROVED" ||
-              item.sapati_status == "SETTLED")
+              item.sapati_status == "SETTLED") &&
+            item.totalAmount > 0
         )
         .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
     } else if (status === "active") {
@@ -358,9 +362,8 @@ export async function GET(req: NextRequest) {
           )
           //   .filter(item => item.sapati_status === "PENDING"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
           .filter((item: any) =>
-            item.sapati_status === "APPROVED" &&
-            !item.confirm_settlement &&
-            item.creatorId != item.currentUserId
+            // !item.confirm_settlement
+            item.totalAmount != 0 && item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
               : item.first_name?.toLowerCase().startsWith(searchTerm)
           )
@@ -373,10 +376,7 @@ export async function GET(req: NextRequest) {
               new Date(a.created_at).getTime()
           )
           //   .filter(item => item.sapati_status === "PENDING")
-          .filter(
-            (item: any) =>
-              item.sapati_status === "APPROVED" && !item.confirm_settlement
-          )
+          .filter((item: any) => item.totalAmount != 0)
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
     } else {
