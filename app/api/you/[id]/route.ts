@@ -66,26 +66,44 @@ export async function GET(req: NextRequest, params: any) {
           item.sapati.created_for == user.id)
     );
     console.log(lendingsForMe);
-    const borrowed = getSapatiSum(
+    let borrowed = getSapatiSum(
       borrowingsForMe
         .filter(
           (item) =>
             item.sapati.sapati_satatus !== "DECLINED" &&
-            item.sapati.sapati_satatus !== "SETTLED" &&
-            item.sapati.sapati_satatus == "APPROVED"
+            item.sapati.sapati_satatus !== "SETTLED"
         )
         .map((item) => item.sapati.amount)
     );
-    const lent = getSapatiSum(
+
+    let lent = getSapatiSum(
       lendingsForMe
         .filter(
           (item) =>
             item.sapati.sapati_satatus !== "DECLINED" &&
-            item.sapati.sapati_satatus !== "SETTLED" &&
-            item.sapati.sapati_satatus == "APPROVED"
+            item.sapati.sapati_satatus !== "SETTLED"
         )
         .map((item) => item.sapati.amount)
     );
+    const lentSettled = getSapatiSum(
+      borrowingsForMe
+        .filter((item) => item.sapati.sapati_satatus == "SETTLED")
+        .map((item) => item.sapati.amount)
+    );
+    const borrowSettled = getSapatiSum(
+      lendingsForMe
+        .filter((item) => item.sapati.sapati_satatus == "SETTLED")
+        .map((item) => item.sapati.amount)
+    );
+    console.log(borrowSettled);
+    console.log(lentSettled);
+    console.log(lent);
+    lent = lent + lentSettled;
+    console.log(lent);
+    console.log(borrowed);
+    borrowed = borrowed + borrowSettled;
+    console.log(borrowed);
+
     const borrowedTotal = getSapatiSum(
       borrowingsForMe
         .filter(
@@ -114,9 +132,9 @@ export async function GET(req: NextRequest, params: any) {
       (item) => item.sapati.sapati_satatus == "DECLINED"
     );
     const pendingLent = lendingsForMe.filter(
-      (item) =>
-        !item.sapati.confirm_settlement &&
-        item.sapati.sapati_satatus == "APPROVED"
+      (item) => !item.sapati.confirm_settlement
+      //  &&
+      //   item.sapati.sapati_satatus == "APPROVED"
     );
     const settledBorrowings = borrowingsForMe.filter(
       (item) => item.sapati.confirm_settlement == true
@@ -125,9 +143,9 @@ export async function GET(req: NextRequest, params: any) {
       (item) => item.sapati.sapati_satatus == "DECLINED"
     );
     const pendingBorrowings = borrowingsForMe.filter(
-      (item) =>
-        !item.sapati.confirm_settlement &&
-        item.sapati.sapati_satatus == "APPROVED"
+      (item) => !item.sapati.confirm_settlement
+      // &&
+      //   item.sapati.sapati_satatus == "APPROVED"
     );
     const settled = settledLent.length + settledBorrowings.length;
     const rejected = rejectedLent.length + rejectedBorrowings.length;
