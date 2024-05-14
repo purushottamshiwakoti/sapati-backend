@@ -1,12 +1,10 @@
 import prismadb from "@/lib/prismadb";
 import { getUserById, getUserByPhone } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
-import { Item } from "@radix-ui/react-dropdown-menu";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
     const token = req.headers.get("Authorization");
     if (!token) {
       return NextResponse.json(
@@ -21,214 +19,182 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Invalid token" }, { status: 400 });
     }
 
-    const pgnum: any = parseInt(searchParams.get("pgnum") as string) || 0;
-    const pgsize: any = parseInt(searchParams.get("pgsize") as string) || 10;
-
-    const skip = pgnum * pgsize;
-
-    const borrowings = await prismadb.borrowings.findMany({
-      where: {
-        user_id: existingToken.user_id,
-      },
-      include: {
-        sapati: true,
-        user: true,
-      },
-      orderBy: {
-        created_at: "desc",
-      },
-    });
-
-    const lendings = await prismadb.lendings.findMany({
-      where: {
-        user_id: existingToken.user_id,
-      },
-      include: {
-        sapati: true,
-        user: true,
-      },
-      orderBy: {
-        created_at: "desc",
-      },
-    });
-
-    // Remaining code for processing and formatting results...
-    for (const item of borrowings) {
-      const phone = parseInt(item.sapati.phone);
-      if (!isNaN(phone)) {
-        const borrower_user = await getUserByPhone(phone);
-        const creatorUser = await getUserById(item.sapati.created_by!);
-        const phone_number =
-          creatorUser?.id == existingToken.user_id
-            ? borrower_user?.phone_number
-            : creatorUser?.phone_number;
-        const fullName =
-          creatorUser?.id === existingToken.user_id
-            ? (borrower_user?.first_name?.trim() ?? "") +
-              (borrower_user?.last_name?.trim() ?? "")
-            : (creatorUser?.first_name?.trim() ?? "") +
-              (creatorUser?.last_name?.trim() ?? "");
-        item.user_id = borrower_user?.id || "";
-        item.user.first_name = borrower_user?.first_name || "";
-        item.user.last_name = borrower_user?.last_name || "";
-        item.user.fullName = fullName;
-        // existingToken.user_id == item.sapati.created_by
-        //   ? item.sapati.fullName
-        //   : creatorUser?.first_name + " " + creatorUser?.last_name;
-        //  item.user.first_name + " " + item.user.last_name;
-        item.user.is_verified = borrower_user?.is_verified || false;
-        item.user.image =
-          existingToken.user_id == item.sapati.created_by
-            ? borrower_user?.image ?? null
-            : creatorUser?.image ?? null;
-
-        item.user.phone_number = phone_number!;
-
-        // item.creatorName = borrower_user?.first_name||"";
-
-        // You can access the index using 'index' variable here
-      } else {
-        console.log(
-          `Index: ${item}, Invalid phone number: ${item.sapati.phone}`
-        );
-      }
+    const user = await getUserById(existingToken.user_id);
+    if (!user) {
+      return NextResponse.json({ message: "No user found" }, { status: 404 });
     }
 
-    for (const item of lendings) {
-      const phone = parseInt(item.sapati.phone);
-      if (!isNaN(phone)) {
-        const borrower_user = await getUserByPhone(phone);
-        const creatorUser = await getUserById(item.sapati.created_by!);
+    const status = req.nextUrl.searchParams.get("status");
+    const search = req.nextUrl.searchParams.get("search");
 
-        const phone_number =
-          creatorUser?.id == existingToken.user_id
-            ? borrower_user?.phone_number
-            : creatorUser?.phone_number;
-        const fullName =
-          creatorUser?.id === existingToken.user_id
-            ? (borrower_user?.first_name?.trim() ?? "") +
-              (borrower_user?.last_name?.trim() ?? "")
-            : (creatorUser?.first_name?.trim() ?? "") +
-              (creatorUser?.last_name?.trim() ?? "");
+    const pgnum: any = req.nextUrl.searchParams.get("pgnum") ?? 0;
+    const pgsize: number = 10;
 
-        item.user_id = borrower_user?.id || "";
-        item.user.first_name = borrower_user?.first_name || "";
-        item.user.last_name = borrower_user?.last_name || "";
-        item.user.fullName = fullName;
-        // item.user.fullName =
-        //   existingToken.user_id == item.sapati.created_by
-        //     ? item.sapati.fullName
-        //     : creatorUser?.first_name + " " + creatorUser?.last_name;
-        // item.user.first_name + " " + item.user.last_name;
-        item.user.is_verified = borrower_user?.is_verified || false;
-        item.user.image =
-          existingToken.user_id == item.sapati.created_by
-            ? borrower_user?.image ?? null
-            : creatorUser?.image ?? null;
-        // item.creatorName = borrower_user?.first_name;
+    let data;
 
-        item.user.phone_number = phone_number!;
+    let [borrowings, lendings] = await Promise.all([
+      prismadb.borrowings.findMany({
+        where: { user_id: existingToken.user_id },
+        include: { sapati: true, user: true },
+        orderBy: { created_at: "desc" },
+      }),
+      prismadb.lendings.findMany({
+        where: { user_id: existingToken.user_id },
+        include: { sapati: true, user: true },
+        orderBy: { created_at: "desc" },
+      }),
+    ]);
 
-        // You can access the index using 'index' variable here
-      } else {
-        console.log(
-          `Index: ${item}, Invalid phone number: ${item.sapati.phone}`
-        );
+    const processItems = async (items: any) => {
+      const processedItems = [];
+      for (const item of items) {
+        const phone = parseInt(item.sapati.phone);
+        if (!isNaN(phone)) {
+          const borrower_user = await getUserByPhone(phone);
+          const creatorUser = await getUserById(item.sapati.created_by!);
+          const phone_number =
+            creatorUser?.id === existingToken.user_id
+              ? borrower_user?.phone_number
+              : creatorUser?.phone_number;
+          const fullName =
+            creatorUser?.id === existingToken.user_id
+              ? (borrower_user?.first_name?.trim() ?? "") +
+                (borrower_user?.last_name?.trim() ?? "")
+              : (creatorUser?.first_name?.trim() ?? "") +
+                (creatorUser?.last_name?.trim() ?? "");
+          item.user_id = borrower_user?.id || "";
+          item.user.first_name = borrower_user?.first_name || "";
+          item.user.last_name = borrower_user?.last_name || "";
+          item.user.fullName = fullName;
+          item.user.is_verified = borrower_user?.is_verified || false;
+          item.user.image =
+            existingToken.user_id == item.sapati.created_by
+              ? borrower_user?.image ?? null
+              : creatorUser?.image ?? null;
+          item.user.phone_number = phone_number!;
+          processedItems.push(item);
+        } else {
+          console.log(
+            `Index: ${item}, Invalid phone number: ${item.sapati.phone}`
+          );
+        }
       }
-    }
+      return processedItems;
+    };
 
-    const sapatiTaken = borrowings
-      // .filter((item) => item.sapati.sapati_satatus == "PENDING")
-      .filter(
-        (item) =>
-          item.sapati.sapati_satatus == "APPROVED" &&
-          !item.sapati.confirm_settlement
-      )
-      .map((item) => ({
-        user_id: item.user_id,
-        sapati_id: item.sapati_id,
-        first_name: item.user.first_name,
-        last_name: item.user.last_name,
-        // fullName: item.user.fullName,
-        isverified: item.user.is_verified,
-        created_at: item.sapati.created_at,
-        status: "Borrowed",
-        // status: "Lent",
-        sapati_status: item.sapati.sapati_satatus,
-        confirm_settlement: item.sapati.confirm_settlement,
-        amount: item.sapati.amount,
-        image: item.user.image,
-        creatorId: item.sapati.created_by,
-        currentUserId: existingToken.user_id,
-        userName: item.sapati.created_user_name,
-        userImage: item.sapati.created_user_image,
-        phone_number: item.user.phone_number,
-        fullName: item.user.fullName,
-      }));
-    const sapatiGiven = lendings
+    const processedBorrowings = await processItems(borrowings);
+    const processedLendings = await processItems(lendings);
 
-      // .filter((item) => item.sapati.sapati_satatus == "PENDING")
-      .filter(
-        (item) =>
-          item.sapati.sapati_satatus == "APPROVED" &&
-          !item.sapati.confirm_settlement
-      )
-      .map((item) => ({
-        user_id: item.user_id,
-        sapati_id: item.sapati_id,
-        first_name: item.user.first_name,
-        last_name: item.user.last_name,
-        // fullName: item.user.fullName,
-        isverified: item.user.is_verified,
-        created_at: item.sapati.created_at,
-        status: "Lent",
-        // status: "Borrowed",
-        sapati_status: item.sapati.sapati_satatus,
-        confirm_settlement: item.sapati.confirm_settlement,
-        amount: item.sapati.amount,
-        image: item.user.image,
-        creatorId: item.sapati.created_by,
-        currentUserId: existingToken.user_id,
-        userName: item.sapati.created_user_name,
-        userImage: item.sapati.created_user_image,
-        phone_number: item.user.phone_number,
-        fullName: item.user.fullName,
-      }));
+    const sapatiTaken = processedBorrowings.map((item) => ({
+      user_id: item.user_id,
+      sapati_id: item.sapati_id,
+      first_name: item.user.first_name,
+      last_name: item.user.last_name,
+      isverified: item.user.is_verified,
+      created_at: item.sapati.created_at,
+      status: "Borrowed",
+      sapati_status: item.sapati.sapati_satatus,
+      confirm_settlement: item.sapati.confirm_settlement,
+      amount: item.sapati.amount,
+      image: item.user.image,
+      creatorId: item.sapati.created_by,
+      createdForId: item.sapati.created_for,
+      currentUserId: existingToken.user_id,
+      userName: item.sapati.created_user_name,
+      userImage: item.sapati.created_user_image,
+      phone_number: item.user.phone_number,
+      fullName: item.user.fullName,
+    }));
 
-    let data = [...sapatiTaken, ...sapatiGiven];
+    const sapatiGiven = processedLendings.map((item) => ({
+      user_id: item.user_id,
+      sapati_id: item.sapati_id,
+      first_name: item.user.first_name,
+      last_name: item.user.last_name,
+      isverified: item.user.is_verified,
+      created_at: item.sapati.created_at,
+      status: "Lent",
+      sapati_status: item.sapati.sapati_satatus,
+      confirm_settlement: item.sapati.confirm_settlement,
+      amount: item.sapati.amount,
+      image: item.user.image,
+      creatorId: item.sapati.created_by,
+      createdForId: item.sapati.created_for,
+      currentUserId: existingToken.user_id,
+      userName: item.sapati.created_user_name,
+      userImage: item.sapati.created_user_image,
+      phone_number: item.user.phone_number,
+      fullName: item.user.fullName,
+    }));
 
-    console.log(data); // Print the original data for reference
-
+    data = [...sapatiGiven, ...sapatiTaken];
     const ids: any[] = [];
     const userData: any[] = [];
 
     // Loop through the data to obtain unique creatorIds
+    // for (const item of data) {
+    //   console.log(item);
+    //   if (!ids.includes(item.creatorId)) {
+    //     ids.push(item.creatorId);
+    //   }
+    //   // if (!ids.includes(item.currentUserId)) {
+    //   //   ids.push(item.currentUserId);
+    //   // }
+    // }
+
     for (const item of data) {
       if (!ids.includes(item.phone_number)) {
         ids.push(item.phone_number);
       }
     }
-    // for (const item of data) {
-    //   if (!ids.includes(item.creatorId)) {
-    //     ids.push(item.creatorId);
-    //   }
-    // }
-
     // Now, iterate over the unique creatorIds
     for (const id of ids) {
-      console.log(id);
       // Initialize total amount for this creatorId
       let totalAmount = 0;
 
       // Loop through data to aggregate amounts for the current creatorId
+      // for (const item of data) {
+      //   if (item.creatorId === id) {
+      //     // Adjust amount based on sapati_status
+      //     console.log(item);
+
+      //     if (item.status == "Borrowed") {
+      //       console.log("borrowed");
+      //       totalAmount -= item.amount;
+      //       console.log("borrowed", totalAmount);
+      //     } else if (item.status == "Lent") {
+      //       console.log("lend");
+
+      //       totalAmount += item.amount;
+      //       console.log("lend", totalAmount);
+      //     }
+      //   }
+      //   console.log(totalAmount);
+      // }
+
+      let totalBorrowed = 0;
+      let totalLent = 0;
+      let totalSettled = 0;
       for (const item of data) {
-        console.log(item);
         if (item.phone_number === id) {
+          console.log(item);
           // Adjust amount based on sapati_status
           if (item.status == "Borrowed") {
-            totalAmount -= item.amount;
+            // totalAmount -= item.amount;
+            if (item.sapati_status == "SETTLED") {
+              totalSettled += item.amount;
+            } else {
+              totalBorrowed += item.amount;
+            }
+            console.log(item.amount);
+            console.log(totalBorrowed);
           } else if (item.status == "Lent") {
-            totalAmount += item.amount;
+            // totalAmount += item.amount;
+            if (item.sapati_status == "SETTLED") {
+              totalSettled += item.amount;
+            } else {
+              totalLent += item.amount;
+            }
           }
         }
         // if (item.creatorId === id) {
@@ -239,13 +205,15 @@ export async function GET(req: NextRequest) {
         //     totalAmount += item.amount;
         //   }
         // }
-        console.log(totalAmount);
+        totalLent = totalLent + totalSettled;
+        totalBorrowed = totalBorrowed + totalSettled;
+        totalAmount = totalLent - totalBorrowed;
       }
 
       // Find the first item with this creatorId to include additional data
+      // const firstItem = data.find((item) => item.creatorId === id);
       const firstItem = data.find((item) => item.phone_number === id);
       const newUser = await getUserByPhone(id);
-      console.log(newUser);
 
       // Push the aggregated data for this creatorId to userData array
       userData.push({
@@ -257,7 +225,7 @@ export async function GET(req: NextRequest) {
         last_name: firstItem?.last_name,
         isverified: firstItem?.isverified,
         created_at: firstItem?.created_at,
-        // status: firstItem?.status,
+        status: firstItem?.status,
         sapati_status: firstItem?.sapati_status,
         confirm_settlement: firstItem?.confirm_settlement,
         amount: firstItem?.amount,
@@ -270,16 +238,176 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    const combinedTransactions: any = {};
+    for (const item of data) {
+      const key = `${item.creatorId}-${item.createdForId}`;
+      if (!combinedTransactions[key]) {
+        combinedTransactions[key] = {
+          creatorId: item.creatorId,
+          createdForId: item.createdForId,
+          totalAmount: 0,
+          user_id: item.user_id,
+          first_name: item.first_name,
+          last_name: item.last_name,
+          isverified: item.isverified,
+          created_at: item.created_at,
+          // status: item.status,
+          sapati_status: item.sapati_status,
+          confirm_settlement: item.confirm_settlement,
+          amount: item.amount,
+          image: item.image,
+          currentUserId: item.currentUserId,
+          userName: item.userName,
+          userImage: item.userImage,
+          phone_number: item.phone_number,
+          fullName: item.fullName,
+          // Add more properties as needed
+        };
+      }
+      // Adjust total amount based on status
+      if (item.status === "Borrowed") {
+        combinedTransactions[key].totalAmount -= item.amount;
+      } else if (item.status === "Lent") {
+        combinedTransactions[key].totalAmount += item.amount;
+      }
+    }
+
+    // Convert the combined transactions object to an array
+    const combinedTransactionsArray: any[] =
+      Object.values(combinedTransactions);
+
+    console.log(combinedTransactionsArray);
+    // data = Object.values(combinedTransactions);
+    console.log({ userData });
     data = userData;
-    data
-      .sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      )
-      .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+    console.log(data);
+
+    if (status === "given") {
+      if (search) {
+        const searchTerm = search.toLowerCase();
+        data = data
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+          .filter((item: any) =>
+            item.status === "Lent" &&
+            (item.sapati_status === "APPROVED" ||
+              item.sapati_status == "SETTLED") &&
+            item.totalAmount1 > 0 &&
+            item.creatorId != item.currentUserId
+              ? item.fullName?.toLowerCase().startsWith(searchTerm)
+              : item.first_name?.toLowerCase().startsWith(searchTerm)
+          )
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      } else {
+        data = data
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+          .filter(
+            (item: any) =>
+              item.status === "Lent" &&
+              (item.sapati_status === "APPROVED" ||
+                item.sapati_status == "SETTLED") &&
+              item.totalAmount > 0
+          )
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      }
+    } else if (status === "taken") {
+      if (search) {
+        const searchTerm = search.toLowerCase();
+        data = data
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+          .filter((item: any) =>
+            item.status === "Borrowed" &&
+            (item.sapati_status === "APPROVED" ||
+              item.sapati_status == "SETTLED") &&
+            item.totalAmount > 0 &&
+            item.creatorId != item.currentUserId
+              ? item.fullName?.toLowerCase().startsWith(searchTerm)
+              : item.first_name?.toLowerCase().startsWith(searchTerm)
+          )
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      }
+      data = data
+        .sort(
+          (a: any, b: any) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .filter(
+          (item: any) =>
+            item.status === "Borrowed" &&
+            (item.sapati_status === "APPROVED" ||
+              item.sapati_status == "SETTLED") &&
+            item.totalAmount > 0
+        )
+        .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+    } else if (status === "active") {
+      if (search) {
+        console.log(search);
+        const searchTerm = search.toLowerCase();
+        data = data
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+          //   .filter(item => item.sapati_status === "PENDING"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
+          .filter((item: any) =>
+            // !item.confirm_settlement
+            item.totalAmount != 0 && item.creatorId != item.currentUserId
+              ? item.fullName?.toLowerCase().startsWith(searchTerm)
+              : item.first_name?.toLowerCase().startsWith(searchTerm)
+          )
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      } else {
+        data = data
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+          //   .filter(item => item.sapati_status === "PENDING")
+          .filter((item: any) => item.totalAmount != 0)
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      }
+    } else {
+      if (search) {
+        const searchTerm = search.toLowerCase();
+        data = data
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+          .filter((item: any) =>
+            item.creatorId != item.currentUserId
+              ? item.fullName?.toLowerCase().startsWith(searchTerm)
+              : item.first_name?.toLowerCase().startsWith(searchTerm)
+          )
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      } else {
+        data = data
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+          .filter((item: any) => item.sapati_status != "DECLINED")
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      }
+    }
 
     return NextResponse.json(
-      { message: "Successfully fetched active transactions", data },
+      { message: "Successfully fetched transactions", data },
       { status: 200 }
     );
   } catch (error) {
