@@ -172,13 +172,29 @@ export async function GET(req: NextRequest) {
       //   console.log(totalAmount);
       // }
 
+      let totalBorrowed = 0;
+      let totalLent = 0;
+      let totalSettled = 0;
       for (const item of data) {
         if (item.phone_number === id) {
+          console.log(item);
           // Adjust amount based on sapati_status
           if (item.status == "Borrowed") {
-            totalAmount -= item.amount;
+            // totalAmount -= item.amount;
+            if (item.sapati_status == "SETTLED") {
+              totalSettled += item.amount;
+            } else {
+              totalBorrowed += item.amount;
+            }
+            console.log(item.amount);
+            console.log(totalBorrowed);
           } else if (item.status == "Lent") {
-            totalAmount += item.amount;
+            // totalAmount += item.amount;
+            if (item.sapati_status == "SETTLED") {
+              totalSettled += item.amount;
+            } else {
+              totalLent += item.amount;
+            }
           }
         }
         // if (item.creatorId === id) {
@@ -189,7 +205,9 @@ export async function GET(req: NextRequest) {
         //     totalAmount += item.amount;
         //   }
         // }
-        console.log(totalAmount);
+        totalLent = totalLent + totalSettled;
+        totalBorrowed = totalBorrowed + totalSettled;
+        totalAmount = totalLent - totalBorrowed;
       }
 
       // Find the first item with this creatorId to include additional data
@@ -275,7 +293,7 @@ export async function GET(req: NextRequest) {
           )
           .filter((item: any) =>
             item.status === "Lent" &&
-            (item.sapati_status === "APPROVED" || 
+            (item.sapati_status === "APPROVED" ||
               item.sapati_status == "SETTLED") &&
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
