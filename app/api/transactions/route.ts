@@ -275,7 +275,7 @@ export async function GET(req: NextRequest) {
           )
           .filter((item: any) =>
             item.status === "Lent" &&
-            (item.sapati_status === "APPROVED" ||
+            (item.sapati_status === "APPROVED" || 
               item.sapati_status == "SETTLED") &&
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)

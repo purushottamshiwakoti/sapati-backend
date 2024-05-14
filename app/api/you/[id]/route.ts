@@ -98,10 +98,10 @@ export async function GET(req: NextRequest, params: any) {
     console.log(borrowSettled);
     console.log(lentSettled);
     console.log(lent);
-    lent = lent + lentSettled;
+    lent = lent + lentSettled + borrowSettled;
     console.log(lent);
     console.log(borrowed);
-    borrowed = borrowed + borrowSettled;
+    borrowed = borrowed + borrowSettled + lentSettled;
     console.log(borrowed);
 
     const borrowedTotal = getSapatiSum(

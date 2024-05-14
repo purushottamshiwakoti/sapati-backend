@@ -184,10 +184,9 @@ export async function GET(req: NextRequest, params: any) {
     if (status == "activebook") {
       // const given=sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"&&!item.confirm_settlement||item.sapati_status=="APPROVED"&&!item.confirm_settlement))
       const given = sapatiGiven.filter(
-        (item) =>
-          !item.confirm_settlement &&
-          item.sapati_status == "APPROVED" &&
-          !item.confirm_settlement
+        (item) => !item.confirm_settlement && item.sapati_status != "DECLINED"
+        // &&
+        // !item.confirm_settlement
       );
 
       const taken = sapatiTaken.filter(
