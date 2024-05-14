@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const search = req.nextUrl.searchParams.get("search");
 
     const pgnum: any = req.nextUrl.searchParams.get("pgnum") ?? 0;
-    const pgsize: number = 500;
+    const pgsize: number = 10;
 
     let data;
 
@@ -238,6 +238,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    console.log(userData);
     const combinedTransactions: any = {};
     for (const item of data) {
       const key = `${item.creatorId}-${item.createdForId}`;
@@ -310,9 +311,9 @@ export async function GET(req: NextRequest) {
           )
           .filter(
             (item: any) =>
-              item.status === "Lent" &&
-              (item.sapati_status === "APPROVED" ||
-                item.sapati_status == "SETTLED") &&
+              // item.status === "Lent" &&
+              // (item.sapati_status === "APPROVED" ||
+              //   item.sapati_status == "SETTLED") &&
               item.totalAmount > 0
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
@@ -401,7 +402,7 @@ export async function GET(req: NextRequest) {
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
-          .filter((item: any) => item.sapati_status != "DECLINED")
+          // .filter((item: any) => item.sapati_status != "DECLINED")
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
     }
