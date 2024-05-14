@@ -175,14 +175,19 @@ export async function GET(req: NextRequest) {
       let totalBorrowed = 0;
       let totalLent = 0;
       let totalSettled = 0;
+
+      const allData = data.filter((item) => item.phone_number == 9843439430);
+      console.log(allData);
+
       for (const item of data) {
         if (item.phone_number === id) {
-          console.log(item);
           // Adjust amount based on sapati_status
           if (item.status == "Borrowed") {
             // totalAmount -= item.amount;
             if (item.sapati_status == "SETTLED") {
               totalSettled += item.amount;
+            } else if (item.sapati_status == "DECLINED") {
+              continue;
             } else {
               totalBorrowed += item.amount;
             }
@@ -192,6 +197,8 @@ export async function GET(req: NextRequest) {
             // totalAmount += item.amount;
             if (item.sapati_status == "SETTLED") {
               totalSettled += item.amount;
+            } else if (item.sapati_status == "DECLINED") {
+              continue;
             } else {
               totalLent += item.amount;
             }
@@ -279,7 +286,7 @@ export async function GET(req: NextRequest) {
 
     console.log(combinedTransactionsArray);
     // data = Object.values(combinedTransactions);
-    console.log({ userData });
+
     data = userData;
     console.log(data);
 

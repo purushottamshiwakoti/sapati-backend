@@ -132,7 +132,9 @@ export async function GET(req: NextRequest, params: any) {
       (item) => item.sapati.sapati_satatus == "DECLINED"
     );
     const pendingLent = lendingsForMe.filter(
-      (item) => !item.sapati.confirm_settlement
+      (item) =>
+        item.sapati.sapati_satatus != "DECLINED" &&
+        !item.sapati.confirm_settlement
       //  &&
       //   item.sapati.sapati_satatus == "APPROVED"
     );
@@ -143,7 +145,9 @@ export async function GET(req: NextRequest, params: any) {
       (item) => item.sapati.sapati_satatus == "DECLINED"
     );
     const pendingBorrowings = borrowingsForMe.filter(
-      (item) => !item.sapati.confirm_settlement
+      (item) =>
+        item.sapati.sapati_satatus != "DECLINED" &&
+        !item.sapati.confirm_settlement
       // &&
       //   item.sapati.sapati_satatus == "APPROVED"
     );
