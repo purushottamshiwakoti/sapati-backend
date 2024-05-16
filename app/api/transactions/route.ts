@@ -319,10 +319,11 @@ export async function GET(req: NextRequest) {
           )
           .filter(
             (item: any) =>
-              // item.status === "Lent" &&
+              item.status === "Lent" &&
               // (item.sapati_status === "APPROVED" ||
               //   item.sapati_status == "SETTLED") &&
-              item.sapati_status != "DECLINED" && item.totalAmount !== 0
+              item.sapati_status != "DECLINED" &&
+              item.totalAmount !== 0
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
