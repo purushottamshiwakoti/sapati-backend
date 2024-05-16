@@ -27,7 +27,6 @@ export async function GET(req: NextRequest, params: any) {
     }
 
     const status = req.nextUrl.searchParams.get("status");
-    let data;
     const findUser = await getUserById(id);
 
     if (!findUser) {
@@ -35,7 +34,7 @@ export async function GET(req: NextRequest, params: any) {
     }
 
     const pgnum: any = req.nextUrl.searchParams.get("pgnum") ?? 0;
-    const pgsize: number = 20;
+    const pgsize: number = 10;
 
     let borrowings = await prismadb.borrowings.findMany({
       where: {
@@ -180,9 +179,9 @@ export async function GET(req: NextRequest, params: any) {
         settled_date: item.sapati.settled_date,
         updated_at: item.sapati.updated_at,
       }));
+    let data;
 
     if (status == "activebook") {
-      // const given=sapatiGiven.filter((item) =>(item.sapati_status=="PENDING"&&!item.confirm_settlement||item.sapati_status=="APPROVED"&&!item.confirm_settlement))
       const given = sapatiGiven.filter(
         (item) => !item.confirm_settlement && item.sapati_status != "DECLINED"
       );
@@ -190,20 +189,23 @@ export async function GET(req: NextRequest, params: any) {
       const taken = sapatiTaken.filter(
         (item) => !item.confirm_settlement && item.sapati_status != "DECLINED"
       );
-      // const taken = sapatiTaken.filter(
-      //   (item) =>
-      //     (item.sapati_status == "PENDING" && !item.confirm_settlement) ||
-      //     (item.sapati_status == "APPROVED" && !item.confirm_settlement)
-      // );
-      data = [...given, ...taken];
-      data
-        .sort(
-          (a, b) =>
-            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        )
-        .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+
+      let activedata = [...given, ...taken];
+
+      // Sort the data
+      activedata = activedata.sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
+
+      // Paginate the data
+      const slicedData = activedata.slice(
+        parseInt(pgnum) * pgsize,
+        (parseInt(pgnum) + 1) * pgsize
+      );
+
       return NextResponse.json(
-        { message: "Successfully fetched transactions", data },
+        { message: "Successfully fetched transactions", data: slicedData },
         { status: 200 }
       );
     }
@@ -220,10 +222,22 @@ export async function GET(req: NextRequest, params: any) {
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
         .filter((item) => item.confirm_settlement == true);
-      data = [...given, ...taken];
-      data.slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      let activedata = [...given, ...taken];
+
+      // Sort the data
+      activedata = activedata.sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
+
+      // Paginate the data
+      const slicedData = activedata.slice(
+        parseInt(pgnum) * pgsize,
+        (parseInt(pgnum) + 1) * pgsize
+      );
+
       return NextResponse.json(
-        { message: "Successfully fetched transactions", data },
+        { message: "Successfully fetched transactions", data: slicedData },
         { status: 200 }
       );
     }
@@ -241,10 +255,22 @@ export async function GET(req: NextRequest, params: any) {
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
         .filter((item) => item.sapati_status == "DECLINED");
-      data = [...given, ...taken];
-      data.slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      let activedata = [...given, ...taken];
+
+      // Sort the data
+      activedata = activedata.sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
+
+      // Paginate the data
+      const slicedData = activedata.slice(
+        parseInt(pgnum) * pgsize,
+        (parseInt(pgnum) + 1) * pgsize
+      );
+
       return NextResponse.json(
-        { message: "Successfully fetched transactions", data },
+        { message: "Successfully fetched transactions", data: slicedData },
         { status: 200 }
       );
     }
