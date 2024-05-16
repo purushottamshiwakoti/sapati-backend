@@ -42,6 +42,7 @@ export async function GET(req: NextRequest, params: any) {
         },
       },
     });
+    console.log(user);
     if (!user) {
       return NextResponse.json({ message: "No user found" }, { status: 404 });
     }
