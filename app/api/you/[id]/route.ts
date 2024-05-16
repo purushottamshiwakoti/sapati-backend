@@ -67,6 +67,7 @@ export async function GET(req: NextRequest, params: any) {
           item.sapati.created_for == user.id)
     );
     console.log(lendingsForMe);
+    console.log(borrowingsForMe);
     let borrowed = getSapatiSum(
       borrowingsForMe
         .filter(

@@ -176,7 +176,9 @@ export async function GET(req: NextRequest) {
       let totalLent = 0;
       let totalSettled = 0;
 
-      const allData = data.filter((item) => item.phone_number == 9843439430);
+      const allData = data.filter((item) => item.phone_number == 9862694813);
+      const user = await getUserByPhone(9862694813);
+      console.log(user);
       console.log(allData);
 
       for (const item of data) {

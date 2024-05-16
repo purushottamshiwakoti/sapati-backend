@@ -179,7 +179,8 @@ export async function GET(req: NextRequest, params: any) {
         settled_date: item.sapati.settled_date,
         updated_at: item.sapati.updated_at,
       }));
-    let data;
+    let data = [...sapatiGiven, ...sapatiTaken];
+    console.log(data);
 
     if (status == "activebook") {
       const given = sapatiGiven.filter(
