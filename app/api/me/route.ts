@@ -1,6 +1,6 @@
 import { getSapatiSum } from "@/lib/calculate-sapati";
 import prismadb from "@/lib/prismadb";
-import { getUserById } from "@/lib/user";
+import { getUserById, getUserByPhone } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,6 +17,8 @@ export interface ExtendedUser extends User {
   activeBook?: number;
   settled?: number;
   rejected?: number;
+  payeeCount?: number;
+  receiverCount?: number;
 }
 
 export async function GET(req: NextRequest) {
@@ -59,12 +61,20 @@ export async function GET(req: NextRequest) {
 
     const borrowings = getSapatiSum(
       user.borrowings
-        .filter((item) => item.sapati.sapati_satatus !== "DECLINED")
+        .filter(
+          (item) =>
+            item.sapati.sapati_satatus == "APPROVED" ||
+            item.sapati.sapati_satatus == "PENDING"
+        )
         .map((item) => item.sapati.amount)
     );
     const lendings = getSapatiSum(
       user.lendings
-        .filter((item) => item.sapati.sapati_satatus !== "DECLINED")
+        .filter(
+          (item) =>
+            item.sapati.sapati_satatus == "APPROVED" ||
+            item.sapati.sapati_satatus == "PENDING"
+        )
         .map((item) => item.sapati.amount)
     );
     const balance = borrowings - lendings;
@@ -93,6 +103,45 @@ export async function GET(req: NextRequest) {
         item.sapati.sapati_satatus == "APPROVED" &&
         !item.sapati.confirm_settlement
     );
+
+    // lend
+    const lendable = user.lendings.filter(
+      (item) =>
+        item.sapati.sapati_satatus == "APPROVED" ||
+        item.sapati.sapati_satatus == "PENDING"
+    );
+    // borrow
+    const receivable = user.borrowings.filter(
+      (item) =>
+        item.sapati.sapati_satatus == "APPROVED" ||
+        item.sapati.sapati_satatus == "PENDING"
+    );
+    // let payeeCount;
+    // let receiverCount;
+
+    console.log(lendable);
+    console.log(receivable);
+
+    const userLendingData: any[] = [];
+    const userReceivingData: any[] = [];
+    const allLendings: any[] = [];
+    for (const item of lendable) {
+      if (!userLendingData.includes(item.sapati.phone)) {
+        userLendingData.push(item.sapati.phone);
+      }
+      console.log(item);
+    }
+
+    console.log(userLendingData);
+    for (const item of receivable) {
+      if (!userReceivingData.includes(item.sapati.phone)) {
+        userReceivingData.push(item.sapati.phone);
+      }
+      console.log(item);
+    }
+
+    console.log(userLendingData);
+    console.log(userReceivingData);
     // const overallTransactions =givenTransactions.length+takenTransactions.length+pendingGiven.length+pendingTaken.length
 
     let existingUser: ExtendedUser = (await getUserById(
@@ -107,6 +156,8 @@ export async function GET(req: NextRequest) {
     existingUser.activeTransactions = pendingGiven.length + pendingTaken.length;
     // existingUser.overallTransactions=givenTransactions.length+takenTransactions.length+pendingGiven.length+pendingTaken.length;
     existingUser.overallTransactions = overallTransactions;
+    existingUser.payeeCount = userLendingData.length;
+    existingUser.receiverCount = userReceivingData.length;
 
     return NextResponse.json(
       {
