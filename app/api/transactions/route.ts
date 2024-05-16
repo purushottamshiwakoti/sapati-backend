@@ -301,9 +301,10 @@ export async function GET(req: NextRequest) {
           )
           .filter((item: any) =>
             item.status === "Lent" &&
-            (item.sapati_status === "APPROVED" ||
-              item.sapati_status == "SETTLED") &&
-            item.totalAmount1 > 0 &&
+            // (item.sapati_status === "APPROVED" ||
+            //   item.sapati_status == "SETTLED")
+            item.sapati_status != "DECLINED" &&
+            item.totalAmount !== 0 &&
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
               : item.first_name?.toLowerCase().startsWith(searchTerm)
@@ -321,7 +322,7 @@ export async function GET(req: NextRequest) {
               // item.status === "Lent" &&
               // (item.sapati_status === "APPROVED" ||
               //   item.sapati_status == "SETTLED") &&
-              item.totalAmount > 0
+              item.sapati_status != "DECLINED" && item.totalAmount !== 0
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
@@ -336,28 +337,34 @@ export async function GET(req: NextRequest) {
           )
           .filter((item: any) =>
             item.status === "Borrowed" &&
-            (item.sapati_status === "APPROVED" ||
-              item.sapati_status == "SETTLED") &&
-            item.totalAmount > 0 &&
+            // (item.sapati_status === "APPROVED" ||
+            //   item.sapati_status == "SETTLED")
+            item.sapati_status != "DECLINED" &&
+            item.totalAmount !== 0 &&
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
               : item.first_name?.toLowerCase().startsWith(searchTerm)
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+      } else {
+        console.log(data);
+        console.log(data.filter((item) => item.status === "Borrowed"));
+        data = data
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+          .filter(
+            (item: any) =>
+              item.status == "Borrowed" &&
+              // (item.sapati_status === "APPROVED" ||
+              //   item.sapati_status == "SETTLED")
+              item.sapati_status != "DECLINED" &&
+              item.totalAmount !== 0
+          )
+          .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
-      data = data
-        .sort(
-          (a: any, b: any) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )
-        .filter(
-          (item: any) =>
-            item.status === "Borrowed" &&
-            (item.sapati_status === "APPROVED" ||
-              item.sapati_status == "SETTLED") &&
-            item.totalAmount > 0
-        )
-        .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
     } else if (status === "active") {
       if (search) {
         console.log(search);
