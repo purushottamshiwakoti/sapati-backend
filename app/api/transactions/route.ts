@@ -302,12 +302,11 @@ export async function GET(req: NextRequest) {
               new Date(a.created_at).getTime()
           )
           .filter((item: any) =>
-            item.status === "Lent" &&
+            // item.status === "Lent" &&
             // (item.sapati_status === "APPROVED" ||
             //   item.sapati_status == "SETTLED")
-            item.sapati_status != "DECLINED" &&
-            item.totalAmount !== 0 &&
-            item.creatorId != item.currentUserId
+            // item.sapati_status != "DECLINED" &&
+            item.totalAmount > 0 && item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
               : item.first_name?.toLowerCase().startsWith(searchTerm)
           )
@@ -321,11 +320,11 @@ export async function GET(req: NextRequest) {
           )
           .filter(
             (item: any) =>
-              item.status === "Lent" &&
+              // item.status === "Lent" &&
               // (item.sapati_status === "APPROVED" ||
               //   item.sapati_status == "SETTLED") &&
-              item.sapati_status != "DECLINED" &&
-              item.totalAmount !== 0
+              // item.sapati_status != "DECLINED" &&
+              item.totalAmount > 0
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
@@ -339,12 +338,11 @@ export async function GET(req: NextRequest) {
               new Date(a.created_at).getTime()
           )
           .filter((item: any) =>
-            item.status === "Borrowed" &&
+            // item.status === "Borrowed" &&
             // (item.sapati_status === "APPROVED" ||
             //   item.sapati_status == "SETTLED")
-            item.sapati_status != "DECLINED" &&
-            item.totalAmount !== 0 &&
-            item.creatorId != item.currentUserId
+            // item.sapati_status != "DECLINED" &&
+            item.totalAmount < 0 && item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
               : item.first_name?.toLowerCase().startsWith(searchTerm)
           )
@@ -360,11 +358,11 @@ export async function GET(req: NextRequest) {
           )
           .filter(
             (item: any) =>
-              item.status == "Borrowed" &&
+              // item.status == "Borrowed" &&
               // (item.sapati_status === "APPROVED" ||
               //   item.sapati_status == "SETTLED")
-              item.sapati_status != "DECLINED" &&
-              item.totalAmount !== 0
+              // item.sapati_status != "DECLINED" &&
+              item.totalAmount < 0
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
