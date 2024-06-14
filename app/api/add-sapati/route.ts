@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
         { status: 403 }
       );
     }
-    return_date = "";
+    return_date = null;
 
     if (type == "LENDED" && newUser !== undefined) {
       const sapati = await prismadb.sapati.create({
