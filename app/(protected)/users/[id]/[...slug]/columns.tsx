@@ -13,7 +13,7 @@ export type LendBorrow = {
   amount: number;
   status: string;
   takenDate: Date;
-  returnDate: Date;
+  returnDate: Date | null | string;
   isSettled: boolean;
 };
 
