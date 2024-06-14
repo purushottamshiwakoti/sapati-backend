@@ -210,6 +210,114 @@ export async function GET(req: NextRequest, params: any) {
         { status: 200 }
       );
     }
+
+    //  all start
+    if (status == "all") {
+      const given = sapatiGiven.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      // .filter((item) => item.confirm_settlement == true);
+      const taken = sapatiTaken.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      // .filter((item) => item.confirm_settlement == true);
+      let activedata = [...given, ...taken];
+
+      // Sort the data
+      activedata = activedata.sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
+
+      // Paginate the data
+      const slicedData = activedata.slice(
+        parseInt(pgnum) * pgsize,
+        (parseInt(pgnum) + 1) * pgsize
+      );
+
+      return NextResponse.json(
+        { message: "Successfully fetched transactions", data: slicedData },
+        { status: 200 }
+      );
+    }
+    // all end
+
+    // lend start
+    if (status == "lend") {
+      const given = sapatiGiven
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .filter((item) => item.status == "LENDED");
+      const taken = sapatiTaken
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .filter((item) => item.status == "LENDED");
+
+      let activedata = [...given, ...taken];
+
+      // Sort the data
+      activedata = activedata.sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
+
+      // Paginate the data
+      const slicedData = activedata.slice(
+        parseInt(pgnum) * pgsize,
+        (parseInt(pgnum) + 1) * pgsize
+      );
+
+      return NextResponse.json(
+        { message: "Successfully fetched transactions", data: slicedData },
+        { status: 200 }
+      );
+    }
+    // lend end
+
+    // borrowed start
+    if (status == "borrowed") {
+      const given = sapatiGiven
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .filter((item) => item.status == "BORROWED");
+      // .filter((item) => item.confirm_settlement == true);
+      const taken = sapatiTaken
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .filter((item) => item.status == "BORROWED");
+
+      // .filter((item) => item.confirm_settlement == true);
+      let activedata = [...given, ...taken];
+
+      // Sort the data
+      activedata = activedata.sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
+
+      // Paginate the data
+      const slicedData = activedata.slice(
+        parseInt(pgnum) * pgsize,
+        (parseInt(pgnum) + 1) * pgsize
+      );
+
+      return NextResponse.json(
+        { message: "Successfully fetched transactions", data: slicedData },
+        { status: 200 }
+      );
+    }
+    // borrowed end
+
     if (status == "settled") {
       const given = sapatiGiven
         .sort(
