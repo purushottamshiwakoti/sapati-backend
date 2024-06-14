@@ -82,7 +82,7 @@ model Sapati {
   phone               String
   amount              Int
   taken_date          DateTime
-  return_date         DateTime
+  return_date         DateTime?
   decline_reason      String?
   change_reason       String?
   changed_remarks     String?
