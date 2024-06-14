@@ -75,19 +75,19 @@ export async function GET(req: NextRequest) {
         item.status == "REQUEST"
           ? `${item.sapati.created_user_name} is ${
               item.sapati.type == "LENDED" ? "lending to" : "requesting"
-            } you amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`
+            } you amount <b>${item.sapati.amount}`
           : item.status == "APPROVED" &&
             item.sapati.sapati_satatus == "APPROVED"
-          ? `${item.sapati.fullName} accepted your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`
+          ? `${item.sapati.fullName} accepted your request of amount <b>${item.sapati.amount}`
           : item.sapati.sapati_satatus == "DECLINED" &&
             item.status == "REJECTED"
-          ? `${item.sapati.fullName} declined your request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`
+          ? `${item.sapati.fullName} declined your request of amount <b>${item.sapati.amount}`
           : item.sapati.sapati_satatus == "CHANGE" && item.status == "CHANGE"
-          ? `${item.sapati.fullName} has requested to change request of amount <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`
+          ? `${item.sapati.fullName} has requested to change request of amount <b>${item.sapati.amount}`
           : item.status == "SETTLED"
           ? ` ${item.sapati.settled_by_name} have successfully settled sapati`
           : item.status == "DUE"
-          ? `${item.sapati.fullName} Sapati of amount has to be paid back <b>${item.sapati.amount}</b> for <b>${fromatDate}</b>`
+          ? `${item.sapati.fullName} Sapati of amount has to be paid back <b>${item.sapati.amount}`
           : null;
       const status =
         item.status !== "SETTLED" && item.status !== "DUE"
