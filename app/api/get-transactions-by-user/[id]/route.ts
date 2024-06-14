@@ -251,13 +251,15 @@ export async function GET(req: NextRequest, params: any) {
           (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
-        .filter((item) => item.status == "LENDED");
+        // .filter((item) => item.status == "LENDED");
+        .filter((item) => item.status == "BORROWED");
       const taken = sapatiTaken
         .sort(
           (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
-        .filter((item) => item.status == "LENDED");
+        // .filter((item) => item.status == "LENDED");
+        .filter((item) => item.status == "BORROWED");
 
       let activedata = [...given, ...taken];
 
@@ -287,14 +289,16 @@ export async function GET(req: NextRequest, params: any) {
           (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
-        .filter((item) => item.status == "BORROWED");
+        // .filter((item) => item.status == "BORROWED");
+        .filter((item) => item.status == "LENDED");
       // .filter((item) => item.confirm_settlement == true);
       const taken = sapatiTaken
         .sort(
           (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
-        .filter((item) => item.status == "BORROWED");
+        // .filter((item) => item.status == "BORROWED");
+        .filter((item) => item.status == "LENDED");
 
       // .filter((item) => item.confirm_settlement == true);
       let activedata = [...given, ...taken];
