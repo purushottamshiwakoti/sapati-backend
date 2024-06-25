@@ -335,7 +335,10 @@ export async function GET(req: NextRequest) {
       user.id
     )) as ExtendedUser;
 
-    existingUser.lendings = payee.reduce((accumulator, currentValue) => {
+    // existingUser.lendings = payee.reduce((accumulator, currentValue) => {
+    //   return accumulator + currentValue.totalAmount;
+    // }, 0);
+    existingUser.lent = payee.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.totalAmount;
     }, 0);
     existingUser.borrowed = receivee.reduce((accumulator, currentValue) => {
