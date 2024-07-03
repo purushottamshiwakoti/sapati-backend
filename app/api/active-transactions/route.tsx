@@ -103,9 +103,11 @@ export async function GET(req: NextRequest) {
       userName: item.sapati.created_user_name,
       userImage: item.sapati.created_user_image,
       phone_number: item.user.phone_number,
-      fullName: item.user.fullName,
+      // fullName: item.user.fullName,
+      fullName: item.sapati.fullName,
     }));
 
+    // return NextResponse.json({ processedLendings });
     const sapatiGiven = processedLendings.map((item) => ({
       user_id: item.user_id,
       sapati_id: item.sapati_id,
@@ -124,7 +126,8 @@ export async function GET(req: NextRequest) {
       userName: item.sapati.created_user_name,
       userImage: item.sapati.created_user_image,
       phone_number: item.user.phone_number,
-      fullName: item.user.fullName,
+      // fullName: item.user.fullName,
+      fullName: item.sapati.fullName,
     }));
 
     data = [...sapatiGiven, ...sapatiTaken];
@@ -219,7 +222,9 @@ export async function GET(req: NextRequest) {
 
       // Find the first item with this creatorId to include additional data
       // const firstItem = data.find((item) => item.creatorId === id);
+      console.log(data);
       const firstItem = data.find((item) => item.phone_number === id);
+      console.log(firstItem);
       const newUser = await getUserByPhone(id);
 
       // Push the aggregated data for this creatorId to userData array
