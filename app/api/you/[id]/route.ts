@@ -157,9 +157,21 @@ export async function GET(req: NextRequest, params: any) {
     const rejected = rejectedLent.length + rejectedBorrowings.length;
     const activeBook = pendingLent.length + pendingBorrowings.length;
 
+    console.log(user);
+
+    const name =
+      user.fullName ??
+      user.borrowings[0].sapati.fullName ??
+      user.lendings[0].sapati.fullName ??
+      "";
+
     const modifiedUser = {
       id: user.id,
-      fullName: user.fullName,
+      fullName:
+        user.fullName ??
+        user.borrowings[0].sapati.fullName ??
+        user.lendings[0].sapati.fullName ??
+        "",
 
       first_name: user.first_name,
       last_name: user.last_name,
