@@ -311,7 +311,8 @@ export async function GET(req: NextRequest) {
             item.totalAmount1 > 0 &&
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
-              : item.first_name?.toLowerCase().startsWith(searchTerm)
+              : item.first_name?.toLowerCase().startsWith(searchTerm) ||
+                item.last_name?.toLowerCase().startsWith(searchTerm)
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       } else {
@@ -346,7 +347,8 @@ export async function GET(req: NextRequest) {
             item.totalAmount > 0 &&
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
-              : item.first_name?.toLowerCase().startsWith(searchTerm)
+              : item.first_name?.toLowerCase().startsWith(searchTerm) ||
+                item.last_name?.toLowerCase().startsWith(searchTerm)
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
@@ -378,7 +380,8 @@ export async function GET(req: NextRequest) {
             // !item.confirm_settlement
             item.totalAmount != 0 && item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
-              : item.first_name?.toLowerCase().startsWith(searchTerm)
+              : item.first_name?.toLowerCase().startsWith(searchTerm) ||
+                item.last_name?.toLowerCase().startsWith(searchTerm)
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       } else {
@@ -404,7 +407,8 @@ export async function GET(req: NextRequest) {
           .filter((item: any) =>
             item.creatorId != item.currentUserId
               ? item.fullName?.toLowerCase().startsWith(searchTerm)
-              : item.first_name?.toLowerCase().startsWith(searchTerm)
+              : item.first_name?.toLowerCase().startsWith(searchTerm) ||
+                item.last_name?.toLowerCase().startsWith(searchTerm)
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       } else {
