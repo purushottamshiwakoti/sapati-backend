@@ -73,9 +73,11 @@ export async function GET(req: NextRequest) {
           : null;
       const requestDescription =
         item.status == "REQUEST"
-          ? `${item.sapati.created_user_name} is ${
-              item.sapati.type == "LENDED" ? "lending to" : "requesting"
-            } you amount <b>${item.sapati.amount}</b> `
+          ? `${item.sapati.created_user_name} ${
+              item.sapati.type == "LENDED"
+                ? `lent you <b>${item.sapati.amount}</b>.`
+                : `borrowed <b>${item.sapati.amount}</b> from you. `
+            } `
           : item.status == "APPROVED" &&
             item.sapati.sapati_satatus == "APPROVED"
           ? `${item.sapati.fullName} accepted your request of amount <b>${item.sapati.amount}</b> `
