@@ -20,6 +20,7 @@ export interface ExtendedUser extends User {
   payeeCount?: number;
   receiverCount?: number;
   noData?: boolean;
+  isActiveAvailable?: boolean;
 }
 
 export async function GET(req: NextRequest) {
@@ -360,6 +361,8 @@ export async function GET(req: NextRequest) {
     existingUser.payeeCount = payee.length;
     existingUser.receiverCount = receivee.length;
     existingUser.noData = noData;
+    existingUser.isActiveAvailable =
+      payee.length == 0 && receivee.length == 0 ? false : true;
 
     return NextResponse.json(
       { message: "Successfully fetched user", user: existingUser },
