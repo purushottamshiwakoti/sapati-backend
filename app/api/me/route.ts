@@ -19,6 +19,7 @@ export interface ExtendedUser extends User {
   rejected?: number;
   payeeCount?: number;
   receiverCount?: number;
+  noData?: boolean;
 }
 
 export async function GET(req: NextRequest) {
@@ -99,6 +100,7 @@ export async function GET(req: NextRequest) {
       }
       return processedItems;
     };
+    let noData;
 
     const processedBorrowings = await processItems(borrowings);
     const processedLendings = await processItems(lendings);
@@ -193,6 +195,17 @@ export async function GET(req: NextRequest) {
       let totalBorrowed = 0;
       let totalLent = 0;
       let totalSettled = 0;
+
+      if (sapatiGiven.length == 0) {
+        noData = true;
+      } else {
+        noData = false;
+      }
+      if (sapatiTaken.length == 0) {
+        noData = true;
+      } else {
+        noData = false;
+      }
 
       const allData = data.filter((item) => item.phone_number == 9862694813);
       const user = await getUserByPhone(9862694813);
@@ -346,6 +359,7 @@ export async function GET(req: NextRequest) {
     }, 0);
     existingUser.payeeCount = payee.length;
     existingUser.receiverCount = receivee.length;
+    existingUser.noData = noData;
 
     return NextResponse.json(
       { message: "Successfully fetched user", user: existingUser },
