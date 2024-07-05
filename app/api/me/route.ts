@@ -147,6 +147,7 @@ export async function GET(req: NextRequest) {
     }));
 
     const data = [...sapatiGiven, ...sapatiTaken];
+
     const ids: any[] = [];
     const userData: any[] = [];
 
@@ -222,7 +223,7 @@ export async function GET(req: NextRequest) {
     }, 0);
     existingUser.payeeCount = payee.length;
     existingUser.receiverCount = receivee.length;
-    existingUser.noData = payee.length === 0 && receivee.length === 0;
+    existingUser.noData = data.length == 0;
     existingUser.isData = payee.length === 0 && receivee.length === 0;
     existingUser.isActiveAvailable = payee.length > 0 || receivee.length > 0;
 
