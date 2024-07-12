@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
       const token = await generatePhoneVerificationToken(user.phone_number);
       const sms = await sendSms(
-        user.country_code,
+        user.country_code ?? "+977",
         user.phone_number.toString(),
         `Your otp for sapati is ${token}. Please verify it`,
         user.phone_number
