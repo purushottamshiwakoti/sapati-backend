@@ -1,8 +1,6 @@
 import prismadb from "@/lib/prismadb";
-import { getUserById } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
 import { NextRequest, NextResponse } from "next/server";
-import { ExtendedUser } from "../../me/route";
 import { getSapatiSum } from "@/lib/calculate-sapati";
 
 export async function GET(req: NextRequest, params: any) {
@@ -47,9 +45,13 @@ export async function GET(req: NextRequest, params: any) {
       return NextResponse.json({ message: "No user found" }, { status: 404 });
     }
 
-    // getting user lending
-    //    user lendings is borrowings for me
-    let borrowingsForMe = user.lendings.filter(
+    const filterValidSapati = (items: any[]) =>
+      items.filter(
+        (item) =>
+          item.sapati && item.sapati.created_by && item.sapati.created_for
+      );
+
+    let borrowingsForMe = filterValidSapati(user.lendings).filter(
       (item) =>
         (item.sapati.created_by == user.id &&
           item.sapati.created_for == existingToken.user_id) ||
@@ -57,9 +59,7 @@ export async function GET(req: NextRequest, params: any) {
           item.sapati.created_for == user.id)
     );
 
-    //    getting borrowings from user
-    //  user borrowings is lendings for me
-    let lendingsForMe = user.borrowings.filter(
+    let lendingsForMe = filterValidSapati(user.borrowings).filter(
       (item) =>
         (item.sapati.created_by == user.id &&
           item.sapati.created_for == existingToken.user_id) ||
@@ -68,65 +68,40 @@ export async function GET(req: NextRequest, params: any) {
     );
     console.log(lendingsForMe);
     console.log(borrowingsForMe);
-    let borrowed = getSapatiSum(
-      borrowingsForMe
-        .filter(
-          (item) =>
-            item.sapati.sapati_satatus !== "DECLINED" &&
-            item.sapati.sapati_satatus !== "SETTLED"
-        )
-        .map((item) => item.sapati.amount)
-    );
 
-    let lent = getSapatiSum(
-      lendingsForMe
-        .filter(
-          (item) =>
-            item.sapati.sapati_satatus !== "DECLINED" &&
-            item.sapati.sapati_satatus !== "SETTLED"
-        )
-        .map((item) => item.sapati.amount)
-    );
-    const lentSettled = getSapatiSum(
-      borrowingsForMe
-        .filter((item) => item.sapati.sapati_satatus == "SETTLED")
-        .map((item) => item.sapati.amount)
-    );
-    const borrowSettled = getSapatiSum(
-      lendingsForMe
-        .filter((item) => item.sapati.sapati_satatus == "SETTLED")
-        .map((item) => item.sapati.amount)
-    );
+    const getFilteredSum = (items: any[], statusFilter: string[]) =>
+      getSapatiSum(
+        items
+          .filter((item) => statusFilter.includes(item.sapati.sapati_satatus))
+          .map((item) => item.sapati.amount)
+      );
+
+    let borrowed = getFilteredSum(borrowingsForMe, ["DECLINED", "SETTLED"]);
+    let lent = getFilteredSum(lendingsForMe, ["DECLINED", "SETTLED"]);
+
+    const lentSettled = getFilteredSum(borrowingsForMe, ["SETTLED"]);
+    const borrowSettled = getFilteredSum(lendingsForMe, ["SETTLED"]);
+
     console.log(borrowSettled);
     console.log(lentSettled);
     console.log(lent);
+
     lent = lent + lentSettled + borrowSettled;
     console.log(lent);
     console.log(borrowed);
+
     borrowed = borrowed + borrowSettled + lentSettled;
     console.log(borrowed);
 
-    const borrowedTotal = getSapatiSum(
-      borrowingsForMe
-        .filter(
-          (item) =>
-            item.sapati.sapati_satatus !== "DECLINED" &&
-            item.sapati.sapati_satatus != "SETTLED"
-        )
-        .map((item) => item.sapati.amount)
-    );
-    const lentTotal = getSapatiSum(
-      lendingsForMe
-        .filter(
-          (item) =>
-            item.sapati.sapati_satatus !== "DECLINED" &&
-            item.sapati.sapati_satatus != "SETTLED"
-        )
-        .map((item) => item.sapati.amount)
-    );
+    const borrowedTotal = getFilteredSum(borrowingsForMe, [
+      "DECLINED",
+      "SETTLED",
+    ]);
+    const lentTotal = getFilteredSum(lendingsForMe, ["DECLINED", "SETTLED"]);
 
     const balance = lentTotal - borrowedTotal;
     const overallTransactions = lendingsForMe.length + borrowingsForMe.length;
+
     const settledLent = lendingsForMe.filter(
       (item) => item.sapati.confirm_settlement == true
     );
@@ -137,9 +112,8 @@ export async function GET(req: NextRequest, params: any) {
       (item) =>
         item.sapati.sapati_satatus != "DECLINED" &&
         !item.sapati.confirm_settlement
-      //  &&
-      //   item.sapati.sapati_satatus == "APPROVED"
     );
+
     const settledBorrowings = borrowingsForMe.filter(
       (item) => item.sapati.confirm_settlement == true
     );
@@ -150,27 +124,20 @@ export async function GET(req: NextRequest, params: any) {
       (item) =>
         item.sapati.sapati_satatus != "DECLINED" &&
         !item.sapati.confirm_settlement
-      // &&
-      //   item.sapati.sapati_satatus == "APPROVED"
     );
+
     const settled = settledLent.length + settledBorrowings.length;
     const rejected = rejectedLent.length + rejectedBorrowings.length;
     const activeBook = pendingLent.length + pendingBorrowings.length;
 
     console.log(user);
 
-    const name =
-      user.fullName ??
-      user.borrowings[0].sapati.fullName ??
-      user.lendings[0].sapati.fullName ??
-      "";
-
     const modifiedUser = {
       id: user.id,
       fullName:
         user.fullName ??
-        user.borrowings[0].sapati.fullName ??
-        user.lendings[0].sapati.fullName ??
+        user.borrowings[0]?.sapati?.fullName ??
+        user.lendings[0]?.sapati?.fullName ??
         "",
 
       first_name: user.first_name,
@@ -186,10 +153,6 @@ export async function GET(req: NextRequest, params: any) {
       settled,
       rejected,
     };
-
-    // if(!findUser){
-    //     return NextResponse.json({message:"No user found"},{status:404})
-    // }
 
     return NextResponse.json(
       { message: "Successfully fetched user", user: modifiedUser },
