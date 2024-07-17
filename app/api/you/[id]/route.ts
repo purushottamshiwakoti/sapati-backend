@@ -67,12 +67,12 @@ export async function GET(req: NextRequest, params: any) {
           item.sapati.created_for == user.id)
     );
     console.log(lendingsForMe);
-    console.log(borrowingsForMe);
+    console.log(
+      getSapatiSum(borrowingsForMe.map((item) => item.sapati.amount))
+    );
 
     let borrowed = getSapatiSum(
-      borrowingsForMe
-        .filter((item) => item.sapati.sapati_satatus !== "SETTLED")
-        .map((item) => item.sapati.amount)
+      borrowingsForMe.map((item) => item.sapati.amount)
     );
     let lent = getSapatiSum(
       lendingsForMe
