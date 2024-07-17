@@ -94,7 +94,7 @@ export async function GET(req: NextRequest, params: any) {
     console.log(lent);
     console.log(borrowed);
 
-    borrowed = borrowed + borrowSettled + lentSettled;
+    // borrowed = borrowed + borrowSettled + lentSettled;
     console.log(borrowed);
 
     // const borrowedTotal = getFilteredSum(borrowingsForMe, [
