@@ -226,6 +226,7 @@ export async function GET(req: NextRequest) {
       const firstItem = data.find((item) => item.phone_number === id);
       console.log(firstItem);
       const newUser = await getUserByPhone(id);
+      console.log(newUser);
 
       // Push the aggregated data for this creatorId to userData array
       userData.push({
@@ -246,7 +247,7 @@ export async function GET(req: NextRequest) {
         userName: firstItem?.userName,
         userImage: firstItem?.userImage,
         phone_number: firstItem?.phone_number,
-        fullName: firstItem?.fullName,
+        fullName: newUser?.fullName ?? firstItem?.fullName,
       });
     }
 
