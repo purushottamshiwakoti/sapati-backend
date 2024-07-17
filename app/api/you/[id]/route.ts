@@ -90,7 +90,7 @@ export async function GET(req: NextRequest, params: any) {
     console.log(lentSettled);
     console.log(lent);
 
-    lent = lent + lentSettled + borrowSettled;
+    // lent = lent + lentSettled + borrowSettled;
     console.log(lent);
     console.log(borrowed);
 
