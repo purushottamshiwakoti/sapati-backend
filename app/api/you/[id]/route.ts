@@ -67,18 +67,13 @@ export async function GET(req: NextRequest, params: any) {
           item.sapati.created_for == user.id)
     );
     console.log(lendingsForMe);
-    console.log(
-      getSapatiSum(borrowingsForMe.map((item) => item.sapati.amount))
-    );
+    console.log(lendingsForMe.map((item) => item.sapati.amount));
+    console.log(getSapatiSum(lendingsForMe.map((item) => item.sapati.amount)));
 
     let borrowed = getSapatiSum(
       borrowingsForMe.map((item) => item.sapati.amount)
     );
-    let lent = getSapatiSum(
-      lendingsForMe
-        .filter((item) => item.sapati.sapati_satatus !== "SETTLED")
-        .map((item) => item.sapati.amount)
-    );
+    let lent = getSapatiSum(lendingsForMe.map((item) => item.sapati.amount));
 
     const lentSettled = getSapatiSum(
       borrowingsForMe
