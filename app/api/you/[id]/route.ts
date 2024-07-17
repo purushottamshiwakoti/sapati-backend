@@ -69,18 +69,27 @@ export async function GET(req: NextRequest, params: any) {
     console.log(lendingsForMe);
     console.log(borrowingsForMe);
 
-    const getFilteredSum = (items: any[], statusFilter: string[]) =>
-      getSapatiSum(
-        items
-          .filter((item) => statusFilter.includes(item.sapati.sapati_satatus))
-          .map((item) => item.sapati.amount)
-      );
+    let borrowed = getSapatiSum(
+      borrowingsForMe
+        .filter((item) => item.sapati.sapati_satatus !== "SETTLED")
+        .map((item) => item.sapati.amount)
+    );
+    let lent = getSapatiSum(
+      lendingsForMe
+        .filter((item) => item.sapati.sapati_satatus !== "SETTLED")
+        .map((item) => item.sapati.amount)
+    );
 
-    let borrowed = getFilteredSum(borrowingsForMe, ["DECLINED", "SETTLED"]);
-    let lent = getFilteredSum(lendingsForMe, ["DECLINED", "SETTLED"]);
-
-    const lentSettled = getFilteredSum(borrowingsForMe, ["SETTLED"]);
-    const borrowSettled = getFilteredSum(lendingsForMe, ["SETTLED"]);
+    const lentSettled = getSapatiSum(
+      borrowingsForMe
+        .filter((item) => item.sapati.sapati_satatus !== "SETTLED")
+        .map((item) => item.sapati.amount)
+    );
+    const borrowSettled = getSapatiSum(
+      lendingsForMe
+        .filter((item) => item.sapati.sapati_satatus !== "SETTLED")
+        .map((item) => item.sapati.amount)
+    );
 
     console.log(borrowSettled);
     console.log(lentSettled);
@@ -93,13 +102,13 @@ export async function GET(req: NextRequest, params: any) {
     borrowed = borrowed + borrowSettled + lentSettled;
     console.log(borrowed);
 
-    const borrowedTotal = getFilteredSum(borrowingsForMe, [
-      "DECLINED",
-      "SETTLED",
-    ]);
-    const lentTotal = getFilteredSum(lendingsForMe, ["DECLINED", "SETTLED"]);
+    // const borrowedTotal = getFilteredSum(borrowingsForMe, [
+    //   "DECLINED",
+    //   "SETTLED",
+    // ]);
+    // const lentTotal = getFilteredSum(lendingsForMe, ["DECLINED", "SETTLED"]);
 
-    const balance = lentTotal - borrowedTotal;
+    // const balance = lentTotal - borrowedTotal;
     const overallTransactions = lendingsForMe.length + borrowingsForMe.length;
 
     const settledLent = lendingsForMe.filter(
