@@ -27,7 +27,7 @@ model User {
   tokensCreatedDate DateTime?
   notification      Boolean?      @default(true)
   is_verified       Boolean       @default(false)
-  gender            Gender?
+  gender            String?
   country_code      String?
   phone_number      Int           @unique
   dob               String?

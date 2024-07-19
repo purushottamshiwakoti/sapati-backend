@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
       );
       if (samePassword) {
         return NextResponse.json(
-          { message: "Passowrd cannot be same" },
+          { message: "Password cannot be same" },
           { status: 400 }
         );
       }
