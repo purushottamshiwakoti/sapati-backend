@@ -86,8 +86,6 @@ export async function GET(req: NextRequest) {
 
     const processedBorrowings = await processItems(borrowings);
     const processedLendings = await processItems(lendings);
-    console.log(processedLendings);
-    console.log(processedBorrowings);
 
     const sapatiTaken = processedBorrowings.map((item) => ({
       user_id: item.user_id,
@@ -135,13 +133,7 @@ export async function GET(req: NextRequest) {
     }));
 
     data = [...sapatiGiven, ...sapatiTaken];
-    console.log(data);
-    console.log(
-      data.sort(
-        (a: any, b: any) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      )
-    );
+
     const ids: any[] = [];
     const userData: any[] = [];
 
@@ -312,15 +304,17 @@ export async function GET(req: NextRequest) {
         const searchTerm = search.toLowerCase();
         data = data
 
-          .filter((item: any) =>
-            item.status === "Lent" &&
-            (item.sapati_status === "APPROVED" ||
-              item.sapati_status == "SETTLED") &&
-            item.totalAmount1 > 0 &&
-            item.creatorId != item.currentUserId
-              ? item.fullName?.toLowerCase().startsWith(searchTerm)
-              : item.first_name?.toLowerCase().startsWith(searchTerm) ||
-                item.last_name?.toLowerCase().startsWith(searchTerm)
+          .filter(
+            (item: any) =>
+              item.status === "Lent" &&
+              (item.sapati_status === "APPROVED" ||
+                item.sapati_status == "SETTLED") &&
+              item.totalAmount1 > 0 &&
+              item.phone_number.toString().startsWith(searchTerm)
+            // item.creatorId != item.currentUserId
+            //   ? item.fullName?.toLowerCase().startsWith(searchTerm)
+            //   : item.first_name?.toLowerCase().startsWith(searchTerm) ||
+            //     item.last_name?.toLowerCase().startsWith(searchTerm)
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       } else {
@@ -348,15 +342,17 @@ export async function GET(req: NextRequest) {
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
-          .filter((item: any) =>
-            item.status === "Borrowed" &&
-            (item.sapati_status === "APPROVED" ||
-              item.sapati_status == "SETTLED") &&
-            item.totalAmount > 0 &&
-            item.creatorId != item.currentUserId
-              ? item.fullName?.toLowerCase().startsWith(searchTerm)
-              : item.first_name?.toLowerCase().startsWith(searchTerm) ||
-                item.last_name?.toLowerCase().startsWith(searchTerm)
+          .filter(
+            (item: any) =>
+              item.status === "Borrowed" &&
+              (item.sapati_status === "APPROVED" ||
+                item.sapati_status == "SETTLED") &&
+              item.totalAmount > 0 &&
+              item.phone_number.toString().startsWith(searchTerm)
+            // item.creatorId != item.currentUserId
+            //   ? item.fullName?.toLowerCase().startsWith(searchTerm)
+            //   : item.first_name?.toLowerCase().startsWith(searchTerm) ||
+            //     item.last_name?.toLowerCase().startsWith(searchTerm)
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       }
@@ -384,12 +380,14 @@ export async function GET(req: NextRequest) {
               new Date(a.created_at).getTime()
           )
           //   .filter(item => item.sapati_status === "PENDING"&&item.creatorId!=item.currentUserId?item.fullName?.toLowerCase().startsWith(searchTerm):item.first_name?.toLowerCase().startsWith(searchTerm))
-          .filter((item: any) =>
-            // !item.confirm_settlement
-            item.totalAmount != 0 && item.creatorId != item.currentUserId
-              ? item.fullName?.toLowerCase().startsWith(searchTerm)
-              : item.first_name?.toLowerCase().startsWith(searchTerm) ||
-                item.last_name?.toLowerCase().startsWith(searchTerm)
+          .filter(
+            (item: any) =>
+              // !item.confirm_settlement
+              item.phone_number.toString().startsWith(searchTerm)
+            // item.totalAmount != 0 && item.creatorId != item.currentUserId
+            //   ? item.fullName?.toLowerCase().startsWith(searchTerm)
+            //   : item.first_name?.toLowerCase().startsWith(searchTerm) ||
+            //     item.last_name?.toLowerCase().startsWith(searchTerm)
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       } else {
@@ -413,10 +411,11 @@ export async function GET(req: NextRequest) {
               new Date(a.created_at).getTime()
           )
           .filter((item: any) =>
-            item.creatorId != item.currentUserId
-              ? item.fullName?.toLowerCase().startsWith(searchTerm)
-              : item.first_name?.toLowerCase().startsWith(searchTerm) ||
-                item.last_name?.toLowerCase().startsWith(searchTerm)
+            // item.creatorId != item.currentUserId
+            //   ? item.fullName?.toLowerCase().startsWith(searchTerm)
+            //   : item.first_name?.toLowerCase().startsWith(searchTerm) ||
+            //     item.last_name?.toLowerCase().startsWith(searchTerm)
+            item.phone_number.toString().startsWith(searchTerm)
           )
           .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
       } else {
