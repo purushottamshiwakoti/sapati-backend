@@ -48,6 +48,8 @@ export async function GET(req: NextRequest) {
     const processItems = async (items: any) => {
       const processedItems = [];
       for (const item of items) {
+        console.log(item);
+
         const phone = parseInt(item.sapati.phone);
         if (!isNaN(phone)) {
           const borrower_user = await getUserByPhone(phone);
@@ -84,6 +86,8 @@ export async function GET(req: NextRequest) {
 
     const processedBorrowings = await processItems(borrowings);
     const processedLendings = await processItems(lendings);
+    console.log(processedLendings);
+    console.log(processedBorrowings);
 
     const sapatiTaken = processedBorrowings.map((item) => ({
       user_id: item.user_id,
@@ -131,6 +135,13 @@ export async function GET(req: NextRequest) {
     }));
 
     data = [...sapatiGiven, ...sapatiTaken];
+    console.log(data);
+    console.log(
+      data.sort(
+        (a: any, b: any) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+    );
     const ids: any[] = [];
     const userData: any[] = [];
 
@@ -300,11 +311,7 @@ export async function GET(req: NextRequest) {
       if (search) {
         const searchTerm = search.toLowerCase();
         data = data
-          .sort(
-            (a: any, b: any) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          )
+
           .filter((item: any) =>
             item.status === "Lent" &&
             (item.sapati_status === "APPROVED" ||
