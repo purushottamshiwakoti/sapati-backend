@@ -22,6 +22,7 @@ export interface ExtendedUser extends User {
   noData?: boolean;
   isActiveAvailable?: boolean;
   isData?: boolean;
+  activeCount?: number;
 }
 
 export async function GET(req: NextRequest) {
@@ -226,6 +227,7 @@ export async function GET(req: NextRequest) {
     existingUser.noData = data.length == 0;
     existingUser.isData = payee.length === 0 && receivee.length === 0;
     existingUser.isActiveAvailable = payee.length > 0 || receivee.length > 0;
+    existingUser.activeCount = payee.length + receivee.length;
 
     console.log(existingUser);
     return NextResponse.json(
