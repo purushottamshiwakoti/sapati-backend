@@ -27,7 +27,7 @@ export async function GET(req) {
     const status = req.nextUrl.searchParams.get("status");
     const search = req.nextUrl.searchParams.get("search");
 
-    const pgnum = parseInt(req.nextUrl.searchParams.get("pgnum") || "0", 10);
+    const pgnum = req.nextUrl.searchParams.get("pgnum") ?? 0;
     const pgsize = 10;
 
     let [borrowings, lendings] = await Promise.all([
@@ -60,21 +60,26 @@ export async function GET(req) {
                   (borrower_user?.last_name?.trim() ?? "")
                 : (creatorUser?.first_name?.trim() ?? "") +
                   (creatorUser?.last_name?.trim() ?? "");
-
-            item.user_id = borrower_user?.id || "";
-            item.user.first_name = borrower_user?.first_name || "";
-            item.user.last_name = borrower_user?.last_name || "";
-            item.user.fullName = fullName;
-            item.user.is_verified = borrower_user?.is_verified || false;
-            item.user.image =
-              existingToken.user_id == item.sapati.created_by
-                ? borrower_user?.image ?? null
-                : creatorUser?.image ?? null;
-            item.user.phone_number = phone_number;
+            return {
+              ...item,
+              user_id: borrower_user?.id || "",
+              user: {
+                ...item.user,
+                first_name: borrower_user?.first_name || "",
+                last_name: borrower_user?.last_name || "",
+                fullName,
+                is_verified: borrower_user?.is_verified || false,
+                image:
+                  existingToken.user_id == item.sapati.created_by
+                    ? borrower_user?.image ?? null
+                    : creatorUser?.image ?? null,
+                phone_number,
+              },
+            };
           }
-          return item;
+          return null;
         })
-      );
+      ).then((result) => result.filter((item) => item !== null));
     };
 
     const [processedBorrowings, processedLendings] = await Promise.all([
@@ -126,145 +131,126 @@ export async function GET(req) {
 
     let data = [...sapatiGiven, ...sapatiTaken];
 
-    const ids = [];
+    const ids = new Set(data.map((item) => item.phone_number));
     const userData = [];
 
-    data.forEach((item) => {
-      if (!ids.includes(item.phone_number)) {
-        ids.push(item.phone_number);
-      }
-    });
-
-    await Promise.all(
-      ids.map(async (id) => {
-        let totalBorrowed = 0;
-        let totalLent = 0;
-        let totalSettled = 0;
-
-        const userTransactions = data.filter(
-          (item) => item.phone_number === id
-        );
-
-        userTransactions.forEach((item) => {
-          if (item.status === "Borrowed") {
-            if (item.sapati_status === "SETTLED") {
-              totalSettled += item.amount;
-            } else if (item.sapati_status !== "DECLINED") {
-              totalBorrowed += item.amount;
-            }
-          } else if (item.status === "Lent") {
-            if (item.sapati_status === "SETTLED") {
-              totalSettled += item.amount;
-            } else if (item.sapati_status !== "DECLINED") {
-              totalLent += item.amount;
-            }
+    for (const id of ids) {
+      let totalBorrowed = 0;
+      let totalLent = 0;
+      let totalSettled = 0;
+      const allData = data.filter((item) => item.phone_number == id);
+      for (const item of allData) {
+        if (item.status == "Borrowed") {
+          if (item.sapati_status == "SETTLED") {
+            totalSettled += item.amount;
+          } else if (item.sapati_status != "DECLINED") {
+            totalBorrowed += item.amount;
           }
-        });
+        } else if (item.status == "Lent") {
+          if (item.sapati_status == "SETTLED") {
+            totalSettled += item.amount;
+          } else if (item.sapati_status != "DECLINED") {
+            totalLent += item.amount;
+          }
+        }
+      }
 
-        totalLent += totalSettled;
-        totalBorrowed += totalSettled;
-        const totalAmount = totalLent - totalBorrowed;
+      totalLent += totalSettled;
+      totalBorrowed += totalSettled;
+      const totalAmount = totalLent - totalBorrowed;
+      const firstItem = allData[0];
+      const newUser = await getUserByPhone(id);
 
-        const firstItem = userTransactions[0];
-        const newUser = await getUserByPhone(id);
-
-        userData.push({
-          creatorId: newUser?.id,
-          totalAmount,
-          user_id: firstItem?.user_id,
-          first_name: firstItem?.first_name,
-          last_name: firstItem?.last_name,
-          isverified: firstItem?.isverified,
-          created_at: firstItem?.created_at,
-          status: firstItem?.status,
-          sapati_status: firstItem?.sapati_status,
-          confirm_settlement: firstItem?.confirm_settlement,
-          amount: firstItem?.amount,
-          image: firstItem?.image,
-          currentUserId: firstItem?.currentUserId,
-          userName: firstItem?.userName,
-          userImage: firstItem?.userImage,
-          phone_number: firstItem?.phone_number,
-          fullName: newUser?.fullName ?? firstItem?.fullName,
-        });
-      })
-    );
+      userData.push({
+        creatorId: newUser?.id,
+        totalAmount,
+        ...firstItem,
+        fullName: newUser?.fullName ?? firstItem?.fullName,
+      });
+    }
 
     data = userData;
 
     if (status === "given") {
-      if (search) {
-        const searchTerm = search.toLowerCase();
-        data = data
-          .filter(
+      data = search
+        ? data.filter(
             (item) =>
               item.status === "Lent" &&
               (item.sapati_status === "APPROVED" ||
-                item.sapati_status === "SETTLED") &&
-              item.totalAmount > 0 &&
-              item.phone_number.toString().startsWith(searchTerm)
+                item.sapati_status == "SETTLED") &&
+              item.totalAmount1 > 0 &&
+              item.creatorId != item.currentUserId &&
+              (item.fullName?.toLowerCase().startsWith(search.toLowerCase()) ||
+                item.first_name
+                  ?.toLowerCase()
+                  .startsWith(search.toLowerCase()) ||
+                item.last_name?.toLowerCase().startsWith(search.toLowerCase()))
           )
-          .slice(pgnum * pgsize, (pgnum + 1) * pgsize);
-      } else {
-        data = data
-          .sort(
-            (a, b) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          )
-          .filter((item) => item.totalAmount > 0)
-          .slice(pgnum * pgsize, (pgnum + 1) * pgsize);
-      }
+        : data.filter((item) => item.totalAmount > 0);
     } else if (status === "taken") {
-      if (search) {
-        const searchTerm = search.toLowerCase();
-        data = data
-          .sort(
-            (a, b) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          )
-          .filter(
+      data = search
+        ? data.filter(
             (item) =>
               item.status === "Borrowed" &&
               (item.sapati_status === "APPROVED" ||
-                item.sapati_status === "SETTLED") &&
+                item.sapati_status == "SETTLED") &&
               item.totalAmount > 0 &&
-              item.phone_number.toString().startsWith(searchTerm)
+              item.creatorId != item.currentUserId &&
+              (item.fullName?.toLowerCase().startsWith(search.toLowerCase()) ||
+                item.first_name
+                  ?.toLowerCase()
+                  .startsWith(search.toLowerCase()) ||
+                item.last_name?.toLowerCase().startsWith(search.toLowerCase()))
           )
-          .slice(pgnum * pgsize, (pgnum + 1) * pgsize);
-      } else {
-        data = data
-          .sort(
-            (a, b) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          )
-          .filter(
+        : data.filter(
             (item) =>
               item.status === "Borrowed" &&
               (item.sapati_status === "APPROVED" ||
-                item.sapati_status === "SETTLED") &&
+                item.sapati_status == "SETTLED") &&
               item.totalAmount > 0
+          );
+    } else if (status === "active") {
+      data = search
+        ? data.filter(
+            (item) =>
+              item.totalAmount != 0 &&
+              item.creatorId != item.currentUserId &&
+              (item.fullName?.toLowerCase().startsWith(search.toLowerCase()) ||
+                item.first_name
+                  ?.toLowerCase()
+                  .startsWith(search.toLowerCase()) ||
+                item.last_name?.toLowerCase().startsWith(search.toLowerCase()))
           )
-          .slice(pgnum * pgsize, (pgnum + 1) * pgsize);
-      }
+        : data.filter((item) => item.totalAmount != 0);
     } else {
-      if (search) {
-        const searchTerm = search.toLowerCase();
-        data = data
-          .filter((item) => item.phone_number.toString().startsWith(searchTerm))
-          .slice(pgnum * pgsize, (pgnum + 1) * pgsize);
-      } else {
-        data = data.slice(pgnum * pgsize, (pgnum + 1) * pgsize);
-      }
+      data = search
+        ? data.filter(
+            (item) =>
+              item.creatorId != item.currentUserId &&
+              (item.fullName?.toLowerCase().startsWith(search.toLowerCase()) ||
+                item.first_name
+                  ?.toLowerCase()
+                  .startsWith(search.toLowerCase()) ||
+                item.last_name?.toLowerCase().startsWith(search.toLowerCase()))
+          )
+        : data;
     }
 
-    return NextResponse.json({ data }, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching data:", error);
+    data = data
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+      .slice(parseInt(pgnum) * pgsize, (parseInt(pgnum) + 1) * pgsize);
+
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Successfully fetched transactions", data },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
