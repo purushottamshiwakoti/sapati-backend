@@ -14,6 +14,7 @@ const TermsandCOndition = async () => {
       <h2 className="text-xl font-bold text-blue-500">{data?.title}</h2>
       <div>
         <div className="mt-3">{data && parse(data.description)}</div>
+        <div></div>
       </div>
     </div>
   );
