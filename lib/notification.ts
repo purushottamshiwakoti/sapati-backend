@@ -47,7 +47,7 @@ export async function sendNotification(
       }
     );
 
-    console.log({ response });
+    console.log(response);
   } catch (error) {
     console.error("Error sending notification:", error);
   }
