@@ -214,24 +214,26 @@ export async function GET(req) {
         ? data.filter(
             (item) =>
               item.totalAmount != 0 &&
-              item.creatorId != item.currentUserId &&
-              (item.fullName?.toLowerCase().startsWith(search.toLowerCase()) ||
-                item.first_name
-                  ?.toLowerCase()
-                  .startsWith(search.toLowerCase()) ||
-                item.last_name?.toLowerCase().startsWith(search.toLowerCase()))
+              // item.creatorId != item.currentUserId &&
+              // (item.fullName?.toLowerCase().startsWith(search.toLowerCase()) ||
+              //   item.first_name
+              //     ?.toLowerCase()
+              //     .startsWith(search.toLowerCase()) ||
+              //   item.last_name?.toLowerCase().startsWith(search.toLowerCase()))
+              item.phone_number.toString().includes(search)
           )
         : data.filter((item) => item.totalAmount != 0);
     } else {
+      console.log(search);
       data = search
-        ? data.filter(
-            (item) =>
-              item.creatorId != item.currentUserId &&
-              (item.fullName?.toLowerCase().startsWith(search.toLowerCase()) ||
-                item.first_name
-                  ?.toLowerCase()
-                  .startsWith(search.toLowerCase()) ||
-                item.last_name?.toLowerCase().startsWith(search.toLowerCase()))
+        ? data.filter((item) =>
+            // item.creatorId != item.currentUserId &&
+            // (item.fullName?.toLowerCase().startsWith(search.toLowerCase()) ||
+            //   item.first_name
+            //     ?.toLowerCase()
+            //     .startsWith(search.toLowerCase()) ||
+            //   item.last_name?.toLowerCase().startsWith(search.toLowerCase()))
+            item.phone_number.toString().includes(search)
           )
         : data;
     }
