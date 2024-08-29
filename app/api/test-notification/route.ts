@@ -1,19 +1,21 @@
 import { sendNotification } from "@/lib/notification";
 import { NextResponse } from "next/server";
 
-export async function GET(){
-    try {
+export async function GET() {
+  try {
+    const title = "hAWA";
+    const body = "pOINT";
 
-        const title="Amount Requested"
-        const body = "hello"
+    const send = await sendNotification(
+      "ftLzox4kRq-4rRgqVRycNa:APA91bEXiZXcPliX9Tjxd59SL6O_iNDC3yiLAGKI_i9nvopx-7p-psLCF3p98svf7MyAaJ5GTfKJBKzENz5l-uAEs_i_ZvLD9PqwN1BIQ1px1zntWOKdiAxmS4inbwH8e25D_S5VwFdU",
+      title,
+      body
+    );
+    console.log(send);
 
-        const send=await sendNotification("fxYGxm1MSqWOPX_QYBWas4:APA91bFlYEYH6txXFOxT01tWDeCAKpvGVxB0s_ppyxiv7DcAOHTqmPd8GT9lXAWY_vVMDQmEM-gsWM7PQEmSz3uhwskdRy5TwG6i_Ax4x_BFTnq7u5Za17IumtwvXhtdjYczWmZSgsYC",title,body);
-        console.log(send);
-
-        return NextResponse.json({message:"yes"},{status:200})
-        
-    } catch (error) {
-        console.log(error);
-        return NextResponse.json({message:"sdnbnbdsnbds"},{status:500})
-    }
+    return NextResponse.json({ message: "yes" }, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ message: "sdnbnbdsnbds" }, { status: 500 });
+  }
 }
