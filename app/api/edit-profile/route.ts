@@ -42,10 +42,15 @@ export async function PATCH(req: NextRequest) {
       // Check if the image size is greater than 2MB
       const MAX_IMAGE_SIZE_MB = 3;
       const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+      console.log(image.size);
 
       if (image.size > MAX_IMAGE_SIZE_BYTES) {
         return NextResponse.json(
-          { message: `Image size must not exceed ${MAX_IMAGE_SIZE_MB}MB` },
+          {
+            data: {
+              message: `Image size must not exceed ${MAX_IMAGE_SIZE_MB}MB`,
+            },
+          },
           { status: 400 }
         );
       }

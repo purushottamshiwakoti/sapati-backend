@@ -28,7 +28,11 @@ export async function POST(req: NextRequest) {
 
       if (image.size > MAX_IMAGE_SIZE_BYTES) {
         return NextResponse.json(
-          { message: `Image size must not exceed ${MAX_IMAGE_SIZE_MB}MB` },
+          {
+            data: {
+              message: `Image size must not exceed ${MAX_IMAGE_SIZE_MB}MB`,
+            },
+          },
           { status: 400 }
         );
       }
