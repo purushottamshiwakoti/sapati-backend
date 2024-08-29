@@ -38,6 +38,19 @@ export async function PATCH(req: NextRequest) {
       }
     });
 
+    if (image !== null) {
+      // Check if the image size is greater than 2MB
+      const MAX_IMAGE_SIZE_MB = 3;
+      const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+
+      if (image.size > MAX_IMAGE_SIZE_BYTES) {
+        return NextResponse.json(
+          { error: `Image size must not exceed ${MAX_IMAGE_SIZE_MB}MB` },
+          { status: 400 }
+        );
+      }
+    }
+
     if (errors.length > 0) {
       return NextResponse.json({ error: errors[0] }, { status: 400 });
     }
