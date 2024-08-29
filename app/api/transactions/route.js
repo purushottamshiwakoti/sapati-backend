@@ -224,7 +224,6 @@ export async function GET(req) {
           )
         : data.filter((item) => item.totalAmount != 0);
     } else {
-      console.log(search);
       data = search
         ? data.filter((item) =>
             // item.creatorId != item.currentUserId &&

@@ -8,7 +8,6 @@ import prismadb from "@/lib/prismadb";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log(body);
     const { phone_number, password, device_token, country_code } = body;
 
     const requiredFields = [
@@ -70,14 +69,12 @@ export async function POST(req: NextRequest) {
         device_token,
       },
     });
-    console.log(token);
 
     return NextResponse.json(
       { message: "Successfully logged in", token: token },
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }

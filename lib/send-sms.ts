@@ -14,7 +14,6 @@ export const sendSms = async (
   phone: number
 ) => {
   try {
-    console.log(country_code === "+977");
     const user = await getUserByPhone(phone);
     if (user) {
       const today = new Date().getDate();
@@ -31,9 +30,6 @@ export const sendSms = async (
           },
         });
       }
-      console.log(user.tokensCreatedDate == new Date());
-      console.log(user.tokensCreatedDate?.getDate());
-      console.log(new Date().getDate());
 
       if (
         user.tokensNumber &&
@@ -50,16 +46,12 @@ export const sendSms = async (
         to: to,
         text: body,
       });
-
-      console.log(res.data);
     } else {
       const message = await client.messages.create({
         from: "+15168149873",
         to: `${country_code}${to}`,
         body: body,
       });
-
-      console.log(message);
     }
 
     if (user) {

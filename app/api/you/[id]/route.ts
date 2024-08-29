@@ -5,7 +5,6 @@ import { getSapatiSum } from "@/lib/calculate-sapati";
 
 export async function GET(req: NextRequest, params: any) {
   try {
-    console.log(params.params.id);
     const id = params.params.id;
     const token = req.headers.get("Authorization");
     if (!token) {
@@ -40,7 +39,6 @@ export async function GET(req: NextRequest, params: any) {
         },
       },
     });
-    console.log(user);
     if (!user) {
       return NextResponse.json({ message: "No user found" }, { status: 404 });
     }
@@ -66,9 +64,6 @@ export async function GET(req: NextRequest, params: any) {
         (item.sapati.created_by == existingToken.user_id &&
           item.sapati.created_for == user.id)
     );
-    console.log(lendingsForMe);
-    console.log(lendingsForMe.map((item) => item.sapati.amount));
-    console.log(getSapatiSum(lendingsForMe.map((item) => item.sapati.amount)));
 
     let borrowed = getSapatiSum(
       borrowingsForMe.map((item) => item.sapati.amount)
@@ -86,24 +81,6 @@ export async function GET(req: NextRequest, params: any) {
         .map((item) => item.sapati.amount)
     );
 
-    console.log(borrowSettled);
-    console.log(lentSettled);
-    console.log(lent);
-
-    // lent = lent + lentSettled + borrowSettled;
-    console.log(lent);
-    console.log(borrowed);
-
-    // borrowed = borrowed + borrowSettled + lentSettled;
-    console.log(borrowed);
-
-    // const borrowedTotal = getFilteredSum(borrowingsForMe, [
-    //   "DECLINED",
-    //   "SETTLED",
-    // ]);
-    // const lentTotal = getFilteredSum(lendingsForMe, ["DECLINED", "SETTLED"]);
-
-    // const balance = lentTotal - borrowedTotal;
     const overallTransactions = lendingsForMe.length + borrowingsForMe.length;
 
     const settledLent = lendingsForMe.filter(
@@ -133,8 +110,6 @@ export async function GET(req: NextRequest, params: any) {
     const settled = settledLent.length + settledBorrowings.length;
     const rejected = rejectedLent.length + rejectedBorrowings.length;
     const activeBook = pendingLent.length + pendingBorrowings.length;
-
-    console.log(user);
 
     const modifiedUser = {
       id: user.id,

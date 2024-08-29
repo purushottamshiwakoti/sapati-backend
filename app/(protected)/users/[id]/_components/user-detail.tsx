@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const UserDetail = ({ data }: { data: any }) => {
-  console.log(data);
   return (
     <div className="bg-white dark:bg-gray-800 p-4 shadow-xl mx-10 rounded-2xl">
       <div className="space-y-4">

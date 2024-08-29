@@ -1,4 +1,4 @@
-import { deleteImage, uploadImage } from "@/actions/upload";
+import { uploadImage } from "@/actions/upload";
 import prismadb from "@/lib/prismadb";
 import { getUserById } from "@/lib/user";
 import { verifyBearerToken } from "@/lib/verifyBearerToken";
@@ -25,7 +25,6 @@ export async function PATCH(req: NextRequest) {
     const gender: any = data.get("gender");
     let userImage;
 
-    console.log(dob);
     const requiredFields = [
       { field: first_name, fieldName: "First Name" },
       { field: last_name, fieldName: "Last Name" },
@@ -42,7 +41,6 @@ export async function PATCH(req: NextRequest) {
       // Check if the image size is greater than 2MB
       const MAX_IMAGE_SIZE_MB = 3;
       const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
-      console.log(image.size);
 
       if (image.size > MAX_IMAGE_SIZE_BYTES) {
         return NextResponse.json(
@@ -73,10 +71,6 @@ export async function PATCH(req: NextRequest) {
       userImage = await uploadImage(image);
     }
 
-    if (user.image !== null) {
-      await deleteImage(user.image);
-    }
-
     const updateData: any = {
       first_name,
       last_name,
@@ -84,7 +78,6 @@ export async function PATCH(req: NextRequest) {
       dob: dob || null, // If dob is an empty string, set it to null
       gender: gender || null, // If gender is an empty string or null, set it to null
     };
-    console.log(updateData);
     if (userImage !== null) {
       updateData.image = userImage;
     }

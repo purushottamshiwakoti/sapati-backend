@@ -6,11 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 
 export const generatePhoneVerificationToken = async (phone_number: number) => {
   try {
-    console.log(phone_number);
     const token = crypto.randomInt(100_000, 1_000_000).toString();
-    console.log(token);
     const expires = new Date(new Date().getTime() + 5 * 60 * 1000);
-    console.log(expires);
     const existingToken = await getVerificationTokenByPhone(phone_number);
     if (existingToken) {
       await prismadb.verifyPhoneNumber.delete({
@@ -28,8 +25,6 @@ export const generatePhoneVerificationToken = async (phone_number: number) => {
       },
     });
 
-    console.log(createToken);
-
     return token;
   } catch (error) {
     console.log(error);
@@ -41,7 +36,6 @@ export const getPhoneNumberToken = async (
   phone_number: number
 ) => {
   try {
-    console.log(token);
     const getToken = await prismadb.verifyPhoneNumber.findFirst({
       where: {
         token,
@@ -56,7 +50,6 @@ export const getPhoneNumberToken = async (
 };
 
 export const generateBearerToken = async (id: string) => {
-  console.log(id);
   try {
     // const existingToken=await prismadb.bearerToken.findUnique({
     //     where:{

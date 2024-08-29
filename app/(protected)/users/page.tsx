@@ -7,7 +7,6 @@ async function getData(s?: any) {
   const phoneNumber = s ? parseInt(s) : undefined;
 
   if (s != null) {
-    console.log(typeof phoneNumber);
     const user = await prismadb.user.findUnique({
       where: {
         phone_number: phoneNumber,

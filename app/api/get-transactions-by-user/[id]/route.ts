@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest, params: any) {
   try {
     const id = params.params.id;
-    console.log(id);
     const token = req.headers.get("Authorization");
     if (!token) {
       return NextResponse.json(
@@ -72,7 +71,6 @@ export async function GET(req: NextRequest, params: any) {
           item.sapati.created_for == id)
     );
 
-    console.log(borrowings);
     for (const item of borrowings) {
       const phone = parseInt(item.sapati.phone);
       if (!isNaN(phone)) {
@@ -92,9 +90,7 @@ export async function GET(req: NextRequest, params: any) {
         );
       }
     }
-    console.log(borrowings);
 
-    console.log(lendings);
     for (const item of lendings) {
       const phone = parseInt(item.sapati.phone);
       if (!isNaN(phone)) {
@@ -114,8 +110,6 @@ export async function GET(req: NextRequest, params: any) {
         );
       }
     }
-
-    console.log(lendings);
 
     const sapatiTaken = borrowings
       .sort(
@@ -180,7 +174,6 @@ export async function GET(req: NextRequest, params: any) {
         updated_at: item.sapati.updated_at,
       }));
     let data = [...sapatiGiven, ...sapatiTaken];
-    console.log(data);
 
     if (status == "activebook") {
       const given = sapatiGiven.filter(
@@ -388,7 +381,6 @@ export async function GET(req: NextRequest, params: any) {
       );
     }
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       { error: "Internal server error", message: error },
       { status: 500 }

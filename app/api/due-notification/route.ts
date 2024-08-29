@@ -11,7 +11,6 @@ export async function GET() {
     });
 
     const date = new Date();
-    console.log(date);
     const sapatis = await prismadb.sapati.findMany({
       where: {
         sapati_satatus: {

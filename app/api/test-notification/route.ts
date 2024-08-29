@@ -11,7 +11,6 @@ export async function GET() {
       title,
       body
     );
-    console.log(send);
 
     return NextResponse.json({ message: "yes" }, { status: 200 });
   } catch (error) {

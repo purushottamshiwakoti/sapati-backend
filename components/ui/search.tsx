@@ -17,7 +17,6 @@ const Search = ({ searchKey }: { searchKey: string }) => {
   };
   const clearSearch = (e: any) => {
     e.preventDefault();
-    console.log(s);
     router.push(`${path}`);
   };
   return (

@@ -23,9 +23,7 @@ export async function POST(req: NextRequest) {
         { status: 409 }
       );
     }
-    console.log(
-      existingUser.country_code + existingUser.phone_number.toString()
-    );
+
     const token = await generatePhoneVerificationToken(phone);
     const sms = await sendSms(
       existingUser.country_code!,
@@ -33,7 +31,6 @@ export async function POST(req: NextRequest) {
       `Your otp for sapati is ${token}. Please verify it`,
       existingUser.phone_number
     );
-    console.log(sms);
     if (sms.error) {
       return NextResponse.json({ message: sms.error }, { status: 400 });
     }

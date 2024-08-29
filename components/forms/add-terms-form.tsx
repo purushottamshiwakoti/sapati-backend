@@ -50,7 +50,6 @@ export const AddTermsForm = ({ data }: { data: Terms }) => {
   function onSubmit(values: z.infer<typeof termsFormSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    // console.log(values);
     startTransistion(() => {
       addTerms(values, data.id).then((data) => {
         if (data?.success) {

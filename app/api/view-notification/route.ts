@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
         created_at: "desc",
       },
     });
-    console.log(notifications.filter((item) => item.status == "DUE"));
 
     let notificationsArray = [];
     for (const item of notifications) {
@@ -121,8 +120,6 @@ export async function GET(req: NextRequest) {
       const createdFor = usersecond;
       const createdBy = user;
 
-      console.log(item);
-
       notificationsArray.push({
         request: request,
         requestDescription: requestDescription,
@@ -151,7 +148,6 @@ export async function GET(req: NextRequest) {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
-    console.log(notificationsArray);
     return NextResponse.json(
       { message: "yes", notificationsArray },
       { status: 200 }

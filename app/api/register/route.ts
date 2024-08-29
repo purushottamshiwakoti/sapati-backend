@@ -22,12 +22,6 @@ export async function POST(req: NextRequest) {
 
     const existingUser = await getUserByPhone(phone);
 
-    console.log(
-      existingUser &&
-        existingUser.is_verified &&
-        existingUser.country_code == country_code
-    );
-
     if (
       existingUser &&
       !existingUser.is_verified &&

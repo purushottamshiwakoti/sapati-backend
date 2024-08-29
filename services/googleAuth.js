@@ -12,7 +12,6 @@ const client = new JWT({
 
 async function getAccessToken() {
   const tokens = await client.authorize();
-  console.log(tokens.access_token);
   return tokens.access_token;
 }
 

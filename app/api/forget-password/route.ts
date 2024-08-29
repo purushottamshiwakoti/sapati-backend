@@ -6,7 +6,6 @@ import { getUserByPhone } from "@/lib/user";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log(body);
     const { new_password, confirm_new_password, phone_number } = body;
 
     const requiredFields = [
@@ -79,7 +78,6 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }

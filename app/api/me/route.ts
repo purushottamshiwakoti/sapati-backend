@@ -229,7 +229,6 @@ export async function GET(req: NextRequest) {
     existingUser.isActiveAvailable = payee.length > 0 || receivee.length > 0;
     existingUser.activeCount = payee.length + receivee.length;
 
-    console.log(existingUser);
     return NextResponse.json(
       { message: "Successfully fetched user", user: existingUser },
       { status: 200 }
