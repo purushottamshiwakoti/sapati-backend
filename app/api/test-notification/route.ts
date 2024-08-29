@@ -7,7 +7,7 @@ export async function GET() {
     const body = "pOINT";
 
     const send = await sendNotification(
-      "ftLzox4kRq-4rRgqVRycNa:APA91bEXiZXcPliX9Tjxd59SL6O_iNDC3yiLAGKI_i9nvopx-7p-psLCF3p98svf7MyAaJ5GTfKJBKzENz5l-uAEs_i_ZvLD9PqwN1BIQ1px1zntWOKdiAxmS4inbwH8e25D_S5VwFdU",
+      "snnsnsnsnns-4rRgqVRycNa:APA91bEXiZXcPliX9Tjxd59SL6O_iNDC3yiLAGKI_i9nvopx-7p-psLCF3p98svf7MyAaJ5GTfKJBKzENz5l-uAEs_i_ZvLD9PqwN1BIQ1px1zntWOKdiAxmS4inbwH8e25D_S5VwFdU",
       title,
       body
     );

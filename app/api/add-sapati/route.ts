@@ -13,16 +13,6 @@ export async function POST(req: NextRequest) {
     const token = await req.headers;
     const bearerToken = token.get("Authorization")?.split(" ")[1];
 
-    const existingToken = await verifyBearerToken(bearerToken);
-    if (!existingToken) {
-      return NextResponse.json({ message: "Invalid token" }, { status: 400 });
-    }
-
-    const user = await getUserById(existingToken.user_id);
-
-    if (!user) {
-      return NextResponse.json({ message: "No user found" }, { status: 404 });
-    }
     let {
       fullName,
       phone,
@@ -64,6 +54,17 @@ export async function POST(req: NextRequest) {
 
     if (errors.length > 0) {
       return NextResponse.json({ error: errors[0] }, { status: 499 });
+    }
+
+    const existingToken = await verifyBearerToken(bearerToken);
+    if (!existingToken) {
+      return NextResponse.json({ message: "Invalid token" }, { status: 400 });
+    }
+
+    const user = await getUserById(existingToken.user_id);
+
+    if (!user) {
+      return NextResponse.json({ message: "No user found" }, { status: 404 });
     }
 
     const sapatiUser = {
