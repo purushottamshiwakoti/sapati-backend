@@ -1,5 +1,4 @@
 const { JWT } = require("google-auth-library");
-
 const serviceAccount = require("./service-account.json");
 
 const SCOPES = ["https://www.googleapis.com/auth/cloud-platform"];
@@ -11,8 +10,13 @@ const client = new JWT({
 });
 
 async function getAccessToken() {
-  const tokens = await client.authorize();
-  return tokens.access_token;
+  try {
+    const tokens = await client.authorize();
+    console.log("Access Token:", tokens.access_token); // Debugging purpose
+    return tokens.access_token;
+  } catch (error) {
+    console.error("Error obtaining access token:", error);
+  }
 }
 
 module.exports = { getAccessToken };

@@ -282,7 +282,8 @@ export async function POST(req: NextRequest) {
           },
         },
       });
-      await prismadb.notifications.create({
+
+      const not = await prismadb.notifications.create({
         data: {
           sapati_id: sapati.id,
           status: "REQUEST",
@@ -290,14 +291,20 @@ export async function POST(req: NextRequest) {
           created_at: new Date(nepalTime),
         },
       });
+
+      console.log("hello");
+
       if (existingUser.device_token && existingUser.notification) {
-        await sendNotification(
+        console.log("okay");
+        const noti = await sendNotification(
           existingUser.device_token,
           "Amount Borrowed",
           `${
             user.fullName ?? user.first_name
           } have borrowed from you ${amount}. Please verify it`
         );
+        console.log(noti);
+        console.log("hello");
       }
       return NextResponse.json(
         { message: "Successfully added borrowing", user: sapatiUser },
@@ -305,6 +312,7 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }

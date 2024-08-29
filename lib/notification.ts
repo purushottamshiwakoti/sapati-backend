@@ -11,6 +11,8 @@ export async function sendNotification(
 
   const key = `Bearer ${bearer}`;
 
+  console.log({ key });
+
   try {
     const response = await axios.post(
       "https://fcm.googleapis.com/v1/projects/sapati-20d50/messages:send",
@@ -24,7 +26,7 @@ export async function sendNotification(
       }
     );
   } catch (error) {
-    console.error("Error sending notification:", error);
+    console.log("Error sending notification:", error);
   }
 }
 

@@ -10,6 +10,7 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  trustHost: true,
   callbacks: {
     async signIn({ user }) {
       if (!user) return false;
@@ -19,9 +20,9 @@ export const {
 
       return true;
     },
-    async session({ session,token  }) {
-      session.user.name=token.name;
-      session.user.id=token.sub!;
+    async session({ session, token }) {
+      session.user.name = token.name;
+      session.user.id = token.sub!;
       return session;
     },
     async jwt({ token }) {

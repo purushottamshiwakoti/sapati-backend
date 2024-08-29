@@ -1,9 +1,6 @@
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <main className="flex items-center justify-center w-full h-screen">
-      <div className="text-xl font-bold">Welcome to sapati</div>
-    </main>
-  );
+  redirect("https://sapati.app");
 }
