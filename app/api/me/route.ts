@@ -46,12 +46,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "No user found" }, { status: 404 });
     }
 
-    const status = req.nextUrl.searchParams.get("status");
-    const search = req.nextUrl.searchParams.get("search");
-
-    const pgnum: any = req.nextUrl.searchParams.get("pgnum") ?? 0;
-    const pgsize: number = 10;
-
     let [borrowings, lendings] = await Promise.all([
       prismadb.borrowings.findMany({
         where: { user_id: existingToken.user_id },
@@ -102,8 +96,10 @@ export async function GET(req: NextRequest) {
       return processedItems;
     };
 
-    const processedBorrowings = await processItems(borrowings);
-    const processedLendings = await processItems(lendings);
+    const [processedBorrowings, processedLendings] = await Promise.all([
+      processItems(borrowings),
+      await processItems(lendings),
+    ]);
 
     const sapatiTaken = processedBorrowings.map((item) => ({
       user_id: item.user_id,
