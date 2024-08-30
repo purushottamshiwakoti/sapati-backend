@@ -27,6 +27,7 @@ export interface ExtendedUser extends User {
 
 export async function GET(req: NextRequest) {
   try {
+    console.time();
     const token = req.headers.get("Authorization");
     if (!token) {
       return NextResponse.json(
@@ -60,46 +61,62 @@ export async function GET(req: NextRequest) {
     ]);
 
     const processItems = async (items: any) => {
-      const processedItems = [];
-      for (const item of items) {
+      const processedItems: any[] = [];
+
+      // Prepare an array of promises to fetch users by phone and creator ID
+      const userPromises = items.map(async (item: any) => {
         const phone = parseInt(item.sapati.phone);
+
         if (!isNaN(phone)) {
-          const borrower_user = await getUserByPhone(phone);
-          const creatorUser = await getUserById(item.sapati.created_by!);
-          const phone_number =
-            creatorUser?.id === existingToken.user_id
-              ? borrower_user?.phone_number
-              : creatorUser?.phone_number;
-          const fullName =
-            creatorUser?.id === existingToken.user_id
-              ? (borrower_user?.first_name?.trim() ?? "") +
-                (borrower_user?.last_name?.trim() ?? "")
-              : (creatorUser?.first_name?.trim() ?? "") +
-                (creatorUser?.last_name?.trim() ?? "");
+          // Fetch both borrower user and creator user in parallel
+          const [borrower_user, creatorUser] = await Promise.all([
+            getUserByPhone(phone),
+            getUserById(item.sapati.created_by!),
+          ]);
+
+          const isCreatorCurrentUser =
+            creatorUser?.id === existingToken.user_id;
+          const phone_number = isCreatorCurrentUser
+            ? borrower_user?.phone_number
+            : creatorUser?.phone_number;
+          const fullName = isCreatorCurrentUser
+            ? (borrower_user?.first_name?.trim() ?? "") +
+              (borrower_user?.last_name?.trim() ?? "")
+            : (creatorUser?.first_name?.trim() ?? "") +
+              (creatorUser?.last_name?.trim() ?? "");
+
           item.user_id = borrower_user?.id || "";
           item.user.first_name = borrower_user?.first_name || "";
           item.user.last_name = borrower_user?.last_name || "";
           item.user.fullName = fullName;
           item.user.is_verified = borrower_user?.is_verified || false;
-          item.user.image =
-            existingToken.user_id == item.sapati.created_by
-              ? borrower_user?.image ?? null
-              : creatorUser?.image ?? null;
+          item.user.image = isCreatorCurrentUser
+            ? borrower_user?.image ?? null
+            : creatorUser?.image ?? null;
           item.user.phone_number = phone_number!;
+
           processedItems.push(item);
         } else {
           console.log(
             `Index: ${item}, Invalid phone number: ${item.sapati.phone}`
           );
         }
-      }
+      });
+
+      // Wait for all user fetching promises to resolve
+      await Promise.all(userPromises);
+
       return processedItems;
     };
 
     const [processedBorrowings, processedLendings] = await Promise.all([
       processItems(borrowings),
-      await processItems(lendings),
+      processItems(lendings),
     ]);
+
+    console.timeEnd();
+
+    // return NextResponse.json({ message: "no war" }, { status: 200 });
 
     const sapatiTaken = processedBorrowings.map((item) => ({
       user_id: item.user_id,
