@@ -11,7 +11,7 @@ export const {
   signOut,
 } = NextAuth({
   callbacks: {
-    // trustHost: true,
+    trustHost: true,
     async signIn({ user }) {
       if (!user) return false;
       const existingUser = await getAdminById(user.id as string);
@@ -39,7 +39,7 @@ export const {
   },
 
   adapter: PrismaAdapter(prismadb),
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
   session: { strategy: "jwt" },
   ...authConfig,
 });
