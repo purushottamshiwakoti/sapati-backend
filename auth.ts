@@ -10,8 +10,8 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  trustHost: true,
   callbacks: {
-    trustHost: true,
     async signIn({ user }) {
       if (!user) return false;
       const existingUser = await getAdminById(user.id as string);
